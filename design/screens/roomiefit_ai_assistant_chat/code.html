@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serenity Housing - RoomieFit Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#777587",
+                        "secondary-container": "#dce0e4",
+                        "error-container": "#ffdad6",
+                        "surface": "#f9f9ff",
+                        "inverse-surface": "#263143",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#171c1f",
+                        "tertiary-fixed": "#ffdadc",
+                        "surface-container-low": "#f0f3ff",
+                        "on-tertiary-fixed-variant": "#891933",
+                        "tertiary": "#8b1b34",
+                        "on-secondary-fixed-variant": "#43474b",
+                        "surface-dim": "#cfdaf2",
+                        "inverse-primary": "#c3c0ff",
+                        "primary-fixed": "#e2dfff",
+                        "tertiary-fixed-dim": "#ffb2b9",
+                        "surface-tint": "#4d44e3",
+                        "secondary": "#5a5f62",
+                        "on-secondary-container": "#5e6367",
+                        "on-background": "#111c2d",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-tertiary-container": "#ffd0d3",
+                        "on-surface-variant": "#464555",
+                        "primary-container": "#4f46e5",
+                        "primary": "#3525cd",
+                        "on-primary-fixed": "#0f0069",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dee8ff",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-fixed": "#dfe3e7",
+                        "background": "#f9f9ff",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-tertiary-fixed": "#400010",
+                        "on-primary-container": "#dad7ff",
+                        "surface-variant": "#d8e3fb",
+                        "surface-container": "#e7eeff",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-surface": "#111c2d",
+                        "tertiary-container": "#ab354b",
+                        "outline-variant": "#c7c4d8",
+                        "secondary-fixed-dim": "#c3c7cb",
+                        "on-tertiary": "#ffffff",
+                        "coral": "#FB7185"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "sm": "8px",
+                        "container-max": "1280px",
+                        "2xl": "64px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "unit": "4px",
+                        "lg": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Geist"],
+                        "label-md": ["Geist"],
+                        "body-md": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-xl-mobile": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "headline-xl": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                        "headline-xl-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+        .backdrop-blur-overlay {
+            backdrop-filter: blur(8px);
+            background-color: rgba(17, 28, 45, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<!-- Background Content Simulation (The Homepage) -->
+<div class="fixed inset-0 z-0 overflow-y-auto">
+<!-- TopNavBar Component from JSON -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)]">
+<div class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto">
+<div class="text-headline-md font-headline-md font-bold text-on-surface dark:text-inverse-on-surface">Serenity</div>
+<nav class="hidden md:flex gap-lg">
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Apartments</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Roommates</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Resources</a>
+</nav>
+<div class="flex items-center gap-md">
+<span class="text-on-surface-variant font-label-md">EN / עב</span>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-full font-label-md hover:opacity-90 transition-all">Login</button>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-lg md:px-xl py-2xl space-y-2xl">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-xl items-center">
+<div class="space-y-lg">
+<h1 class="font-headline-xl text-headline-xl text-on-background">Finding your peace in the student housing rush.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">Serenity helps you navigate the Tel Aviv housing market with AI-powered roommate matching and verified listings tailored for students.</p>
+<div class="flex gap-md">
+<button class="bg-coral text-on-primary px-xl py-md rounded-2xl font-headline-md shadow-lg hover:scale-105 transition-transform">Explore Rooms</button>
+<button class="border-2 border-primary text-primary px-xl py-md rounded-2xl font-headline-md hover:bg-primary-container hover:text-on-primary-container transition-colors">Find a Roomie</button>
+</div>
+</div>
+<div class="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
+<img class="w-full h-full object-cover" data-alt="A modern, sun-drenched Tel Aviv apartment living room with warm wooden floors, minimalist white furniture, and large windows looking out onto lush green trees. The interior has a soft, serene atmosphere with domestic plants and subtle blue accents, following a premium light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYbbjXL79C2OIau9VzXTcUByO3yb0zFSFVnm13KSXvZD3FTsToDzqyMgr6Si5BZNfBeLXh7DBivfRbDczOyYy0BMWMtGHL0VGSvq9HC8Djoo_lY7oc5oaG6Yq1vZTomqPEfgBNSkuemF00SDGGTunuvC2fmoo7AGT6kCoM-7QuPGjcbGCsQkawyfILfL8ii-m-3JRHJBMv4vPm15VQ9DyFnrS-VZKGtpjDrzw7Fn85DpTRaKDIGUU6Fumjnl0SGGYV7xd2_WUgcq5V"/>
+</div>
+</section>
+<!-- Featured Section (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="md:col-span-2 bg-surface-container-low p-xl rounded-2xl relative overflow-hidden group">
+<div class="relative z-10 space-y-md">
+<span class="bg-primary-container text-on-primary-container px-md py-xs rounded-full text-label-sm uppercase tracking-wider">New Listings</span>
+<h2 class="font-headline-lg text-headline-lg">Apartments near TAU</h2>
+<p class="font-body-md text-on-surface-variant max-w-md">Browse verified 2 and 3-room apartments within walking distance of Tel Aviv University.</p>
+</div>
+<div class="absolute right-0 bottom-0 w-64 h-48 opacity-20 group-hover:opacity-40 transition-opacity">
+<img class="object-contain" data-alt="A detailed architectural floor plan of a 2-bedroom apartment, styled with clean minimalist lines and soft indigo color accents on a white background, representing modern urban living." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ7fRfxwqCOimvGv1lSCB4bq5WhCqo77nZTxtVyrO7pGkmJjvKyFg_DKti4rM4PhccE6O_XEahD_FM4Eu92gFrLxqQQu6B6eJvauEjY9qRFwHzVMa9yj5z_q8jUg4ZXi0uPI2eiaFAWyTy2AM3YMqumrMUaFZFTAYFlKt7pQlzGK32FvwU6Gd9XHyOw4L7zgpYE-HXMZBrs-o_KkNkFdAB_g7Ui4q9rILEULD69rDl9li0j0L1h3PmpLatLX3tdiiAZoHcJNS0A_6-"/>
+</div>
+</div>
+<div class="bg-secondary-container p-xl rounded-2xl flex flex-col justify-between">
+<h2 class="font-headline-lg text-headline-lg">Roomie Match</h2>
+<p class="font-body-md text-on-secondary-container">Find someone who shares your lifestyle and study habits.</p>
+<button class="text-primary font-label-md flex items-center gap-xs mt-lg">Start Quiz <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+</section>
+</main>
+</div>
+<!-- Backdrop Blur for Slide-over -->
+<div class="fixed inset-0 z-40 backdrop-blur-overlay"></div>
+<!-- AI Assistant Chat Panel -->
+<aside class="fixed right-0 top-0 bottom-0 w-full md:w-[450px] bg-surface-container-lowest z-50 shadow-[-10px_0_40px_rgba(0,0,0,0.1)] flex flex-col transform transition-transform duration-300 ease-in-out">
+<!-- Chat Header -->
+<header class="p-lg flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-primary-container rounded-2xl flex items-center justify-center text-on-primary-container shadow-sm">
+<span class="material-symbols-outlined text-[28px]" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md leading-tight">RoomieFit Assistant</h3>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+<span class="text-label-sm text-outline">Online</span>
+</div>
+</div>
+</div>
+<button class="p-sm hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="close">close</span>
+</button>
+</header>
+<!-- Conversation Area -->
+<div class="flex-1 overflow-y-auto p-lg space-y-lg scroll-smooth">
+<!-- Assistant Message -->
+<div class="flex flex-col items-start max-w-[85%]">
+<div class="bg-primary-container/10 text-primary p-md rounded-2xl rounded-tl-xs">
+<p class="font-body-md">Shalom! I'm your RoomieFit assistant. How can I help you find your dream student home today?</p>
+</div>
+<span class="text-label-sm text-outline mt-xs ml-xs">10:02 AM</span>
+</div>
+<!-- User Message -->
+<div class="flex flex-col items-end self-end max-w-[85%] ml-auto">
+<div class="bg-coral text-white p-md rounded-2xl rounded-tr-xs shadow-md">
+<p class="font-body-md">I'm looking for a 2-room apartment near TAU under ₪4,000 with a balcony.</p>
+</div>
+<span class="text-label-sm text-outline mt-xs mr-xs">10:03 AM</span>
+</div>
+<!-- Assistant Message + Cards -->
+<div class="flex flex-col items-start max-w-[90%]">
+<div class="bg-primary-container/10 text-primary p-md rounded-2xl rounded-tl-xs mb-md">
+<p class="font-body-md">I found a few great matches for you near Tel Aviv University that fit your budget!</p>
+</div>
+<!-- Horizontal Listing Cards -->
+<div class="space-y-md w-full">
+<!-- Card 1 -->
+<div class="bg-white border border-outline-variant p-sm rounded-2xl flex gap-md shadow-sm hover:shadow-md transition-shadow">
+<div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A bright studio apartment with a small modern balcony overlooking a quiet residential street in Ramat Aviv, near Tel Aviv University. The room is decorated with minimalist student furniture and warm natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjvpCrRAZTw5a7HEs4YYv8b8UPrfaHnsIi9hWbZd1bJIlo7A4mrzu7i3CQXF3ro6o2vuDrjlpQPVWGLAMxgALJeyQ4Puo2Sf52dpSAww3Ul_ILgRg3lz_DQnaqC4c44FVqfGc5k-MPB36tyCkDVr5XQEEo5ZR2g0u_FZ-9nyWse6o5U42_W21ZSD-Vri1Vxtz3Q-pGHNvWyk1oGhKJHtIG7sJtsjQBK66SOe875AHYnpDqh_V-ajPKv9OVKpmWuvrio0cg10B-Ucli"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-xs">
+<div>
+<div class="flex justify-between items-start">
+<h4 class="font-label-md text-on-surface">Einstein St. Apartment</h4>
+<span class="text-primary font-bold">₪3,800</span>
+</div>
+<div class="flex gap-sm mt-xs">
+<span class="bg-surface-container-low px-sm py-xs rounded-lg text-label-sm text-on-surface-variant">2 Rooms</span>
+<span class="bg-surface-container-low px-sm py-xs rounded-lg text-label-sm text-on-surface-variant">5 min walk</span>
+</div>
+</div>
+<button class="bg-primary text-white text-label-sm py-xs px-md rounded-lg self-end hover:opacity-90 transition-opacity">View Details</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white border border-outline-variant p-sm rounded-2xl flex gap-md shadow-sm hover:shadow-md transition-shadow">
+<div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A cozy apartment interior with large glass doors leading to a spacious sunny balcony with plants. The decor is contemporary with light wood accents and a peaceful vibe, ideal for a student living near Tel Aviv University." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj5YAI9mRtRevyUcQ6UmcK4vpNHvg_WW6syfJLfNQqiaCBVFRlVmXX7QQ1hnsFrX6EDWUCQh4t46nS27BFzEx0X14lv6dAjI-gPc-b1Lha-04i84-8RZ6_gUwGG1p7ydaSOoxQpYYXefyTEC-4OE2DdhlcPbrOT9j1WZqKReNZhlNvvg1H3exDvMZq6RUXkAG4vUmTgn7YLwEhVBi_c2G9pxvI7vGJekfQAwjf47Y1Adpa6ZcxxQ-eC3STKxXUfeDUv7R0kAzcokUr"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-xs">
+<div>
+<div class="flex justify-between items-start">
+<h4 class="font-label-md text-on-surface">Chaim Levanon Heights</h4>
+<span class="text-primary font-bold">₪3,950</span>
+</div>
+<div class="flex gap-sm mt-xs">
+<span class="bg-surface-container-low px-sm py-xs rounded-lg text-label-sm text-on-surface-variant">2 Rooms</span>
+<span class="bg-surface-container-low px-sm py-xs rounded-lg text-label-sm text-on-surface-variant">8 min walk</span>
+</div>
+</div>
+<button class="bg-primary text-white text-label-sm py-xs px-md rounded-lg self-end hover:opacity-90 transition-opacity">View Details</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex items-center gap-xs p-md bg-primary-container/5 rounded-2xl w-fit">
+<div class="w-2 h-2 bg-primary rounded-full typing-dot"></div>
+<div class="w-2 h-2 bg-primary rounded-full typing-dot"></div>
+<div class="w-2 h-2 bg-primary rounded-full typing-dot"></div>
+</div>
+</div>
+<!-- Sticky Bottom Area -->
+<footer class="p-lg border-t border-outline-variant bg-surface-container-lowest">
+<!-- Suggestion Chips -->
+<div class="flex flex-wrap gap-sm mb-lg">
+<button class="px-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-label-sm text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container hover:border-primary transition-all">
+                    2-room near TAU under ₪4,000
+                </button>
+<button class="px-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-label-sm text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container hover:border-primary transition-all">
+                    Non-smoking student roommates
+                </button>
+</div>
+<!-- Input Bar -->
+<div class="relative flex items-center gap-md">
+<div class="flex-1 relative">
+<input class="w-full bg-surface-container-low border-none rounded-2xl py-md pl-md pr-12 text-body-md focus:ring-2 focus:ring-primary focus:bg-white transition-all" placeholder="Type your message..." type="text"/>
+<button class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+</div>
+<button class="w-14 h-14 bg-coral text-white rounded-2xl flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</footer>
+</aside>
+<!-- Floating AI Assistant Button (As per Style Guidance) -->
+<div class="fixed bottom-lg right-lg z-50 flex items-center gap-md group">
+<div class="bg-primary text-on-primary-container px-md py-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+<span class="font-label-md">Need help?</span>
+</div>
+<button class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</button>
+</div>
+<!-- Footer Component from JSON -->
+<footer class="bg-surface dark:bg-on-background relative z-10">
+<div class="w-full px-lg md:px-xl py-2xl max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="font-headline-md text-headline-md text-on-surface">Serenity</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-opacity duration-200" href="#">About Us</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-opacity duration-200" href="#">Contact</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-opacity duration-200" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-opacity duration-200" href="#">Privacy Policy</a>
+</div>
+<p class="text-on-surface-variant dark:text-surface-variant text-label-sm">© 2024 Serenity Housing. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for the chat input
+        const input = document.querySelector('input');
+        const sendBtn = document.querySelector('button .material-symbols-outlined[data-icon="send"]').parentElement;
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        function sendMessage() {
+            if (input.value.trim() === '') return;
+            // Interaction: Clear input and simulate sending
+            input.value = '';
+            input.blur();
+        }
+    </script>
+</body></html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern 3-Room Apartment near TAU | Serenity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#0f0069",
+                    "inverse-primary": "#c3c0ff",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "surface-variant": "#d8e3fb",
+                    "surface-container-high": "#dee8ff",
+                    "secondary-container": "#dce0e4",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#c7c4d8",
+                    "on-tertiary-fixed": "#400010",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffdadc",
+                    "on-secondary-container": "#5e6367",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "error": "#ba1a1a",
+                    "tertiary": "#8b1b34",
+                    "surface-container-low": "#f0f3ff",
+                    "surface": "#f9f9ff",
+                    "on-primary-container": "#dad7ff",
+                    "outline": "#777587",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#e7eeff",
+                    "background": "#f9f9ff",
+                    "secondary": "#5a5f62",
+                    "on-tertiary-container": "#ffd0d3",
+                    "tertiary-fixed-dim": "#ffb2b9",
+                    "surface-bright": "#f9f9ff",
+                    "primary-fixed": "#e2dfff",
+                    "secondary-fixed": "#dfe3e7",
+                    "on-surface": "#111c2d",
+                    "inverse-on-surface": "#ecf1ff",
+                    "tertiary-container": "#ab354b",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#4d44e3",
+                    "on-surface-variant": "#464555",
+                    "on-secondary-fixed-variant": "#43474b",
+                    "on-secondary-fixed": "#171c1f",
+                    "surface-dim": "#cfdaf2",
+                    "surface-container-highest": "#d8e3fb",
+                    "primary": "#3525cd",
+                    "on-tertiary-fixed-variant": "#891933",
+                    "on-background": "#111c2d",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#4f46e5",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#263143",
+                    "secondary-fixed-dim": "#c3c7cb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "md": "16px",
+                    "container-max": "1280px",
+                    "xl": "40px",
+                    "lg": "24px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "unit": "4px",
+                    "2xl": "64px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Geist"],
+                    "headline-xl": ["Geist"],
+                    "headline-lg": ["Geist"],
+                    "body-md": ["Geist"],
+                    "label-md": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "headline-xl-mobile": ["Geist"],
+                    "body-lg": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                    "headline-xl-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; background-color: #FAFAF9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .custom-shadow { shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] }
+        .hover-shadow:hover { shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] }
+    </style>
+</head>
+<body class="bg-[#FAFAF9] text-on-surface antialiased overflow-x-hidden">
+<!-- Header / TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface dock full-width top-0 sticky z-50 shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)]">
+<div class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto">
+<div class="text-headline-md font-headline-md font-bold text-on-surface dark:text-inverse-on-surface">Serenity</div>
+<nav class="hidden md:flex items-center gap-xl">
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Home</a>
+<a class="text-primary dark:text-inverse-primary font-bold border-b-2 border-primary pb-1" href="#">Apartments</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Roommates</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Resources</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant font-label-md hover:text-primary transition-all">EN / עב</button>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Login</button>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-lg md:px-xl py-2xl space-y-2xl">
+<!-- Image Gallery -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[500px]">
+<div class="md:col-span-3 h-full rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] group cursor-pointer">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="A bright, spacious modern apartment interior in Tel Aviv with floor-to-ceiling windows overlooking a sun-drenched Ramat Aviv street. The living room features a minimalist cream-colored sofa, warm light wood flooring, and indoor plants. The lighting is soft and natural, emphasizing a serene, high-end residential atmosphere with clean architectural lines and a contemporary domestic aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDpaHyloIWIPBg5Jqdrd5Ao3LgB4iNs3tQ2HPYBl6i-DQDjAlkbYyznjLE5AnYMJmSnDXrzwDTt0KN06hiWh04_46IXlnw7loFGyhLO_AnHbGK4IXlLK6TSzFDlO43eUJztF50oxKSROAvloWXl_hexn9NXNwrFIdEq3XuFvftRayFFZKHsbvOvoJ063K_mfdrXJiJqzJaN7ImcPWWxewTE-vHW69rUhpbSZrcyrXrsud5ycRe8HSPxOb5VcUGpuxX5QxxguP_u3_r7')">
+</div>
+</div>
+<div class="grid grid-cols-3 md:grid-cols-1 gap-md h-full">
+<div class="rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] cursor-pointer hover:opacity-90 transition-opacity">
+<div class="w-full h-full bg-cover bg-center" data-alt="A close-up shot of a modern kitchen area in a Serenity housing apartment. High-quality white cabinets are paired with sleek grey stone countertops and state-of-the-art stainless steel appliances. The mood is clean and efficient, with soft morning light streaming in from a nearby window, casting gentle shadows across the minimalist space." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzlUbQ2c23LxkssFobLiiTxvo-tuu8KeR4fJr3LXs_3R_2c4dE77OMjczTMihcYr5LkyorAcrWQxyRSCiS3z3FeMnHF9vIvMxc0OfLx2c0GWhixf4_AodD9V3DP9brcDD9DpVLA_siwLsAzrBgan7jFJhpadYM8LckdflmvLVVaHtf7Oy3xuxsPWpYVIpEzQa1V-N2KuaMqQsjxNOFFXh54Kn6tcYk97UKP1bqCx67Ah-QDHz63YMEh9xNSF6AdJQI2Uj3iiBAQOcy')"></div>
+</div>
+<div class="rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] cursor-pointer hover:opacity-90 transition-opacity">
+<div class="w-full h-full bg-cover bg-center" data-alt="A tranquil bedroom scene in a modern Tel Aviv student apartment. A comfortable bed with crisp white linens sits next to a large window showing lush green treetops. The design follows a minimalist palette of soft whites and warm greys, promoting a calm and focused environment for studying and relaxation, illuminated by diffused afternoon sun." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCRGQlQgleKiKLaK442AyPXq-QcfPVZnlIA6DIEhCiySWMU_yNldS3eh2LIndwxJtyCwKlltZLBtl88hsVFiQLqIj-BgNg66zUjbvLCrEEPQaSPjL8Areu_199ue8hgjfLMxVEMpGsk9BU4XRQKJNyMQyFZk_JiHJFR9B2lBAvkj_BrwD_PLnQBm9zSRzNG_Y7Z3YxRQ8NJcUEmEZKzhHJQHFNYhINsLMcAIXNV8Mywye0gQO2dGrU-XZpKAg8-e9tZk3oIdQnfd5Xz')"></div>
+</div>
+<div class="rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] cursor-pointer hover:opacity-90 transition-opacity">
+<div class="w-full h-full bg-cover bg-center" data-alt="A sleek, modern bathroom with large grey porcelain tiles and a walk-in rainfall shower. The lighting is warm and integrated into the mirror, creating a spa-like feel. The overall aesthetic is one of domestic serenity, with clean lines and premium fixtures that convey quality and a sense of finding home in a busy city." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBB1qOfcS4XkTfTGi1Ikh4S49bW6Xd_neOJ1R2gs2tvfOg6lreAsItdHmuNqCFtSpFKZHV5_Am8-e5gxcVEv6kUfHKBUvxbXhYIsiFDjt_rgg60jhGMx71JaNY-Goe55a81MOWZ6NHYlPRsmPzjfwSGLbIC-_ZsNq0Bse3yTQocqpOtRGP1k6H_4iCPqF83qTkc1Hj1SuFI1WYPYczTWLkYfpcqcwWxB0w9GCuuZ7bATjr_3wHHBZ_tr99uFH4WqVnt0Xh3BSVN_brH')"></div>
+</div>
+</div>
+</section>
+<!-- Header Info & Key Facts -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-2xl items-start">
+<div class="lg:col-span-2 space-y-xl">
+<!-- Title & Price -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface">Modern 3-Room Apartment near TAU</h1>
+<p class="text-on-surface-variant font-body-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">location_on</span>
+                            Ramat Aviv, Tel Aviv
+                        </p>
+</div>
+<div class="text-right">
+<div class="text-primary font-headline-xl text-headline-xl leading-none">₪7,800<span class="text-label-md font-label-md text-on-surface-variant">/month</span></div>
+</div>
+</div>
+<!-- Key Facts Grid -->
+<div class="bg-surface-container-lowest p-xl rounded-2xl shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] border border-surface-container">
+<div class="grid grid-cols-2 md:grid-cols-3 gap-xl">
+<div class="space-y-xs">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Rooms</p>
+<p class="font-headline-md text-headline-md text-on-surface">3.0</p>
+</div>
+<div class="space-y-xs">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Size (sqm)</p>
+<p class="font-headline-md text-headline-md text-on-surface">85 m²</p>
+</div>
+<div class="space-y-xs">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Floor</p>
+<p class="font-headline-md text-headline-md text-on-surface">4 of 6</p>
+</div>
+<div class="space-y-xs">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Furnished</p>
+<p class="font-headline-md text-headline-md text-on-surface">Partial</p>
+</div>
+<div class="space-y-xs">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Lease</p>
+<p class="font-headline-md text-headline-md text-on-surface">12 Months</p>
+</div>
+<div class="space-y-xs">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-wider">Available</p>
+<p class="font-headline-md text-headline-md text-on-surface">Oct 1st</p>
+</div>
+</div>
+</div>
+<!-- Amenities Row -->
+<div class="flex flex-wrap gap-md">
+<div class="flex items-center gap-sm bg-primary-container/10 px-lg py-md rounded-xl text-primary font-label-md">
+<span class="material-symbols-outlined">balcony</span>
+                        Balcony
+                    </div>
+<div class="flex items-center gap-sm bg-surface-container-high px-lg py-md rounded-xl text-on-surface-variant font-label-md">
+<span class="material-symbols-outlined">pets</span>
+                        Pets Allowed
+                    </div>
+<div class="flex items-center gap-sm bg-surface-container-high px-lg py-md rounded-xl text-on-surface-variant font-label-md">
+<span class="material-symbols-outlined">smoke_free</span>
+                        Smoking Allowed
+                    </div>
+</div>
+</div>
+<!-- Sidebar: Roommates & Location -->
+<div class="space-y-xl">
+<!-- Roommates Section -->
+<div class="bg-surface-container-lowest p-xl rounded-2xl shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] border border-surface-container">
+<h3 class="font-headline-md text-headline-md mb-md">The Roommates</h3>
+<div class="flex items-center gap-md mb-lg">
+<div class="flex -space-x-3">
+<div class="w-12 h-12 rounded-full border-4 border-surface-container-lowest bg-cover bg-center" data-alt="A friendly headshot of a young male student in his early 20s, smiling warmly. He has a modern, casual style with a simple navy t-shirt. The background is a soft-focus urban park, creating a welcoming and trustworthy appearance for a potential roommate profile." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhyt42iw9EU1tK6Qln39Z8GJIyibzo5H6FC68tTvYIkIspYy94CPB0O0qILDynf5xtRIdgAYleyeSD-9sG6BKOwxsbWd2E31GkxlI2gbAl70L-ii2Qwu14botLUnnXMZFsFIUrn4XqLug4Qw1fmy5kHM6j0kPUNp-LuILIwEbA4dG4G4hbUUruxRc2ARj4SU9zXSBUzGvdJvTh7AMBQOTvLqNf777yhpkcMqtUJqkS-rlNAFMwhLh4ervSbmtMibBJylCKVRSiCNb0')"></div>
+<div class="w-12 h-12 rounded-full border-4 border-surface-container-lowest bg-cover bg-center" data-alt="A friendly headshot of a young female student in her early 20s with a cheerful expression. She is wearing a stylish minimalist beige sweater. The lighting is bright and airy, suggesting a positive and approachable personality in a high-quality, professional photography style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeieELp2HNBQd-E9grxp5odS3fyRIJj5_V2Axx07ddi6DtCONFk3j5o8WTM-chzNYYaQu4D1n2_XTZcAEIXKrAVg5u_P9qw8S71-13As0qTzSSctW1At0JnHeium43tcyzWZlqzUyWbbkPzSjfpwOokvtwd1TpxAdhzDIW2DVhHnAULsHl9A_XrbXOok7n_qw4cCmOfS98RQjLkypgKDhOvAXBohr15uHOovVQ9YsfwKIuQ8eeqO6qQ68lIDULtYwAhTpeHctpBS26')"></div>
+</div>
+<p class="font-body-md text-on-surface-variant">2 current roommates</p>
+</div>
+<div class="flex flex-wrap gap-sm">
+<span class="bg-[#e2dfff] text-[#3525cd] px-md py-xs rounded-full text-label-sm">Students</span>
+<span class="bg-[#dcfce7] text-[#166534] px-md py-xs rounded-full text-label-sm">Secular</span>
+<span class="bg-[#fef3c7] text-[#92400e] px-md py-xs rounded-full text-label-sm">Quiet</span>
+</div>
+</div>
+<!-- Location & Commute -->
+<div class="bg-surface-container-lowest p-xl rounded-2xl shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] border border-surface-container">
+<h3 class="font-headline-md text-headline-md mb-md">Location &amp; Commute</h3>
+<div class="w-full h-40 rounded-xl mb-xl overflow-hidden relative">
+<div class="absolute inset-0 bg-surface-container-high flex items-center justify-center" data-location="Ramat Aviv, Tel Aviv" style="">
+<!-- Mimic a map UI -->
+<div class="w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-surface-container to-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+</div>
+</div>
+<div class="space-y-md">
+<div class="flex items-center justify-between font-body-md">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined">school</span>
+<span>Campus</span>
+</div>
+<span class="font-bold">5 min walk</span>
+</div>
+<div class="flex items-center justify-between font-body-md">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined">directions_bus</span>
+<span>Nearest Bus Stop</span>
+</div>
+<span class="font-bold">2 min walk</span>
+</div>
+<div class="flex items-center justify-between font-body-md">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined">directions_bike</span>
+<span>Train Station</span>
+</div>
+<span class="font-bold">10 min bike</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface dark:bg-on-background w-full px-lg md:px-xl py-2xl max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md border-t border-surface-container">
+<div class="font-headline-md text-headline-md text-on-surface">Serenity</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all text-label-sm" href="#">About Us</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all text-label-sm" href="#">Contact</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all text-label-sm" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all text-label-sm" href="#">Privacy Policy</a>
+</div>
+<div class="text-on-surface-variant dark:text-surface-variant text-label-sm">
+            © 2024 Serenity Housing. All rights reserved.
+        </div>
+</footer>
+<!-- Sticky Bottom Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-[100] p-md flex justify-center pointer-events-none">
+<div class="bg-surface-container-lowest/80 backdrop-blur-xl px-xl py-md rounded-2xl shadow-[0_10px_30px_-4px_rgba(30,41,59,0.15)] border border-surface-container-high pointer-events-auto flex items-center gap-xl max-w-3xl w-full justify-between">
+<div class="hidden md:block">
+<p class="text-label-sm text-on-surface-variant">Monthly Total</p>
+<p class="font-headline-md text-headline-md text-primary">₪7,800</p>
+</div>
+<button class="bg-[#FB7185] text-white px-2xl py-md rounded-xl font-bold text-lg hover:brightness-110 active:scale-95 transition-all shadow-lg flex-1 md:flex-none text-center">
+                Contact / Request
+            </button>
+</div>
+</div>
+<!-- Floating AI Assistant -->
+<button class="fixed bottom-32 right-md md:right-xl z-50 bg-primary w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl hover:scale-110 transition-all group overflow-hidden">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="max-w-0 group-hover:max-w-xs group-hover:ml-2 transition-all duration-300 opacity-0 group-hover:opacity-100 font-label-md whitespace-nowrap">Need help?</span>
+</button>
+<script>
+        // Simple micro-interaction for images
+        document.querySelectorAll('section div').forEach(el => {
+            el.addEventListener('click', () => {
+                // Placeholder for gallery lightbox expansion
+                el.style.transform = 'scale(0.98)';
+                setTimeout(() => el.style.transform = '', 150);
+            });
+        });
+    </script>
+</body></html>

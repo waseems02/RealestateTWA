@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serenity | Find Your Perfect Roomie &amp; Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f9f9ff",
+                        "outline": "#777587",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-container": "#ab354b",
+                        "on-surface": "#111c2d",
+                        "surface-variant": "#d8e3fb",
+                        "on-tertiary-fixed-variant": "#891933",
+                        "on-primary-fixed": "#0f0069",
+                        "secondary-container": "#dce0e4",
+                        "inverse-surface": "#263143",
+                        "on-surface-variant": "#464555",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#c3c0ff",
+                        "primary-fixed": "#e2dfff",
+                        "on-secondary-fixed-variant": "#43474b",
+                        "surface-container-low": "#f0f3ff",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#8b1b34",
+                        "on-background": "#111c2d",
+                        "surface-dim": "#cfdaf2",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#5e6367",
+                        "secondary-fixed": "#dfe3e7",
+                        "secondary-fixed-dim": "#c3c7cb",
+                        "surface-container-high": "#dee8ff",
+                        "inverse-on-surface": "#ecf1ff",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#5a5f62",
+                        "on-tertiary-container": "#ffd0d3",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#4d44e3",
+                        "surface-container": "#e7eeff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "tertiary-fixed-dim": "#ffb2b9",
+                        "on-tertiary-fixed": "#400010",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#171c1f",
+                        "tertiary-fixed": "#ffdadc",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-primary-container": "#dad7ff",
+                        "primary": "#3525cd",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c7c4d8",
+                        "error-container": "#ffdad6",
+                        "background": "#f9f9ff",
+                        "primary-container": "#4f46e5",
+                        "brand-coral": "#FB7185"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "md": "16px",
+                        "container-max": "1280px",
+                        "xl": "40px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "2xl": "64px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "headline-xl": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-xl-mobile": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                        "headline-xl-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; background-color: #FAFAF9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-nav { backdrop-filter: blur(8px); }
+        .hero-gradient { background: radial-gradient(circle at top right, #e2dfff 0%, #FAFAF9 60%); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<nav class="sticky top-0 z-50 bg-surface-container-lowest/80 glass-nav shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)]">
+<div class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto">
+<div class="flex items-center gap-xl">
+<span class="text-headline-md font-headline-md font-bold text-on-surface">Serenity</span>
+<div class="hidden md:flex gap-lg items-center">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Home</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Apartments</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Roommates</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="bg-surface-container-low px-sm py-xs rounded-full flex items-center gap-xs text-label-sm font-label-sm border border-outline-variant">
+<span class="bg-primary text-on-primary px-2 py-0.5 rounded-full">EN</span>
+<span class="px-2">עב</span>
+</button>
+<button class="text-primary font-bold font-label-md text-label-md hover:opacity-80 transition-all">Login</button>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-xl font-label-md text-label-md shadow-lg hover:scale-95 transition-all">Get Started</button>
+</div>
+</div>
+</nav>
+<main class="hero-gradient overflow-hidden">
+<!-- Hero Section -->
+<section class="max-w-container-max mx-auto px-lg md:px-xl pt-2xl pb-2xl md:pt-24 md:pb-32 flex flex-col items-center text-center relative">
+<div class="max-w-3xl mb-xl">
+<h1 class="font-headline-xl text-headline-xl md:text-6xl mb-md text-on-surface">Find your perfect roomie &amp; home in Israel</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Connecting students and young professionals with curated living spaces and compatible roommates for a stress-free transition.</p>
+</div>
+<!-- Search Bar Component -->
+<div class="w-full max-w-5xl bg-white p-sm md:p-md rounded-2xl md:rounded-full shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] flex flex-col md:flex-row items-center gap-sm md:gap-md">
+<div class="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-sm items-center px-md">
+<div class="flex items-center gap-sm border-b md:border-b-0 md:border-r border-outline-variant py-2">
+<span class="material-symbols-outlined text-primary">school</span>
+<select class="w-full bg-transparent border-none focus:ring-0 text-label-md font-label-md py-1">
+<option>Tel Aviv University</option>
+<option>Hebrew University</option>
+<option>Technion</option>
+<option>Reichman University</option>
+</select>
+</div>
+<div class="flex items-center gap-sm border-b md:border-b-0 md:border-r border-outline-variant py-2">
+<span class="material-symbols-outlined text-primary">payments</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-label-md font-label-md py-1" placeholder="Price (₪)" type="text"/>
+</div>
+<div class="flex items-center gap-sm py-2">
+<span class="material-symbols-outlined text-primary">door_front</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-label-md font-label-md py-1" placeholder="Rooms" type="text"/>
+</div>
+</div>
+<button class="bg-brand-coral text-white font-bold px-10 py-4 rounded-full hover:scale-105 transition-all text-label-md w-full md:w-auto">Search</button>
+</div>
+<button class="mt-xl flex items-center gap-sm text-primary font-bold font-label-md hover:opacity-80 transition-all bg-primary/10 px-md py-sm rounded-full">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+                Ask the AI assistant
+            </button>
+</section>
+<!-- Featured Listings -->
+<section class="max-w-container-max mx-auto px-lg md:px-xl py-2xl">
+<div class="flex justify-between items-end mb-xl">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Popular near campus</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Hand-picked apartments ready for move-in</p>
+</div>
+<button class="text-primary font-bold text-label-md flex items-center gap-xs">
+                    View all <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+<!-- Listing Card 1 -->
+<div class="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] group hover:shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A bright, sunlit modern apartment interior in Tel Aviv with high ceilings, white walls, and elegant wooden floors. A large window overlooks a lush green street. The room is decorated with minimalist furniture, a few indoor plants, and soft neutral textiles, evoking a sense of domestic serenity and calm, professional light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvEb9-HG0b8xWO3Y2ZaVi1YX80RAOtUjMEPRH9bVOKpaj82ICahYxrI1H7yF5hjhfgoJKz3MTmjATUmU1F-dY_qZuSvEs2aFnhAFrQcdr2W9hz2a-IqAVaxJK6HtVzvNdrId2sWgaoNXacj55FvJCFecvw04HNbq_7KpC-HnKtP_IJLqg5-vUyDZFcwEWi-CIM4ug4Jz4oDiADZ0NTcQuU-Ibh0bRa07d1j_3D3R0DLpcqPxItuxQqNmcEwwGzrKEtcrT7qRsvB3FP"/>
+<button class="absolute top-md right-md bg-white/80 backdrop-blur-sm p-2 rounded-full text-brand-coral">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-headline-md font-headline-md text-on-surface">₪3,500<span class="text-label-sm font-normal text-on-surface-variant">/month</span></span>
+</div>
+<p class="text-on-surface-variant text-label-sm mb-md">3 rooms · 75 sqm · floor 2</p>
+<div class="flex gap-sm mb-md">
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">wifi</span></span>
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">ac_unit</span></span>
+</div>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Students</span>
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Secular</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>5 min walk to TAU</span>
+</div>
+</div>
+</div>
+<!-- Listing Card 2 -->
+<div class="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] group hover:shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A cozy, contemporary living room in Jerusalem with traditional stone accents mixed with modern white cabinetry. Large glass doors lead to a sun-drenched balcony. The space is warm and inviting, lit by a golden afternoon sun, with soft indigo and cream accents, reflecting a high-end domestic serenity vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLoPmL1JngIZl6IHVh6dNXPDuTvGAa4cXRV_tv4uDvO-GE8pYp4Hq2yP3rHbs-FvT_bJ_a_EZQ5xKtYUJXp92iu9IcWyP_SS1fwLg4LjkRDt4aGV_0nYIbLw-zb5YQsmEpIJ5K79A2lCUFc5QvE_GLnzOt8TrKlRTQ4hbY_Voi6aReHKWAQoTlObafEkhplkPiJvUYFEtOM_ZaXwiBseGbwIyokj2VN8xAu-PVceGEq6Hyn7qb12OGAfyJam57DThO_jNn8-i5uxSU"/>
+<button class="absolute top-md right-md bg-white/80 backdrop-blur-sm p-2 rounded-full text-brand-coral">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-headline-md font-headline-md text-on-surface">₪4,200<span class="text-label-sm font-normal text-on-surface-variant">/month</span></span>
+</div>
+<p class="text-on-surface-variant text-label-sm mb-md">2 rooms · 60 sqm · floor 4</p>
+<div class="flex gap-sm mb-md">
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">balcony</span></span>
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">local_laundry_service</span></span>
+</div>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Post-grad</span>
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Vegan Friendly</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>10 min walk to Hebrew U</span>
+</div>
+</div>
+</div>
+<!-- Listing Card 3 -->
+<div class="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] group hover:shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A minimalist loft bedroom with clean lines and functional design in Haifa. Features industrial-chic windows, a desk for studying, and warm wood accents. The lighting is bright and airy, creating a productive yet peaceful atmosphere, consistent with a clean and modern student housing aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_A-c0RqU-S5uxOrzMxffbpLVQhOQGvZ8xpj-RPEEcNkK7FedNzjfvD08DB2ARYvuySIU184O4wcc3bVMJh-BxMHeBtQ1cyhIcvVxNMWPgijmbXK-EJRI9JZKw4vo2vWemRhXYnU2rwYobSGX_n5DZQEiCPJMl2fQB0uCvFtpKXXtG5ZO_jtsnb9VPY6ZVLiOSI-YjYyJfXF0r22cKoEiqzbttV_vKstxnVa1FlPmKarc6500Mo0aoOqZuSM3lMbG1BDVsJrWpnF7W"/>
+<button class="absolute top-md right-md bg-white/80 backdrop-blur-sm p-2 rounded-full text-brand-coral">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-headline-md font-headline-md text-on-surface">₪2,800<span class="text-label-sm font-normal text-on-surface-variant">/month</span></span>
+</div>
+<p class="text-on-surface-variant text-label-sm mb-md">4 rooms · 110 sqm · floor 1</p>
+<div class="flex gap-sm mb-md">
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">chair</span></span>
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">pets</span></span>
+</div>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Roommates</span>
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Quiet</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>2 min walk to Technion</span>
+</div>
+</div>
+</div>
+<!-- Listing Card 4 -->
+<div class="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] group hover:shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] transition-all duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A modern kitchen and dining area in a shared apartment in Herzliya. Sleek white cabinetry, stainless steel appliances, and a wooden dining table. The lighting is high-key and bright, with a minimalist and organized feel, punctuated by small design objects in soft indigo and rose tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHqbfl0ee9I17FI7yMnoxbCFl6POt20TRkcImfffwzLvKzbNbgiGy-1WNIQ8910gxZZnodXx0vurcG0Ip_GcrDmEy44lMSxP2-AXsUr5ysLXjNaGAREeDWmnaKNaI6wZnLvxwW1X0AonyxIqvmuUiUxk0YntZ8bePtdFmsd53DtmxlSbWsxEq0_FL56ESScsbUuFGYDtoCnZRXt_FpRqPofXm4S3VABqzlkzd-T_rkV1moM5oIyoGcaeUHkJdHs5tDcLiaugnEX0ET"/>
+<button class="absolute top-md right-md bg-white/80 backdrop-blur-sm p-2 rounded-full text-brand-coral">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-headline-md font-headline-md text-on-surface">₪5,100<span class="text-label-sm font-normal text-on-surface-variant">/month</span></span>
+</div>
+<p class="text-on-surface-variant text-label-sm mb-md">2 rooms · 55 sqm · floor 6</p>
+<div class="flex gap-sm mb-md">
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">elevator</span></span>
+<span class="bg-primary-container/10 text-primary-container p-1 rounded"><span class="material-symbols-outlined text-[18px]">kitchen</span></span>
+</div>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Professionals</span>
+<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-label-sm">Gym</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>8 min walk to Reichman</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it works -->
+<section class="bg-surface-container-low/50 py-2xl">
+<div class="max-w-container-max mx-auto px-lg md:px-xl">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Stress-free matching</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Your journey from search to keys in three simple steps</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
+<div class="flex flex-col items-center text-center p-lg bg-white rounded-2xl shadow-sm">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-primary text-3xl">search</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-sm text-on-surface">Search</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Filter by university, budget, and lifestyle preferences to find verified listings.</p>
+</div>
+<div class="flex flex-col items-center text-center p-lg bg-white rounded-2xl shadow-sm">
+<div class="w-16 h-16 bg-brand-coral/10 rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-brand-coral text-3xl">handshake</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-sm text-on-surface">Match</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Chat with potential roommates using our AI matching system to ensure compatibility.</p>
+</div>
+<div class="flex flex-col items-center text-center p-lg bg-white rounded-2xl shadow-sm">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-primary text-3xl">key</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-sm text-on-surface">Move in</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Secure your home with digital contracts and join the Serenity community.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Floating AI Assistant -->
+<div class="fixed bottom-lg right-lg z-50 group flex flex-col items-end gap-sm">
+<div class="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 bg-white shadow-lg px-md py-sm rounded-xl text-label-md font-bold text-primary mb-2" id="ai-label">
+                Need help finding a home?
+            </div>
+<button class="w-16 h-16 bg-primary text-on-primary rounded-full shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] flex items-center justify-center hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface dark:bg-on-background">
+<div class="w-full px-lg md:px-xl py-2xl max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex flex-col gap-sm items-center md:items-start">
+<span class="font-headline-md text-headline-md text-on-surface">Serenity</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Serenity Housing. All rights reserved.</p>
+</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary font-label-sm text-label-sm transition-opacity duration-200" href="#">About Us</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary font-label-sm text-label-sm transition-opacity duration-200" href="#">Contact</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary font-label-sm text-label-sm transition-opacity duration-200" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary font-label-sm text-label-sm transition-opacity duration-200" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for the search bar
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('ring-2', 'ring-primary', 'ring-opacity-20', 'rounded-lg');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-20', 'rounded-lg');
+            });
+        });
+
+        // Heart toggle
+        const hearts = document.querySelectorAll('.material-symbols-outlined');
+        hearts.forEach(heart => {
+            if (heart.innerText === 'favorite') {
+                heart.parentElement.addEventListener('click', () => {
+                    const currentFill = heart.style.fontVariationSettings.includes("'FILL' 1");
+                    heart.style.fontVariationSettings = `'FILL' ${currentFill ? 0 : 1}`;
+                });
+            }
+        });
+    </script>
+</body></html>
