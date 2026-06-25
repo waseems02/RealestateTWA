@@ -18,7 +18,7 @@ railway.json              Railway deployment config
 
 Legacy Next.js and Python files may still exist in the repository for reference, but the root `npm` scripts run the Express/static MVP.
 
-## Quick Start
+## Local Run
 
 ```bash
 npm install
@@ -33,6 +33,12 @@ http://localhost:3000/api/health
 http://localhost:3000/api/listings
 ```
 
+Production mode locally:
+
+```bash
+npm start
+```
+
 The app works in mock mode if Supabase, OpenAI, or Telegram variables are missing.
 
 ## Scripts
@@ -44,23 +50,82 @@ The app works in mock mode if Supabase, OpenAI, or Telegram variables are missin
 }
 ```
 
-## Environment Variables
+## Git Branch Workflow
 
-Copy `.env.example` to `.env` locally. Do not commit `.env`.
+- `main`: production-ready branch.
+- `staging`: development/testing branch before production.
+- `frontend`: frontend work.
+- `backend`: backend/API work.
+- `database`: Supabase database work.
+- `ai-agent`: OpenAI AI assistant work.
+- `telegram-bot`: Telegram bot work.
+
+Railway branch mapping:
+
+- Railway `production` environment deploys from GitHub branch `main`.
+- Railway `development` environment deploys from GitHub branch `staging`.
+
+## Railway
+
+Use the existing Railway project only:
+
+```text
+faithful-insight
+```
+
+Do not create a new Railway project.
+
+Railway runs:
+
+```bash
+npm start
+```
+
+Link locally:
+
+```bash
+railway link
+```
+
+Choose `faithful-insight`, then choose the environment you need.
+
+Manual deploy:
+
+```bash
+railway up
+```
+
+If GitHub auto-deploy is enabled, pushing to `main` deploys production and pushing to `staging` deploys development.
+
+## Railway Variables
+
+Set these in the Railway dashboard. Do not commit real values.
+
+Development environment:
 
 ```text
 NODE_ENV=development
-PORT=3000
+RAILWAY_ENVIRONMENT=development
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 OPENAI_API_KEY=
 TELEGRAM_BOT_TOKEN=
-RAILWAY_ENVIRONMENT=
 PUBLIC_APP_URL=
 ```
 
-In production, set secrets as Railway Variables only.
+Production environment:
+
+```text
+NODE_ENV=production
+RAILWAY_ENVIRONMENT=production
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+TELEGRAM_BOT_TOKEN=
+PUBLIC_APP_URL=
+```
 
 ## API Routes
 
@@ -68,47 +133,6 @@ In production, set secrets as Railway Variables only.
 - `GET /api/listings`
 - `POST /api/ai/chat`
 - `POST /api/telegram/webhook`
-
-## Git Branch Strategy
-
-- `main`: production-ready version
-- `staging`: testing before production
-- `frontend`: frontend work
-- `backend`: backend work
-- `database`: Supabase database work
-- `ai-agent`: OpenAI agent work
-- `telegram-bot`: Telegram bot work
-
-## Railway
-
-The existing Railway project name is `faithful-insight`. Do not create a new Railway project for this repository.
-
-Railway uses:
-
-```bash
-npm start
-```
-
-Add these variables in the Railway dashboard:
-
-```text
-NODE_ENV=production
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-OPENAI_API_KEY=
-TELEGRAM_BOT_TOKEN=
-RAILWAY_ENVIRONMENT=production
-PUBLIC_APP_URL=
-```
-
-Link locally with:
-
-```bash
-railway link
-```
-
-Choose `faithful-insight`, then choose `production` if prompted for an environment. See [docs/deployment.md](docs/deployment.md) for deployment steps and environment strategy.
 
 ## Safety Notes
 

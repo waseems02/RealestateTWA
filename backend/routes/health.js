@@ -5,9 +5,10 @@ const router = express.Router();
 router.get("/", (_req, res) => {
   res.json({
     status: "ok",
-    message: "RoomieFit server is running on Railway",
+    project: "RoomieFit",
     railwayProject: "faithful-insight",
-    environment: process.env.NODE_ENV || "development"
+    environment: process.env.NODE_ENV || "development",
+    railwayEnvironment: process.env.RAILWAY_ENVIRONMENT || "local"
   });
 });
 

@@ -1,22 +1,30 @@
 # RoomieFit Deployment
 
+Use the existing Railway project only:
+
+```text
+faithful-insight
+```
+
+Do not create a new Railway project.
+
 ## Local Development
 
-1. Install dependencies from the repository root:
+1. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Create a local `.env` file from `.env.example`.
+2. Create a local `.env` from `.env.example`.
 
-3. Start the development server:
+3. Start the dev server:
 
    ```bash
    npm run dev
    ```
 
-4. Open:
+4. Test:
 
    ```text
    http://localhost:3000
@@ -24,111 +32,164 @@
    http://localhost:3000/api/listings
    ```
 
+5. Test production mode locally:
+
+   ```bash
+   npm start
+   ```
+
 The app can run in mock mode when Supabase, OpenAI, or Telegram variables are missing.
 
-## Production on Railway
-
-Use the existing Railway project:
-
-```text
-faithful-insight
-```
-
-Production runs with:
-
-```bash
-npm start
-```
-
-Railway provides the public URL and runtime port. Set `NODE_ENV=production` in Railway Variables.
-
-## Railway Variables
-
-Add these variables in Railway instead of committing secrets:
-
-```text
-NODE_ENV=production
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-OPENAI_API_KEY=
-TELEGRAM_BOT_TOKEN=
-RAILWAY_ENVIRONMENT=production
-PUBLIC_APP_URL=https://your-railway-domain
-```
-
-`SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and `TELEGRAM_BOT_TOKEN` must stay server-side only.
-
-## Railway Environments
-
-Create separate Railway environments:
-
-- `development`: test variables and mock-safe experiments.
-- `production`: production Supabase/OpenAI/Telegram values and public domain.
-
-Each Railway environment has its own variables and deployments. Keep `NODE_ENV=production` for the production environment.
-
-## Connect GitHub Branches
-
-Recommended branch mapping:
-
-- `main`: production Railway deployment.
-- `staging`: pre-production Railway environment.
-- `frontend`, `backend`, `database`, `ai-agent`, `telegram-bot`: focused development branches.
-
-In Railway:
-
-1. Open the project.
-2. Select the service.
-3. Connect the GitHub repository `waseems02/RoomieFit`.
-4. Set the production deployment branch to `main`.
-5. Add a staging environment and connect it to `staging`.
-
-## Manual Railway Project Setup
-
-Do not create a new Railway project for this app. Use the existing project `faithful-insight`.
-
-If the CLI cannot link automatically:
-
-1. Go to the Railway dashboard.
-2. Open the existing project `faithful-insight`.
-3. Connect or verify the GitHub repo `waseems02/RoomieFit`.
-4. Add variables from `.env.example`.
-5. Deploy the existing service.
-
-## CLI Setup
+## Link Railway
 
 Check the CLI:
 
 ```bash
 railway --version
+railway status
 ```
 
-If missing:
-
-```bash
-npm install -g @railway/cli
-```
-
-Then authenticate and link the existing project:
+If the repo is not linked:
 
 ```bash
 railway login
 railway link
 ```
 
-Choose `faithful-insight` when prompted for the project. Choose `production` if Railway asks for an environment. If a `development` environment also exists, switch to it with:
+Choose the existing project `faithful-insight`. Do not run `railway init`.
+
+## Railway Environments
+
+Required environments:
+
+- `development`
+- `production`
+
+List environments:
 
 ```bash
-railway environment
+railway environment list
 ```
 
-or select it from the Railway dashboard before deploying test changes.
+Create `development` if missing:
 
-## Manual Deploy
+```bash
+railway environment new development --duplicate production
+```
 
-If GitHub deployment is not configured, deploy the linked project manually:
+Production already exists in the project. If the CLI cannot create environments, create them manually:
+
+1. Open Railway dashboard.
+2. Open project `faithful-insight`.
+3. Go to Environments.
+4. Create `development`.
+5. Keep or verify `production`.
+6. Duplicate production settings into development if Railway offers that option.
+
+## GitHub Branch Mapping
+
+Required GitHub branches:
+
+- `main`
+- `staging`
+- `frontend`
+- `backend`
+- `database`
+- `ai-agent`
+- `telegram-bot`
+
+Railway deployment mapping:
+
+- `development` deploys from GitHub branch `staging`.
+- `production` deploys from GitHub branch `main`.
+
+The CLI can connect the GitHub repo source:
+
+```bash
+railway service source connect --repo waseems02/RoomieFit --branch main --service faithful-insight --environment production
+```
+
+The Railway CLI currently applies the GitHub source at service level. Verify and set per-environment branch triggers in the dashboard:
+
+1. Open Railway project `faithful-insight`.
+2. Go to Environments.
+3. Select `development`.
+4. Open the `faithful-insight` service.
+5. Go to Settings.
+6. Under Source / GitHub / Deploy triggers, set branch to `staging`.
+7. Select `production`.
+8. Open the `faithful-insight` service.
+9. Under Source / GitHub / Deploy triggers, set branch to `main`.
+10. Save changes.
+
+## Railway Variables
+
+Set variables in Railway, not in GitHub and not in committed files.
+
+Development:
+
+```text
+NODE_ENV=development
+RAILWAY_ENVIRONMENT=development
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+TELEGRAM_BOT_TOKEN=
+PUBLIC_APP_URL=
+```
+
+Production:
+
+```text
+NODE_ENV=production
+RAILWAY_ENVIRONMENT=production
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+TELEGRAM_BOT_TOKEN=
+PUBLIC_APP_URL=
+```
+
+Safe non-secret values can be set with:
+
+```bash
+railway variable set NODE_ENV=development RAILWAY_ENVIRONMENT=development --service faithful-insight --environment development
+railway variable set NODE_ENV=production RAILWAY_ENVIRONMENT=production --service faithful-insight --environment production
+```
+
+Do not set empty secret variables unless Railway requires them.
+
+## Deploy
+
+If GitHub auto-deploy is configured:
+
+- Push to `main` to deploy production.
+- Push to `staging` to deploy development.
+
+Manual deploy:
 
 ```bash
 railway up
+```
+
+## Public URLs
+
+Production:
+
+```text
+https://faithful-insight-production-6465.up.railway.app
+```
+
+Development:
+
+```text
+https://faithful-insight-development.up.railway.app
+```
+
+Test health:
+
+```text
+/api/health
 ```
