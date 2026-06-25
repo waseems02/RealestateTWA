@@ -5,10 +5,42 @@
   },
   "nav": {
     "home": "Home",
-    "listings": "Listings"
+    "listings": "Listings",
+    "login": "Login",
+    "get_started": "Get Started",
+    "lang_he": "עב",
+    "lang_en": "EN"
   },
   "home": {
-    "browse_listings": "Browse listings"
+    "browse_listings": "Browse listings",
+    "hero_title": "Find your perfect roomie & home in Israel",
+    "hero_subtitle": "Connecting students and young professionals with curated living spaces and compatible roommates for a stress-free transition.",
+    "search_city": "City / Campus",
+    "search_price": "Max price (NIS)",
+    "search_rooms": "Rooms",
+    "search_cta": "Search",
+    "ask_ai": "Ask the AI assistant",
+    "featured_title": "Popular near campus",
+    "featured_subtitle": "Hand-picked apartments ready for move-in",
+    "view_all": "View all",
+    "how_title": "Stress-free matching",
+    "how_subtitle": "Your journey from search to keys in three simple steps",
+    "step1_title": "Search",
+    "step1_desc": "Filter by university, budget, and lifestyle preferences to find verified listings.",
+    "step2_title": "Match",
+    "step2_desc": "Chat with potential roommates using our AI matching system to ensure compatibility.",
+    "step3_title": "Move in",
+    "step3_desc": "Secure your home with digital contracts and join the RoomieFit community."
+  },
+  "ai": {
+    "help_label": "Need help finding a home?"
+  },
+  "footer": {
+    "copyright": "© 2024 RoomieFit. All rights reserved.",
+    "about": "About Us",
+    "contact": "Contact",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   },
   "listings": {
     "title": "Student listings",
