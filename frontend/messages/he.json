@@ -2,5 +2,74 @@
   "app": {
     "title": "RoomieFit",
     "tagline": "מצא דירה ושותפים ליד הקמפוס"
+  },
+  "nav": {
+    "home": "בית",
+    "listings": "דירות"
+  },
+  "home": {
+    "browse_listings": "עיין בדירות"
+  },
+  "listings": {
+    "title": "דירות לסטודנטים",
+    "result_count_one": "דירה אחת נמצאה",
+    "result_count_many": "{count} דירות נמצאו",
+    "no_results": "לא נמצאו דירות תואמות",
+    "no_results_hint": "נסה לשנות את הסינון",
+    "page_of": "עמוד {page} מתוך {total}",
+    "prev": "הקודם",
+    "next": "הבא"
+  },
+  "filters": {
+    "title": "סינון",
+    "apply": "החל סינון",
+    "reset": "אפס",
+    "city": "עיר",
+    "any": "הכל",
+    "min_price": "מחיר מינימלי (₪)",
+    "max_price": "מחיר מקסימלי (₪)",
+    "min_rooms": "חדרים (מינימום)",
+    "min_sqm": "גודל (מ\"ר מינימום)",
+    "amenities": "מתקנים",
+    "has_balcony": "מרפסת",
+    "pets_allowed": "מתאים לבעלי חיים",
+    "smoking_allowed": "מותר לעשן",
+    "parking_available": "חניה",
+    "air_conditioning": "מזגן",
+    "accessible": "נגיש",
+    "furnished": "ריהוט",
+    "furnished_none": "לא מרוהט",
+    "furnished_partial": "מרוהט חלקית",
+    "furnished_full": "מרוהט מלא",
+    "roommates_section": "שותפים",
+    "roommates_status": "סטטוס שותפים",
+    "status_student": "סטודנטים",
+    "status_professional": "עובדים",
+    "status_mixed": "מעורב",
+    "religious": "השקפה דתית",
+    "religious_secular": "חילוני",
+    "religious_traditional": "מסורתי",
+    "religious_religious": "דתי",
+    "religious_mixed": "מעורב",
+    "gender_preference": "העדפת מגדר",
+    "gender_any": "כולם",
+    "gender_male": "גברים",
+    "gender_female": "נשים",
+    "distances_section": "מרחקים",
+    "max_uni_dist": "מרחק מקמפוס (מ' מקסימום)",
+    "max_bus_dist": "מרחק מאוטובוס (מ' מקסימום)",
+    "max_train_dist": "מרחק מרכבת (מ' מקסימום)"
+  },
+  "card": {
+    "rooms": "חדרים",
+    "sqm": "מ\"ר",
+    "floor": "קומה",
+    "month": "₪ לחודש",
+    "available_from": "פנוי מ-",
+    "available_now": "פנוי עכשיו",
+    "to_uni": "ל-",
+    "roommates_one": "שותף אחד",
+    "roommates_many": "{count} שותפים",
+    "no_roommates": "ללא שותפים"
   }
 }
