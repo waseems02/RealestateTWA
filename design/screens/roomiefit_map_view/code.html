@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serenity | Map Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#ffd0d3",
+                    "primary-fixed": "#e2dfff",
+                    "on-tertiary-fixed": "#400010",
+                    "outline": "#777587",
+                    "on-secondary-fixed": "#171c1f",
+                    "primary-container": "#4f46e5",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb2b9",
+                    "tertiary-container": "#ab354b",
+                    "secondary-fixed": "#dfe3e7",
+                    "surface-container-low": "#f0f3ff",
+                    "secondary-container": "#dce0e4",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#8b1b34",
+                    "surface-bright": "#f9f9ff",
+                    "surface-tint": "#4d44e3",
+                    "on-surface-variant": "#464555",
+                    "on-primary-fixed": "#0f0069",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#d8e3fb",
+                    "on-surface": "#111c2d",
+                    "on-secondary-container": "#5e6367",
+                    "surface": "#f9f9ff",
+                    "secondary": "#5a5f62",
+                    "surface-container": "#e7eeff",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#c3c0ff",
+                    "inverse-surface": "#263143",
+                    "surface-container-highest": "#d8e3fb",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "background": "#f9f9ff",
+                    "on-primary-container": "#dad7ff",
+                    "tertiary-fixed": "#ffdadc",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#891933",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "inverse-on-surface": "#ecf1ff",
+                    "primary": "#3525cd",
+                    "secondary-fixed-dim": "#c3c7cb",
+                    "surface-dim": "#cfdaf2",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "outline-variant": "#c7c4d8",
+                    "surface-container-high": "#dee8ff",
+                    "on-secondary-fixed-variant": "#43474b",
+                    "on-background": "#111c2d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "container-max": "1280px",
+                    "unit": "4px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "2xl": "64px",
+                    "md": "16px",
+                    "gutter": "24px",
+                    "xl": "40px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Geist"],
+                    "headline-lg": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "label-md": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "body-md": ["Geist"],
+                    "body-lg": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .map-pin {
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .map-pin:hover {
+            transform: scale(1.1) translateY(-4px);
+            z-index: 50;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2dfff; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] sticky top-0 z-[100] w-full">
+<div class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto">
+<div class="text-headline-md font-headline-md font-bold text-on-surface dark:text-inverse-on-surface">Serenity</div>
+<div class="hidden md:flex items-center gap-xl">
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Home</a>
+<a class="text-primary dark:text-inverse-primary font-bold border-b-2 border-primary pb-1" href="#">Apartments</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Roommates</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-200" href="#">Resources</a>
+</div>
+<div class="flex items-center gap-md">
+<button class="font-label-md text-label-md text-on-surface-variant px-md py-sm rounded-full hover:bg-surface-container transition-colors">EN / עב</button>
+<button class="bg-primary-container text-on-primary-container px-lg py-sm rounded-full font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all">Login</button>
+</div>
+</div>
+</nav>
+<!-- Main Map Viewport -->
+<main class="relative w-full h-[calc(100vh-72px)] overflow-hidden">
+<!-- Full-screen Map Background -->
+<div class="absolute inset-0 w-full h-full bg-surface-container-high" data-location="Tel Aviv University, Israel" style="">
+<img class="w-full h-full object-cover grayscale-[20%] opacity-80" data-alt="A highly detailed, top-down minimalist architectural map of Tel Aviv, focusing on the university district and surrounding residential streets. The map style is clean with soft light-mode colors like off-white roads, light gray buildings, and subtle green areas for parks. The lighting is bright and even, conveying a sense of organized, peaceful urban planning consistent with a premium real estate application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_VfJAPMvOn-dHtHRXL7AaeQ8ivxC9O4mOA2IIxDKM18dWdCOFJrd-KQ1LcZziUHgn4aFeqsGTuy-5fpQ5xFRXGbSfLeu8dWIkj2yMCJgwnAHc2rY-x4iunZmmjykUQx8Pek1bOODWAFT4KiIRJrsctPgs-wCx2KE4tXmCe1GIUQPmZMTlZOSDt--9JJjrSBz7MWJLjv2fXnEZN2cnUSmLDUstdY3up5CI3gvdUoCTwHHSAWHV8X3SlSuf-Cz4ZoGRpk-kkwg57OBw"/>
+</div>
+<!-- Interactive Pins Overlay -->
+<div class="absolute inset-0 z-10 pointer-events-none">
+<!-- Pin 1 -->
+<button class="map-pin absolute top-[30%] left-[45%] pointer-events-auto group">
+<div class="bg-primary text-on-primary px-3 py-1 rounded-full font-bold text-sm flex items-center gap-1 shadow-lg border-2 border-white">
+<span>₪3,800</span>
+</div>
+<div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-primary mx-auto"></div>
+</button>
+<!-- Pin 2 (Active/Selected) -->
+<button class="map-pin absolute top-[45%] left-[55%] pointer-events-auto">
+<div class="bg-tertiary text-on-tertiary px-3 py-1 rounded-full font-bold text-sm flex items-center gap-1 shadow-xl border-2 border-white scale-110">
+<span>₪4,200</span>
+</div>
+<div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-tertiary mx-auto scale-110"></div>
+</button>
+<!-- Pin 3 -->
+<button class="map-pin absolute top-[60%] left-[40%] pointer-events-auto">
+<div class="bg-primary text-on-primary px-3 py-1 rounded-full font-bold text-sm flex items-center gap-1 shadow-lg border-2 border-white">
+<span>₪3,550</span>
+</div>
+<div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-primary mx-auto"></div>
+</button>
+<!-- Pin 4 -->
+<button class="map-pin absolute top-[25%] left-[25%] pointer-events-auto">
+<div class="bg-primary text-on-primary px-3 py-1 rounded-full font-bold text-sm flex items-center gap-1 shadow-lg border-2 border-white">
+<span>₪4,000</span>
+</div>
+<div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-primary mx-auto"></div>
+</button>
+</div>
+<!-- Top Filter Bar Overlay -->
+<div class="absolute top-lg left-1/2 -translate-x-1/2 z-30 w-max max-w-[90vw]">
+<div class="bg-white/80 backdrop-blur-md px-md py-sm rounded-full shadow-[0_4px_20px_-2px_rgba(30,41,59,0.1)] border border-outline-variant flex items-center gap-sm overflow-x-auto no-scrollbar">
+<button class="flex items-center gap-1 px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md whitespace-nowrap">
+                    Price <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md whitespace-nowrap">
+                    Rooms
+                </button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md whitespace-nowrap">
+                    Balcony
+                </button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full bg-tertiary text-on-tertiary font-label-md text-label-md whitespace-nowrap">
+                    Pets Allowed
+                </button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md whitespace-nowrap">
+                    Roommate Type
+                </button>
+<button class="flex items-center gap-1 px-4 py-2 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md whitespace-nowrap">
+                    Religious
+                </button>
+<div class="w-[1px] h-6 bg-outline-variant mx-xs"></div>
+<button class="p-2 rounded-full bg-primary-container text-on-primary-container hover:shadow-lg transition-all">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</div>
+<!-- Floating Selected Listing Panel (Right Side) -->
+<div class="absolute right-lg top-lg bottom-lg z-40 w-96 hidden md:block">
+<div class="h-full bg-white rounded-2xl shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] flex flex-col overflow-hidden border border-outline-variant">
+<!-- Apartment Image Carousel Placeholder -->
+<div class="relative h-64 shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A bright, airy modern apartment interior in Tel Aviv with high ceilings, polished concrete floors, and large windows letting in golden hour sunlight. The space is styled with minimalist Scandinavian furniture, several lush indoor plants, and soft indigo accent cushions. The mood is serene, clean, and welcoming, perfectly capturing 'Domestic Serenity'." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgx1NKKVxpaCo_kFtzgIrQ29tOVOt_aX9F19gAiEyxoDArzbe1X-PJz9igUPbfQEHfW2eKXuUAIyWodlv_Y8SpVerPSW3WgKjZPf26kmLhyvnxqhdoC39bWCQonc5WcpuXDVVAIJqmWIxXilCAFN82WZmA9gbXWVeAwoBaudM053ZzEPCqZ8jtpkw8eCH7PbSS5Mxg867uG6B_leUFVEXJtOd8z4AriGUsgjPj_PdAPYLr6I5loREDm8jo6FjkNxnXLARzdi5kY7UX"/>
+<div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">favorite</span> Popular
+                        </span>
+</div>
+<div class="absolute bottom-4 right-4 flex gap-1">
+<div class="w-2 h-2 rounded-full bg-white shadow-sm"></div>
+<div class="w-2 h-2 rounded-full bg-white/50 shadow-sm"></div>
+<div class="w-2 h-2 rounded-full bg-white/50 shadow-sm"></div>
+</div>
+</div>
+<!-- Panel Content -->
+<div class="flex-1 p-lg flex flex-col gap-md custom-scrollbar overflow-y-auto">
+<div class="flex justify-between items-start">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Einstein St. Penthouse</h2>
+<p class="text-on-surface-variant font-body-md">Ramat Aviv, Tel Aviv</p>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-primary">₪4,200</span>
+<p class="text-label-sm font-label-sm text-on-surface-variant">per month</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-sm">
+<span class="bg-surface-container px-3 py-1.5 rounded-lg text-on-surface-variant font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">bed</span> 3 rooms
+                        </span>
+<span class="bg-surface-container px-3 py-1.5 rounded-lg text-on-surface-variant font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">square_foot</span> 75 sqm
+                        </span>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-3 py-1.5 rounded-lg text-label-md font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">falling</span> 5 min walk to TAU
+                        </span>
+</div>
+<div class="space-y-sm">
+<h3 class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider">Amenities</h3>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-label-sm font-label-sm">Fiber Wifi</span>
+<span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded text-label-sm font-label-sm">AC</span>
+<span class="bg-orange-50 text-orange-700 px-2 py-1 rounded text-label-sm font-label-sm">Elevator</span>
+<span class="bg-rose-50 text-rose-700 px-2 py-1 rounded text-label-sm font-label-sm">Balcony</span>
+</div>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<div class="flex items-center gap-md mb-lg">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A friendly, professional portrait of a young female student with a warm smile, wearing a casual denim jacket, set against a clean studio background. The photo is brightly lit with soft shadows, conveying trust and a supportive community vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdjbStTVgy7ye-WcGS5Ancg3ZkdBETBx2eBpz6y_n2sFFApNEDusaPyvLSX6z81qg0e98Yy8SL3yzlapU70MThzGszg7cPB6fM7MQrsixjp34iFgkdVqepZqz8ddBbXsiCBYYlEbiJm4DNQP33ORHPkwFuJR3Sb3AVxe0qp778k4UcgeXb4w_rjmD9ci5xOiHDU9gXMHfigJaxRbJlyCCY9b5FtJsRmfBxdUIaDbR6TcuOrQUyl5GbK9dq-8hqQYxJ7idLQ5lDYia8"/>
+</div>
+<div>
+<p class="text-on-surface font-label-md text-label-md font-bold">Noa Levi</p>
+<p class="text-on-surface-variant text-label-sm">TAU Student · Seeking 1 roommate</p>
+</div>
+</div>
+<button class="w-full bg-[#FB7185] hover:bg-[#F43F5E] text-white py-4 rounded-xl font-headline-md text-headline-md shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                            View details
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- UI Controls (Bottom Right) -->
+<div class="absolute bottom-lg right-lg z-40 flex flex-col gap-md items-end">
+<!-- List/Map Toggle -->
+<div class="bg-white rounded-full shadow-lg p-1 border border-outline-variant flex items-center">
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+                    List View
+                </button>
+<button class="px-6 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center gap-2 shadow-inner">
+<span class="material-symbols-outlined text-[20px]">map</span>
+                    Map View
+                </button>
+</div>
+<!-- AI Assistant Bubble -->
+<button class="group bg-primary-container text-on-primary-container p-4 rounded-full shadow-[0_10px_30px_-4px_rgba(30,41,59,0.2)] hover:scale-110 transition-all flex items-center gap-0 hover:gap-2 overflow-hidden max-w-[56px] hover:max-w-[200px]" id="ai-assistant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="whitespace-nowrap font-label-md text-label-md opacity-0 group-hover:opacity-100 transition-opacity">Need help?</span>
+</button>
+</div>
+<!-- Mobile Bottom Sheet Handle (Visual indicator) -->
+<div class="md:hidden absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 p-4 border-t border-outline-variant">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full mx-auto mb-4"></div>
+<div class="flex justify-between items-center px-2">
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Selected Apartment</p>
+<p class="font-headline-md text-headline-md text-on-surface">₪4,200 <span class="text-body-md font-normal">/mo</span></p>
+</div>
+<button class="bg-[#FB7185] text-white px-8 py-3 rounded-xl font-label-md text-label-md shadow-md">
+                    View
+                </button>
+</div>
+</div>
+</main>
+<script>
+        // Simple Interaction: Toggle Selected Pin
+        const pins = document.querySelectorAll('.map-pin');
+        pins.forEach(pin => {
+            pin.addEventListener('click', () => {
+                // Reset all pins to primary
+                pins.forEach(p => {
+                    const box = p.querySelector('div');
+                    const arrow = p.querySelector('div:last-child');
+                    box.classList.remove('bg-tertiary', 'scale-110');
+                    box.classList.add('bg-primary');
+                    arrow.classList.remove('border-t-tertiary', 'scale-110');
+                    arrow.classList.add('border-t-primary');
+                });
+
+                // Highlight clicked pin
+                const box = pin.querySelector('div');
+                const arrow = pin.querySelector('div:last-child');
+                box.classList.remove('bg-primary');
+                box.classList.add('bg-tertiary', 'scale-110');
+                arrow.classList.remove('border-t-primary');
+                arrow.classList.add('border-t-tertiary', 'scale-110');
+                
+                // Show panel logic would go here
+            });
+        });
+
+        // Atmospheric micro-interaction for AI Button
+        const aiButton = document.getElementById('ai-assistant');
+        aiButton.addEventListener('mouseenter', () => {
+            console.log('AI helper ready to assist student');
+        });
+    </script>
+</body></html>
