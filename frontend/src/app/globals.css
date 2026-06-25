@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Urban Harmony — Stitch design tokens */
+  /* Urban Harmony - Stitch design tokens */
   --color-primary: #3525cd;
   --color-on-primary: #ffffff;
   --color-primary-container: #4f46e5;
@@ -47,7 +47,7 @@
   --color-surface-variant: #d8e3fb;
   --color-brand-coral: #fb7185;
 
-  --font-sans: var(--font-geist), var(--font-heebo), sans-serif;
+  --font-sans: Arial, "Noto Sans Hebrew", sans-serif;
 }
 
 body {

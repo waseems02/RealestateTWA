@@ -1,75 +1,155 @@
-# RoomieFit
+# RoomieFit / CampusNest Israel
 
-Student apartment + roommate matching platform for Israel. Hebrew RTL UI with English toggle, OpenAI-powered search agent, Telegram bot mirror, and structured data pipeline.
+Student apartment and roommate matching platform for Israel. The project has a Hebrew RTL frontend, Supabase database setup, AI and Telegram placeholders, and a Railway-ready Node/Express deployment server.
 
-> Local folder is still named `RealestateTWA` from the initial scaffold; the GitHub repo is `RoomieFit`.
+## Monorepo Layout
 
-## Monorepo layout
-
-```
-frontend/    Next.js 16 + TS + Tailwind v4 (App Router, RTL default)
-backend/     FastAPI + Supabase client (Railway-deployed)
-bot/         Telegram bot — Step 6 (placeholder)
-scripts/     Data import — Step 7 (placeholder)
-supabase/    config.toml + SQL migrations (linked to project nvpfxtsxgfvjerzfaaiw)
+```text
+frontend/    Next.js 16 + TypeScript + Tailwind v4
+backend/     Node/Express deployment server plus legacy FastAPI app
+bot/         Telegram bot placeholder
+scripts/     Data import placeholder
+supabase/    Supabase config, migrations, and full SQL setup file
 ```
 
 ## Branches
 
-| Branch     | Purpose                                |
-|------------|----------------------------------------|
-| `main`     | Production. GH Pages + Railway deploy from here. |
-| `staging`  | Pre-prod integration.                  |
-| `frontend` | Active frontend dev.                   |
-| `backend`  | Active backend dev.                    |
+| Branch | Purpose |
+| --- | --- |
+| `main` | Production |
+| `staging` | Pre-production integration |
+| `frontend` | Frontend development |
+| `backend` | Backend development |
+| `Data-Base` | Database development |
 
-Flow: `frontend` / `backend` → PR into `staging` → PR into `main`.
+Flow: feature branches -> pull request into `staging` -> pull request into `main`.
 
-## Quick start
+## Quick Start
 
-### Frontend
+Run the full local app from the repository root:
+
+```powershell
+npm install
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Health check:
+
+```text
+http://localhost:3000/api/health
+```
+
+## Production Mode
+
+From the repository root:
+
+```powershell
+npm run build
+npm start
+```
+
+`npm run build` exports the Next.js frontend into `frontend/out`. `npm start` runs `backend/server.js`, which serves the frontend and API routes from one Node/Express app.
+
+## Frontend Only
+
 ```powershell
 cd frontend
 npm install
-npm run dev          # http://localhost:3000
+npm run dev
 ```
 
-### Backend
+## Legacy Python Backend
+
+The older FastAPI backend is still present and was not deleted:
+
 ```powershell
 cd backend
 py -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-copy .env.example .env       # then fill in real values
-uvicorn app.main:app --reload --port 8000   # http://localhost:8000/health
+copy .env.example .env
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Supabase
-```powershell
-supabase db push     # apply local migrations to the linked project
+## Supabase
+
+For a one-file setup, run:
+
+```text
+supabase/full_database_setup.sql
 ```
 
-## Environment variables
+Copy the full SQL file into the Supabase SQL Editor and run it once. It replaces separate schema, seed, and RLS setup files for initial setup.
 
-| Var                            | Where                | When         |
-|--------------------------------|----------------------|--------------|
-| `SUPABASE_URL`                 | backend/.env         | now          |
-| `SUPABASE_ANON_KEY`            | backend/.env         | now          |
-| `SUPABASE_SERVICE_ROLE_KEY`    | backend/.env         | now          |
-| `NEXT_PUBLIC_SUPABASE_URL`     | frontend/.env.local  | Step 3       |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`| frontend/.env.local  | Step 3       |
-| `OPENAI_API_KEY` (or Groq)     | backend/.env         | Step 5       |
-| `TELEGRAM_BOT_TOKEN`           | backend/.env or bot/.env | Step 6   |
+## Environment Variables
 
-Pull keys from Supabase dashboard → Settings → API. Never commit real values.
+Use `.env.example` as the template. Do not commit a real `.env` file.
 
-## Build status
+| Variable | Where |
+| --- | --- |
+| `SUPABASE_URL` | Root `.env` locally, Railway variables in production |
+| `SUPABASE_ANON_KEY` | Root `.env` locally, Railway variables in production |
+| `SUPABASE_SERVICE_ROLE_KEY` | Backend only; root `.env` locally, Railway variables in production |
+| `OPENAI_API_KEY` | Backend only |
+| `TELEGRAM_BOT_TOKEN` | Backend only |
+| `PORT` | Local only; Railway provides this automatically |
+| `NODE_ENV` | `development` locally, `production` on Railway |
 
-- ✅ Step 1 — Monorepo + branches + rename
-- ✅ Step 2 — Supabase schema (`0001_init_listings.sql`)
-- ⬜ Step 3 — Listings page with filters
-- ⬜ Step 4 — Map view (Leaflet)
-- ⬜ Step 5 — AI search agent
-- ⬜ Step 6 — Telegram bot
-- ⬜ Step 7 — Data import pipeline
-- ⬜ Step 8 — English toggle
+Never expose service role keys, OpenAI keys, or Telegram tokens in frontend code.
+
+## Deployment to Railway
+
+Step 1: Push the project to GitHub.
+
+Step 2: Open Railway.
+
+Step 3: Create New Project.
+
+Step 4: Choose Deploy from GitHub repo.
+
+Step 5: Select this repository.
+
+Step 6: Add environment variables:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENAI_API_KEY`
+- `TELEGRAM_BOT_TOKEN`
+- `NODE_ENV=production`
+
+Step 7: Deploy.
+
+Step 8: Open the Railway public domain.
+
+The homepage should load from `/`. The health check should respond at:
+
+```text
+/api/health
+```
+
+Railway install command:
+
+```bash
+npm install
+```
+
+Railway build command:
+
+```bash
+npm run build
+```
+
+Railway start command:
+
+```bash
+npm start
+```
+
+The root `railway.json` sets `npm start` as the start command and `/api/health` as the health check path.
