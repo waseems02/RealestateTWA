@@ -5,7 +5,8 @@ const router = express.Router();
 router.get("/", (_req, res) => {
   res.json({
     status: "ok",
-    message: "RoomieFit / RealestateTMA server is running",
+    message: "RoomieFit server is running on Railway",
+    railwayProject: "faithful-insight",
     environment: process.env.NODE_ENV || "development"
   });
 });

@@ -41,5 +41,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`RoomieFit / RealestateTMA server is running on port ${PORT}`);
+  console.log(`RoomieFit server is running on port ${PORT}`);
 });

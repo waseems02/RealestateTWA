@@ -81,7 +81,7 @@ In production, set secrets as Railway Variables only.
 
 ## Railway
 
-The Railway project name is `RealestateTMA`.
+The existing Railway project name is `faithful-insight`. Do not create a new Railway project for this repository.
 
 Railway uses:
 
@@ -89,7 +89,26 @@ Railway uses:
 npm start
 ```
 
-See [docs/deployment.md](docs/deployment.md) for deployment steps, environment strategy, and manual setup instructions.
+Add these variables in the Railway dashboard:
+
+```text
+NODE_ENV=production
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+TELEGRAM_BOT_TOKEN=
+RAILWAY_ENVIRONMENT=production
+PUBLIC_APP_URL=
+```
+
+Link locally with:
+
+```bash
+railway link
+```
+
+Choose `faithful-insight`, then choose `production` if prompted for an environment. See [docs/deployment.md](docs/deployment.md) for deployment steps and environment strategy.
 
 ## Safety Notes
 

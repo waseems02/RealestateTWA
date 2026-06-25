@@ -28,6 +28,12 @@ The app can run in mock mode when Supabase, OpenAI, or Telegram variables are mi
 
 ## Production on Railway
 
+Use the existing Railway project:
+
+```text
+faithful-insight
+```
+
 Production runs with:
 
 ```bash
@@ -80,15 +86,15 @@ In Railway:
 
 ## Manual Railway Project Setup
 
-If the Railway CLI cannot create or link the project automatically:
+Do not create a new Railway project for this app. Use the existing project `faithful-insight`.
+
+If the CLI cannot link automatically:
 
 1. Go to the Railway dashboard.
-2. Click New Project.
-3. Choose Deploy from GitHub repo.
-4. Select `waseems02/RoomieFit`.
-5. Name the project `RealestateTMA`.
-6. Add variables from `.env.example`.
-7. Deploy.
+2. Open the existing project `faithful-insight`.
+3. Connect or verify the GitHub repo `waseems02/RoomieFit`.
+4. Add variables from `.env.example`.
+5. Deploy the existing service.
 
 ## CLI Setup
 
@@ -104,11 +110,25 @@ If missing:
 npm install -g @railway/cli
 ```
 
-Then authenticate and create or link the project:
+Then authenticate and link the existing project:
 
 ```bash
 railway login
-railway init
+railway link
 ```
 
-Use `RealestateTMA` when prompted for the project name.
+Choose `faithful-insight` when prompted for the project. Choose `production` if Railway asks for an environment. If a `development` environment also exists, switch to it with:
+
+```bash
+railway environment
+```
+
+or select it from the Railway dashboard before deploying test changes.
+
+## Manual Deploy
+
+If GitHub deployment is not configured, deploy the linked project manually:
+
+```bash
+railway up
+```
