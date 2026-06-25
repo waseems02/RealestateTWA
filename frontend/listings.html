@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>חיפוש דירות | RoomieFit</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script defer src="js/app.js"></script>
+    <script defer src="js/listings.js"></script>
+  </head>
+  <body>
+    <main class="container section">
+      <h1 class="page-title">חיפוש דירות</h1>
+      <p class="lead">סננו דירות וחדרים לפי הצרכים של סטודנטים ליד קמפוסים בישראל.</p>
+
+      <form id="filters" class="filters">
+        <label>עיר<input id="city" type="search" placeholder="ירושלים, תל אביב, חיפה" /></label>
+        <label>מחיר מקסימלי<input id="maxPrice" type="number" min="0" step="100" placeholder="3500" /></label>
+        <label>אוניברסיטה / קמפוס<input id="campus" type="search" placeholder="הטכניון" /></label>
+        <label class="checkbox-row"><input id="balcony" type="checkbox" /> מרפסת</label>
+        <label class="checkbox-row"><input id="furnished" type="checkbox" /> מרוהטת</label>
+        <label class="checkbox-row"><input id="transit" type="checkbox" /> קרוב לתחבורה ציבורית</label>
+        <label>
+          העדפת עישון
+          <select id="smoking">
+            <option value="">הכל</option>
+            <option value="yes">מותר לעשן</option>
+            <option value="no">לא מותר לעשן</option>
+          </select>
+        </label>
+      </form>
+
+      <section id="listingsGrid" class="grid" aria-live="polite"></section>
+    </main>
+  </body>
+</html>

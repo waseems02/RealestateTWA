@@ -3,56 +3,43 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
-const { getSupabaseClient } = require("./services/supabaseClient");
+
+const healthRoutes = require("./routes/health");
+const listingsRoutes = require("./routes/listings");
+const aiRoutes = require("./routes/ai");
+const telegramRoutes = require("./routes/telegram");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const frontendOutDir = path.join(__dirname, "..", "frontend", "out");
+const frontendDir = path.join(__dirname, "..", "frontend");
 
-app.use(cors({ origin: true, credentials: false }));
+app.use(
+  cors({
+    origin: process.env.PUBLIC_APP_URL || true,
+    credentials: false
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 
-app.get("/api/health", (_req, res) => {
-  res.json({
-    status: "ok",
-    message: "RoomieFit server is running"
-  });
+app.use("/api/health", healthRoutes);
+app.use("/api/listings", listingsRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/telegram", telegramRoutes);
+
+app.use(express.static(frontendDir, { extensions: ["html"] }));
+
+app.get("/", (_req, res) => {
+  res.sendFile(path.join(frontendDir, "index.html"));
 });
-
-app.get("/api/listings", async (_req, res) => {
-  const supabase = getSupabaseClient();
-
-  if (!supabase) {
-    return res.json({
-      mode: "missing_supabase_env",
-      data: []
-    });
-  }
-
-  const { data, error } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(50);
-
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
-
-  res.json({ mode: "supabase", data });
-});
-
-app.use(express.static(frontendOutDir));
 
 app.get("*", (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "API route not found" });
   }
 
-  res.sendFile(path.join(frontendOutDir, "index.html"));
+  return res.sendFile(path.join(frontendDir, "index.html"));
 });
 
 app.listen(PORT, () => {
-  console.log(`RoomieFit server is running on port ${PORT}`);
+  console.log(`RoomieFit / RealestateTMA server is running on port ${PORT}`);
 });

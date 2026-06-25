@@ -1,34 +1,26 @@
 # RoomieFit / CampusNest Israel
 
-Student apartment and roommate matching platform for Israel. The project has a Hebrew RTL frontend, Supabase database setup, AI and Telegram placeholders, and a Railway-ready Node/Express deployment server.
+Hebrew-first student housing and roommate matching MVP for Israel. The app helps students find apartments, rooms, and roommates near universities and colleges, with Supabase-ready data, an AI assistant endpoint, and a Telegram webhook placeholder.
 
-## Monorepo Layout
+## Project Structure
 
 ```text
-frontend/    Next.js 16 + TypeScript + Tailwind v4
-backend/     Node/Express deployment server plus legacy FastAPI app
-bot/         Telegram bot placeholder
-scripts/     Data import placeholder
-supabase/    Supabase config, migrations, and full SQL setup file
+frontend/                 Plain HTML, CSS, and JavaScript MVP
+backend/                  Node.js Express API and static file server
+backend/routes/           Health, listings, AI, and Telegram routes
+backend/services/         Supabase and OpenAI server-side clients
+backend/telegram/         Grammy bot setup
+supabase/                 Database setup SQL
+docs/                     Deployment and architecture notes
+railway.json              Railway deployment config
+.env.example              Safe environment template
 ```
 
-## Branches
-
-| Branch | Purpose |
-| --- | --- |
-| `main` | Production |
-| `staging` | Pre-production integration |
-| `frontend` | Frontend development |
-| `backend` | Backend development |
-| `Data-Base` | Database development |
-
-Flow: feature branches -> pull request into `staging` -> pull request into `main`.
+Legacy Next.js and Python files may still exist in the repository for reference, but the root `npm` scripts run the Express/static MVP.
 
 ## Quick Start
 
-Run the full local app from the repository root:
-
-```powershell
+```bash
 npm install
 npm run dev
 ```
@@ -37,119 +29,71 @@ Open:
 
 ```text
 http://localhost:3000
-```
-
-Health check:
-
-```text
 http://localhost:3000/api/health
+http://localhost:3000/api/listings
 ```
 
-## Production Mode
+The app works in mock mode if Supabase, OpenAI, or Telegram variables are missing.
 
-From the repository root:
+## Scripts
 
-```powershell
-npm run build
-npm start
+```json
+{
+  "dev": "nodemon backend/server.js",
+  "start": "node backend/server.js"
+}
 ```
-
-`npm run build` exports the Next.js frontend into `frontend/out`. `npm start` runs `backend/server.js`, which serves the frontend and API routes from one Node/Express app.
-
-## Frontend Only
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-## Legacy Python Backend
-
-The older FastAPI backend is still present and was not deleted:
-
-```powershell
-cd backend
-py -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-uvicorn app.main:app --reload --port 8000
-```
-
-## Supabase
-
-For a one-file setup, run:
-
-```text
-supabase/full_database_setup.sql
-```
-
-Copy the full SQL file into the Supabase SQL Editor and run it once. It replaces separate schema, seed, and RLS setup files for initial setup.
 
 ## Environment Variables
 
-Use `.env.example` as the template. Do not commit a real `.env` file.
-
-| Variable | Where |
-| --- | --- |
-| `SUPABASE_URL` | Root `.env` locally, Railway variables in production |
-| `SUPABASE_ANON_KEY` | Root `.env` locally, Railway variables in production |
-| `SUPABASE_SERVICE_ROLE_KEY` | Backend only; root `.env` locally, Railway variables in production |
-| `OPENAI_API_KEY` | Backend only |
-| `TELEGRAM_BOT_TOKEN` | Backend only |
-| `PORT` | Local only; Railway provides this automatically |
-| `NODE_ENV` | `development` locally, `production` on Railway |
-
-Never expose service role keys, OpenAI keys, or Telegram tokens in frontend code.
-
-## Deployment to Railway
-
-Step 1: Push the project to GitHub.
-
-Step 2: Open Railway.
-
-Step 3: Create New Project.
-
-Step 4: Choose Deploy from GitHub repo.
-
-Step 5: Select this repository.
-
-Step 6: Add environment variables:
-
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `OPENAI_API_KEY`
-- `TELEGRAM_BOT_TOKEN`
-- `NODE_ENV=production`
-
-Step 7: Deploy.
-
-Step 8: Open the Railway public domain.
-
-The homepage should load from `/`. The health check should respond at:
+Copy `.env.example` to `.env` locally. Do not commit `.env`.
 
 ```text
-/api/health
+NODE_ENV=development
+PORT=3000
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+TELEGRAM_BOT_TOKEN=
+RAILWAY_ENVIRONMENT=
+PUBLIC_APP_URL=
 ```
 
-Railway install command:
+In production, set secrets as Railway Variables only.
 
-```bash
-npm install
-```
+## API Routes
 
-Railway build command:
+- `GET /api/health`
+- `GET /api/listings`
+- `POST /api/ai/chat`
+- `POST /api/telegram/webhook`
 
-```bash
-npm run build
-```
+## Git Branch Strategy
 
-Railway start command:
+- `main`: production-ready version
+- `staging`: testing before production
+- `frontend`: frontend work
+- `backend`: backend work
+- `database`: Supabase database work
+- `ai-agent`: OpenAI agent work
+- `telegram-bot`: Telegram bot work
+
+## Railway
+
+The Railway project name is `RealestateTMA`.
+
+Railway uses:
 
 ```bash
 npm start
 ```
 
-The root `railway.json` sets `npm start` as the start command and `/api/health` as the health check path.
+See [docs/deployment.md](docs/deployment.md) for deployment steps, environment strategy, and manual setup instructions.
+
+## Safety Notes
+
+- Do not commit `.env` files.
+- Do not expose service role, OpenAI, or Telegram keys in frontend code.
+- Use demo data unless a legal API is available.
+- Do not scrape Yad2 or Facebook.
