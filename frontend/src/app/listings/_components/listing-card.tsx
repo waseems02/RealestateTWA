@@ -1,100 +1,136 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
 import he from "../../../../messages/he.json";
 import { CITY_LABELS_HE } from "@/lib/constants";
 import type { ListingWithUniversities } from "@/lib/db-types";
 
+const CARD_GRADIENTS = [
+  "from-primary/15 to-primary/5",
+  "from-brand-coral/15 to-brand-coral/5",
+  "from-surface-container-high to-surface-container-low",
+  "from-primary-fixed to-surface",
+];
+
 export function ListingCard({ listing }: { listing: ListingWithUniversities }) {
-  const cityLabel = listing.city ? CITY_LABELS_HE[listing.city] ?? listing.city : "";
+  const [saved, setSaved] = useState(false);
+  const cityLabel = listing.city ? (CITY_LABELS_HE[listing.city] ?? listing.city) : "";
   const nearest = nearestUniversity(listing);
-  const roommatesLabel = roommatesText(listing.num_roommates);
-  const availableLabel = availableText(listing.available_from);
-  const priceLabel = `${listing.price_nis.toLocaleString("he-IL")} ${he.card.month}`;
+  const grad = CARD_GRADIENTS[listing.title.charCodeAt(0) % CARD_GRADIENTS.length];
 
   return (
-    <article className="flex flex-col justify-between rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950">
-      <header>
-        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          {listing.title}
-        </h3>
-        {(cityLabel || listing.neighborhood) && (
-          <p className="mt-1 text-sm text-zinc-500">
-            {[listing.neighborhood, cityLabel].filter(Boolean).join(" · ")}
-          </p>
-        )}
-      </header>
-
-      <p className="mt-3 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-        {priceLabel}
-      </p>
-
-      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-zinc-700 dark:text-zinc-300">
-        {listing.rooms !== null && (
-          <Stat label={he.card.rooms} value={String(listing.rooms)} />
-        )}
-        {listing.size_sqm !== null && (
-          <Stat label={he.card.sqm} value={String(listing.size_sqm)} />
-        )}
-        {listing.floor !== null && (
-          <Stat label={he.card.floor} value={String(listing.floor)} />
-        )}
-        <Stat label="" value={roommatesLabel} />
-      </dl>
-
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {listing.has_balcony && <Badge>מרפסת</Badge>}
-        {listing.parking_available && <Badge>חניה</Badge>}
-        {listing.air_conditioning && <Badge>מזגן</Badge>}
-        {listing.furnished === "full" && <Badge>מרוהט</Badge>}
-        {listing.furnished === "partial" && <Badge>מרוהט חלקית</Badge>}
-        {listing.pets_allowed && <Badge>חיות מחמד</Badge>}
-        {listing.accessible && <Badge>נגיש</Badge>}
-        {listing.gender_preference === "female" && <Badge tone="pink">לנשים בלבד</Badge>}
-        {listing.gender_preference === "male" && <Badge tone="blue">לגברים בלבד</Badge>}
-        {listing.roommates_religious_tag && (
-          <Badge tone="muted">{religiousLabel(listing.roommates_religious_tag)}</Badge>
+    <article className="flex flex-col rounded-2xl bg-white overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] hover:shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] transition-all duration-300 group">
+      {/* Photo / placeholder */}
+      <div className={`relative h-44 bg-gradient-to-br ${grad} flex items-center justify-center overflow-hidden`}>
+        <span className="text-5xl font-black text-on-surface/10 group-hover:scale-110 transition-transform duration-500">
+          {listing.title.slice(0, 2)}
+        </span>
+        <button
+          aria-label="שמור דירה"
+          onClick={() => setSaved((s) => !s)}
+          className="absolute top-3 left-3 bg-white/80 backdrop-blur-sm p-2 rounded-full transition-transform hover:scale-110"
+        >
+          <span className={`text-lg ${saved ? "text-brand-coral" : "text-on-surface-variant"}`}>
+            {saved ? "♥" : "♡"}
+          </span>
+        </button>
+        {listing.available_from && new Date(listing.available_from) > new Date() && (
+          <span className="absolute bottom-3 right-3 bg-white/90 text-on-surface text-xs font-semibold px-2 py-1 rounded-full">
+            {he.card.available_from} {new Date(listing.available_from).toLocaleDateString("he-IL")}
+          </span>
         )}
       </div>
 
-      <footer className="mt-4 space-y-1 border-t border-zinc-100 pt-3 text-xs text-zinc-500 dark:border-zinc-800">
-        {nearest && (
-          <p>
-            {he.card.to_uni} {nearest.name} — {formatDistance(nearest.distance_m)}
+      {/* Content */}
+      <div className="p-4 flex flex-col gap-3 flex-1">
+        <div>
+          <p className="text-xl font-bold text-on-surface">
+            ₪{listing.price_nis.toLocaleString("he-IL")}
+            <span className="text-xs font-normal text-on-surface-variant"> {he.card.month}</span>
           </p>
-        )}
-        {listing.bus_stop_distance_m !== null && (
-          <p>אוטובוס: {formatDistance(listing.bus_stop_distance_m)}</p>
-        )}
-        <p>{availableLabel}</p>
-      </footer>
+          {(cityLabel || listing.neighborhood) && (
+            <p className="text-xs text-on-surface-variant mt-0.5">
+              {[listing.neighborhood, cityLabel].filter(Boolean).join(" · ")}
+            </p>
+          )}
+        </div>
+
+        {/* Key facts */}
+        <p className="text-xs text-on-surface-variant">
+          {listing.rooms != null && `${listing.rooms} ${he.card.rooms}`}
+          {listing.size_sqm != null && ` · ${listing.size_sqm} ${he.card.sqm}`}
+          {listing.floor != null && ` · קומה ${listing.floor}`}
+        </p>
+
+        {/* Amenity icons */}
+        <div className="flex gap-1.5 flex-wrap">
+          {listing.has_balcony && <AmenityIcon icon="🏗️" label="מרפסת" />}
+          {listing.air_conditioning && <AmenityIcon icon="❄️" label="מזגן" />}
+          {listing.parking_available && <AmenityIcon icon="🅿️" label="חניה" />}
+          {listing.pets_allowed && <AmenityIcon icon="🐾" label="חיות" />}
+          {listing.furnished !== "none" && (
+            <AmenityIcon icon="🛋️" label={listing.furnished === "full" ? "מרוהט" : "חלקי"} />
+          )}
+        </div>
+
+        {/* Roommate tags */}
+        <div className="flex gap-1.5 flex-wrap">
+          {listing.roommates_status && (
+            <Tag>{listing.roommates_status === "student" ? "סטודנטים" : listing.roommates_status === "professional" ? "עובדים" : "מעורב"}</Tag>
+          )}
+          {listing.roommates_religious_tag && listing.roommates_religious_tag !== "mixed" && (
+            <Tag>{listing.roommates_religious_tag === "secular" ? "חילוני" : listing.roommates_religious_tag === "traditional" ? "מסורתי" : "דתי"}</Tag>
+          )}
+          {listing.gender_preference !== "any" && (
+            <Tag tone="pink">{listing.gender_preference === "female" ? "לנשים בלבד" : "לגברים בלבד"}</Tag>
+          )}
+        </div>
+
+        {/* Distance badges */}
+        <div className="flex gap-2 flex-wrap mt-auto pt-2 border-t border-outline-variant/40">
+          {nearest && (
+            <DistBadge icon="🎓" label={`${formatDist(nearest.distance_m)} ${nearest.name}`} />
+          )}
+          {listing.bus_stop_distance_m != null && (
+            <DistBadge icon="🚌" label={formatDist(listing.bus_stop_distance_m)} />
+          )}
+          {listing.train_station_distance_m != null && (
+            <DistBadge icon="🚆" label={formatDist(listing.train_station_distance_m)} />
+          )}
+        </div>
+      </div>
+
+      <Link
+        href={`/listings/${listing.id}`}
+        className="block text-center text-xs font-bold text-primary py-3 border-t border-outline-variant/40 hover:bg-primary/5 transition-colors"
+      >
+        לפרטים המלאים →
+      </Link>
     </article>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function AmenityIcon({ icon, label }: { icon: string; label: string }) {
   return (
-    <div className="flex items-baseline gap-1">
-      <dt className="text-zinc-500">{label}</dt>
-      <dd className="font-medium text-zinc-900 dark:text-zinc-50">{value}</dd>
-    </div>
+    <span title={label} className="bg-primary/10 text-primary px-2 py-0.5 rounded-lg text-xs font-medium flex items-center gap-1">
+      <span>{icon}</span> {label}
+    </span>
   );
 }
 
-function Badge({
-  children,
-  tone = "default",
-}: {
-  children: React.ReactNode;
-  tone?: "default" | "muted" | "pink" | "blue";
-}) {
-  const styles: Record<typeof tone, string> = {
-    default:
-      "bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
-    muted: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-    pink: "bg-pink-50 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300",
-    blue: "bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  };
+function Tag({ children, tone = "default" }: { children: React.ReactNode; tone?: "default" | "pink" }) {
   return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${styles[tone]}`}>
+    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${tone === "pink" ? "bg-brand-coral/10 text-brand-coral" : "bg-surface-container-highest text-on-surface-variant"}`}>
       {children}
+    </span>
+  );
+}
+
+function DistBadge({ icon, label }: { icon: string; label: string }) {
+  return (
+    <span className="flex items-center gap-1 text-xs text-on-surface-variant">
+      <span>{icon}</span> {label}
     </span>
   );
 }
@@ -108,36 +144,7 @@ function nearestUniversity(l: ListingWithUniversities) {
   return { name: first.universities.name_he, distance_m: first.distance_m };
 }
 
-function roommatesText(n: number): string {
-  if (n === 0) return he.card.no_roommates;
-  if (n === 1) return he.card.roommates_one;
-  return he.card.roommates_many.replace("{count}", String(n));
-}
-
-function availableText(date: string | null): string {
-  if (!date) return he.card.available_now;
-  const d = new Date(date);
-  if (d.getTime() <= Date.now()) return he.card.available_now;
-  return `${he.card.available_from} ${d.toLocaleDateString("he-IL")}`;
-}
-
-function formatDistance(m: number | null | undefined): string {
-  if (m == null) return "";
+function formatDist(m: number): string {
   if (m >= 1000) return `${(m / 1000).toFixed(1)} ק"מ`;
   return `${m} מ'`;
-}
-
-function religiousLabel(tag: string): string {
-  switch (tag) {
-    case "secular":
-      return he.filters.religious_secular;
-    case "traditional":
-      return he.filters.religious_traditional;
-    case "religious":
-      return he.filters.religious_religious;
-    case "mixed":
-      return he.filters.religious_mixed;
-    default:
-      return tag;
-  }
 }

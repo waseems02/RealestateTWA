@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import he from "../../../../messages/he.json";
 import { CITY_LABELS_HE, ISRAELI_CITIES } from "@/lib/constants";
 
@@ -8,23 +11,60 @@ function getStr(sp: SP, key: string): string {
   if (Array.isArray(v)) return v[0] ?? "";
   return v ?? "";
 }
-
+function getNum(sp: SP, key: string, fallback: number): number {
+  const n = Number(getStr(sp, key));
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
 function isOn(sp: SP, key: string): boolean {
   return getStr(sp, key) === "1";
 }
 
+const ROOM_OPTS = ["1", "2", "3", "4+"] as const;
+const STATUS_OPTS = [
+  { v: "student", label: he.filters.status_student },
+  { v: "professional", label: he.filters.status_professional },
+  { v: "mixed", label: he.filters.status_mixed },
+] as const;
+const RELIGIOUS_OPTS = [
+  { v: "secular", label: he.filters.religious_secular },
+  { v: "traditional", label: he.filters.religious_traditional },
+  { v: "religious", label: he.filters.religious_religious },
+  { v: "mixed", label: he.filters.religious_mixed },
+] as const;
+const GENDER_OPTS = [
+  { v: "male", label: he.filters.gender_male },
+  { v: "female", label: he.filters.gender_female },
+  { v: "any", label: he.filters.gender_any },
+] as const;
+const FURNISHED_OPTS = [
+  { v: "none", label: he.filters.furnished_none },
+  { v: "partial", label: he.filters.furnished_partial },
+  { v: "full", label: he.filters.furnished_full },
+] as const;
+const LEASE_OPTS = [
+  { v: "6", label: "6 חודשים" },
+  { v: "12", label: "12 חודשים" },
+  { v: "24", label: "24 חודשים" },
+] as const;
+
 export function FiltersForm({ initial }: { initial: SP }) {
+  const [maxPrice, setMaxPrice] = useState(getNum(initial, "max_price", 8000));
+  const [maxBus, setMaxBus] = useState(getNum(initial, "max_bus", 1000));
+  const [maxTrain, setMaxTrain] = useState(getNum(initial, "max_train", 2000));
+
   return (
     <form
       method="get"
       action="/listings"
-      className="space-y-6 rounded-lg border border-zinc-200 bg-white p-5 text-sm dark:border-zinc-800 dark:bg-zinc-950"
+      className="space-y-6 rounded-2xl border border-outline-variant bg-white p-5 text-sm shadow-sm"
     >
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-        {he.filters.title}
-      </h2>
+      <h2 className="text-base font-bold text-on-surface">{he.filters.title}</h2>
 
-      <Field label={he.filters.city}>
+      {/* City */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
+          {he.filters.city}
+        </label>
         <select
           name="city"
           defaultValue={getStr(initial, "city")}
@@ -32,166 +72,221 @@ export function FiltersForm({ initial }: { initial: SP }) {
         >
           <option value="">{he.filters.any}</option>
           {ISRAELI_CITIES.map((c) => (
-            <option key={c} value={c}>
-              {CITY_LABELS_HE[c] ?? c}
-            </option>
+            <option key={c} value={c}>{CITY_LABELS_HE[c] ?? c}</option>
           ))}
         </select>
-      </Field>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={he.filters.min_price}>
-          <input
-            type="number"
-            name="min_price"
-            inputMode="numeric"
-            min={0}
-            defaultValue={getStr(initial, "min_price")}
-            className={inputCls}
-          />
-        </Field>
-        <Field label={he.filters.max_price}>
-          <input
-            type="number"
-            name="max_price"
-            inputMode="numeric"
-            min={0}
-            defaultValue={getStr(initial, "max_price")}
-            className={inputCls}
-          />
-        </Field>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={he.filters.min_rooms}>
-          <input
-            type="number"
-            name="min_rooms"
-            inputMode="decimal"
-            min={0}
-            step={0.5}
-            defaultValue={getStr(initial, "min_rooms")}
-            className={inputCls}
-          />
-        </Field>
-        <Field label={he.filters.min_sqm}>
-          <input
-            type="number"
-            name="min_sqm"
-            inputMode="numeric"
-            min={0}
-            defaultValue={getStr(initial, "min_sqm")}
-            className={inputCls}
-          />
-        </Field>
+      {/* Price range slider */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
+            {he.filters.max_price}
+          </label>
+          <span className="text-sm font-bold text-primary">
+            ₪{maxPrice.toLocaleString("he-IL")}
+          </span>
+        </div>
+        <input
+          type="range"
+          name="max_price"
+          min={1000}
+          max={15000}
+          step={500}
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(Number(e.target.value))}
+          className="w-full accent-primary"
+        />
+        <div className="flex justify-between text-xs text-on-surface-variant">
+          <span>₪1,000</span>
+          <span>₪15,000</span>
+        </div>
       </div>
 
-      <Field label={he.filters.furnished}>
-        <select
-          name="furnished"
-          defaultValue={getStr(initial, "furnished")}
-          className={selectCls}
-        >
+      {/* Rooms chips */}
+      <div className="space-y-2">
+        <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
+          {he.filters.min_rooms}
+        </label>
+        <div className="flex gap-2 flex-wrap">
+          {ROOM_OPTS.map((r) => {
+            const val = r === "4+" ? "4" : r;
+            return (
+              <ChipRadio
+                key={r}
+                name="min_rooms"
+                value={val}
+                label={r}
+                defaultChecked={getStr(initial, "min_rooms") === val}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Min sqm */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
+          {he.filters.min_sqm}
+        </label>
+        <input
+          type="number"
+          name="min_sqm"
+          inputMode="numeric"
+          min={0}
+          defaultValue={getStr(initial, "min_sqm")}
+          placeholder="מ׳׳ר"
+          className={inputCls}
+        />
+      </div>
+
+      {/* Furnished */}
+      <div className="space-y-2">
+        <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
+          {he.filters.furnished}
+        </label>
+        <div className="flex gap-2 flex-wrap">
+          {FURNISHED_OPTS.map(({ v, label }) => (
+            <ChipRadio
+              key={v}
+              name="furnished"
+              value={v}
+              label={label}
+              defaultChecked={getStr(initial, "furnished") === v}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Lease length */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
+          אורך חוזה
+        </label>
+        <select name="lease_months" defaultValue={getStr(initial, "lease_months")} className={selectCls}>
           <option value="">{he.filters.any}</option>
-          <option value="none">{he.filters.furnished_none}</option>
-          <option value="partial">{he.filters.furnished_partial}</option>
-          <option value="full">{he.filters.furnished_full}</option>
+          {LEASE_OPTS.map(({ v, label }) => (
+            <option key={v} value={v}>{label}</option>
+          ))}
         </select>
-      </Field>
+      </div>
 
-      <fieldset className="space-y-2">
-        <legend className="font-medium text-zinc-900 dark:text-zinc-50">
+      {/* Amenity toggles */}
+      <fieldset className="space-y-2.5">
+        <legend className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
           {he.filters.amenities}
         </legend>
-        <CheckRow name="has_balcony" label={he.filters.has_balcony} checked={isOn(initial, "has_balcony")} />
-        <CheckRow name="parking_available" label={he.filters.parking_available} checked={isOn(initial, "parking_available")} />
-        <CheckRow name="air_conditioning" label={he.filters.air_conditioning} checked={isOn(initial, "air_conditioning")} />
-        <CheckRow name="accessible" label={he.filters.accessible} checked={isOn(initial, "accessible")} />
-        <CheckRow name="pets_allowed" label={he.filters.pets_allowed} checked={isOn(initial, "pets_allowed")} />
-        <CheckRow name="smoking_allowed" label={he.filters.smoking_allowed} checked={isOn(initial, "smoking_allowed")} />
+        <Toggle name="has_balcony" label={he.filters.has_balcony} defaultChecked={isOn(initial, "has_balcony")} />
+        <Toggle name="pets_allowed" label={he.filters.pets_allowed} defaultChecked={isOn(initial, "pets_allowed")} />
+        <Toggle name="smoking_allowed" label={he.filters.smoking_allowed} defaultChecked={isOn(initial, "smoking_allowed")} />
+        <Toggle name="parking_available" label={he.filters.parking_available} defaultChecked={isOn(initial, "parking_available")} />
+        <Toggle name="air_conditioning" label={he.filters.air_conditioning} defaultChecked={isOn(initial, "air_conditioning")} />
+        <Toggle name="accessible" label={he.filters.accessible} defaultChecked={isOn(initial, "accessible")} />
       </fieldset>
 
-      <fieldset className="space-y-3">
-        <legend className="font-medium text-zinc-900 dark:text-zinc-50">
+      {/* Roommate section */}
+      <fieldset className="space-y-4">
+        <legend className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
           {he.filters.roommates_section}
         </legend>
 
-        <Field label={he.filters.roommates_status}>
-          <select
-            name="roommates_status"
-            defaultValue={getStr(initial, "roommates_status")}
-            className={selectCls}
-          >
-            <option value="">{he.filters.any}</option>
-            <option value="student">{he.filters.status_student}</option>
-            <option value="professional">{he.filters.status_professional}</option>
-            <option value="mixed">{he.filters.status_mixed}</option>
-          </select>
-        </Field>
+        <div className="space-y-2">
+          <span className="text-xs text-on-surface-variant">{he.filters.roommates_status}</span>
+          <div className="flex gap-2 flex-wrap">
+            {STATUS_OPTS.map(({ v, label }) => (
+              <ChipRadio
+                key={v}
+                name="roommates_status"
+                value={v}
+                label={label}
+                defaultChecked={getStr(initial, "roommates_status") === v}
+              />
+            ))}
+          </div>
+        </div>
 
-        <Field label={he.filters.religious}>
-          <select
-            name="religious"
-            defaultValue={getStr(initial, "religious")}
-            className={selectCls}
-          >
-            <option value="">{he.filters.any}</option>
-            <option value="secular">{he.filters.religious_secular}</option>
-            <option value="traditional">{he.filters.religious_traditional}</option>
-            <option value="religious">{he.filters.religious_religious}</option>
-            <option value="mixed">{he.filters.religious_mixed}</option>
-          </select>
-        </Field>
+        <div className="space-y-2">
+          <span className="text-xs text-on-surface-variant">{he.filters.religious}</span>
+          <div className="flex gap-2 flex-wrap">
+            {RELIGIOUS_OPTS.map(({ v, label }) => (
+              <ChipRadio
+                key={v}
+                name="religious"
+                value={v}
+                label={label}
+                defaultChecked={getStr(initial, "religious") === v}
+              />
+            ))}
+          </div>
+        </div>
 
-        <Field label={he.filters.gender_preference}>
-          <select
-            name="gender"
-            defaultValue={getStr(initial, "gender")}
-            className={selectCls}
-          >
-            <option value="">{he.filters.gender_any}</option>
-            <option value="male">{he.filters.gender_male}</option>
-            <option value="female">{he.filters.gender_female}</option>
-          </select>
-        </Field>
+        <div className="space-y-2">
+          <span className="text-xs text-on-surface-variant">{he.filters.gender_preference}</span>
+          <div className="flex gap-2 flex-wrap">
+            {GENDER_OPTS.map(({ v, label }) => (
+              <ChipRadio
+                key={v}
+                name="gender"
+                value={v}
+                label={label}
+                defaultChecked={getStr(initial, "gender") === v}
+              />
+            ))}
+          </div>
+        </div>
       </fieldset>
 
-      <fieldset className="space-y-3">
-        <legend className="font-medium text-zinc-900 dark:text-zinc-50">
+      {/* Distance sliders */}
+      <fieldset className="space-y-5">
+        <legend className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
           {he.filters.distances_section}
         </legend>
-        <Field label={he.filters.max_bus_dist}>
+
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-xs text-on-surface-variant">{he.filters.max_bus_dist}</span>
+            <span className="text-xs font-bold text-primary">{maxBus} מ׳</span>
+          </div>
           <input
-            type="number"
+            type="range"
             name="max_bus"
-            inputMode="numeric"
-            min={0}
-            defaultValue={getStr(initial, "max_bus")}
-            className={inputCls}
+            min={100}
+            max={3000}
+            step={100}
+            value={maxBus}
+            onChange={(e) => setMaxBus(Number(e.target.value))}
+            className="w-full accent-primary"
           />
-        </Field>
-        <Field label={he.filters.max_train_dist}>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-xs text-on-surface-variant">{he.filters.max_train_dist}</span>
+            <span className="text-xs font-bold text-primary">{maxTrain} מ׳</span>
+          </div>
           <input
-            type="number"
+            type="range"
             name="max_train"
-            inputMode="numeric"
-            min={0}
-            defaultValue={getStr(initial, "max_train")}
-            className={inputCls}
+            min={100}
+            max={5000}
+            step={100}
+            value={maxTrain}
+            onChange={(e) => setMaxTrain(Number(e.target.value))}
+            className="w-full accent-primary"
           />
-        </Field>
+        </div>
       </fieldset>
 
       <div className="flex gap-2 pt-2">
         <button
           type="submit"
-          className="flex-1 rounded-md bg-zinc-900 px-4 py-2 font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="flex-1 rounded-full bg-primary px-4 py-2.5 font-bold text-on-primary text-sm transition hover:opacity-90"
         >
           {he.filters.apply}
         </button>
         <a
           href="/listings"
-          className="rounded-md border border-zinc-300 px-4 py-2 font-medium text-zinc-700 transition hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-300"
+          className="rounded-full border border-outline-variant px-4 py-2.5 font-medium text-on-surface-variant text-sm transition hover:border-outline"
         >
           {he.filters.reset}
         </a>
@@ -200,33 +295,61 @@ export function FiltersForm({ initial }: { initial: SP }) {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function ChipRadio({
+  name,
+  value,
+  label,
+  defaultChecked,
+}: {
+  name: string;
+  value: string;
+  label: string;
+  defaultChecked: boolean;
+}) {
   return (
-    <label className="block space-y-1">
-      <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+    <label className="cursor-pointer">
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        defaultChecked={defaultChecked}
+        className="sr-only peer"
+      />
+      <span className="inline-block px-3 py-1 rounded-full border border-outline-variant text-xs font-medium text-on-surface-variant transition peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary hover:border-primary hover:text-primary">
         {label}
       </span>
-      {children}
     </label>
   );
 }
 
-function CheckRow({ name, label, checked }: { name: string; label: string; checked: boolean }) {
+function Toggle({
+  name,
+  label,
+  defaultChecked,
+}: {
+  name: string;
+  label: string;
+  defaultChecked: boolean;
+}) {
   return (
-    <label className="flex items-center gap-2">
-      <input
-        type="checkbox"
-        name={name}
-        value="1"
-        defaultChecked={checked}
-        className="size-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500 dark:border-zinc-600"
-      />
-      <span className="text-zinc-700 dark:text-zinc-300">{label}</span>
+    <label className="flex items-center justify-between cursor-pointer group">
+      <span className="text-sm text-on-surface group-hover:text-primary transition-colors">{label}</span>
+      <div className="relative">
+        <input
+          type="checkbox"
+          name={name}
+          value="1"
+          defaultChecked={defaultChecked}
+          className="sr-only peer"
+        />
+        <div className="w-10 h-5 bg-outline-variant rounded-full peer-checked:bg-primary transition-colors" />
+        <div className="absolute top-0.5 right-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:-translate-x-5" />
+      </div>
     </label>
   );
 }
 
 const inputCls =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
+  "w-full rounded-xl border border-outline-variant bg-white px-3 py-2 text-on-surface placeholder-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm";
 
 const selectCls = inputCls;

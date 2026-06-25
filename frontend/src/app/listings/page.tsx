@@ -110,30 +110,52 @@ export default async function ListingsPage({
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
-      <div className="mb-8 flex items-baseline justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          {he.listings.title}
-        </h1>
-        <span className="text-sm text-zinc-500">{resultLabel}</span>
+      {/* Toolbar */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-on-surface">
+            {he.listings.title}
+          </h1>
+          <span className="text-sm text-on-surface-variant">{resultLabel}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <select
+            name="sort"
+            defaultValue={pickStr(sp.sort)}
+            form="sort-form"
+            className="text-sm rounded-full border border-outline-variant px-3 py-2 bg-white text-on-surface focus:ring-2 focus:ring-primary/20 focus:outline-none"
+          >
+            <option value="">מיון: חדש ביותר</option>
+            <option value="price_asc">מחיר: נמוך לגבוה</option>
+            <option value="price_desc">מחיר: גבוה לנמוך</option>
+          </select>
+          <Link
+            href={`/map`}
+            className="flex items-center gap-1.5 text-sm font-bold text-primary bg-primary/10 px-4 py-2 rounded-full hover:bg-primary/20 transition-colors"
+          >
+            🗺️ מפה
+          </Link>
+        </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[18rem_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[20rem_1fr]">
         <aside className="lg:sticky lg:top-6 self-start">
           <FiltersForm initial={sp} />
         </aside>
 
         <section>
           {listings.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-6 py-16 text-center dark:border-zinc-700 dark:bg-zinc-900">
-              <p className="text-lg font-medium text-zinc-700 dark:text-zinc-300">
+            <div className="rounded-2xl border border-dashed border-outline-variant bg-surface-container-low px-6 py-16 text-center">
+              <p className="text-4xl mb-3">🔍</p>
+              <p className="text-lg font-medium text-on-surface">
                 {he.listings.no_results}
               </p>
-              <p className="mt-2 text-sm text-zinc-500">
+              <p className="mt-2 text-sm text-on-surface-variant">
                 {he.listings.no_results_hint}
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {listings.map((l) => (
                 <ListingCard key={l.id} listing={l} />
               ))}
