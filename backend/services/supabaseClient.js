@@ -1,4 +1,5 @@
 const { createClient } = require("@supabase/supabase-js");
+const ws = require("ws");
 
 let cachedClient = null;
 let warned = false;
@@ -24,7 +25,10 @@ function getSupabaseClient() {
       auth: {
         persistSession: false,
         autoRefreshToken: false
-      }
+      },
+      // Node 20 lacks native WebSocket; supabase-js Realtime needs one even
+      // if we never subscribe. ws is a no-op cost for REST-only use.
+      realtime: { transport: ws }
     });
   }
 
