@@ -1,4 +1,4 @@
-name: Deploy frontend to GitHub Pages
+name: Check frontend static assets
 
 on:
   push:
@@ -8,11 +8,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: frontend-static-check
   cancel-in-progress: true
 
 jobs:
@@ -25,16 +23,4 @@ jobs:
           mkdir -p frontend/out
           cp frontend/*.html frontend/out/
           cp -R frontend/assets frontend/css frontend/js frontend/out/
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: frontend/out
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          test -f frontend/out/index.html
