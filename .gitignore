@@ -34,6 +34,7 @@ build/
 
 # debug
 npm-debug.log*
+npm-start-*.log
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
