@@ -22,7 +22,9 @@ The backend is a Node.js Express app in `backend/`.
 - `backend/routes/telegram.js` exposes `/api/telegram/webhook`.
 - `backend/services/supabaseClient.js` creates a server-side Supabase client when variables exist.
 - `backend/services/openaiClient.js` creates a server-side OpenAI client when `OPENAI_API_KEY` exists.
-- `backend/telegram/bot.js` prepares a Grammy bot for future Telegram integration.
+- `backend/telegram/bot.js` is a grammY bot that starts via long polling alongside the Express server. It handles `/start`, `/help`, `/search`, and free-text messages by calling the in-process AI search service.
+- `backend/telegram/formatListing.js` renders normalized listings into Telegram HTML messages with deep links to `listing-details.html`.
+- `backend/services/aiSearchService.js` is the single entry point for natural-language → structured filters → listings. Used by both `POST /api/ai/chat` and the Telegram bot, so they stay in sync.
 
 ## Data
 
