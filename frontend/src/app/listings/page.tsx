@@ -3,7 +3,6 @@ import Link from "next/link";
 import he from "../../../messages/he.json";
 import { PAGE_SIZE } from "@/lib/constants";
 import type { ListingWithUniversities } from "@/lib/db-types";
-import { supabase } from "@/lib/supabase";
 import { FiltersForm } from "./_components/filters-form";
 import { ListingCard } from "./_components/listing-card";
 
@@ -52,48 +51,60 @@ export default async function ListingsPage({
   const max_train = pickInt(sp.max_train);
   const page = Math.max(1, pickInt(sp.page) ?? 1);
 
-  let query = supabase
-    .from("listings")
-    .select(
-      `*, listing_universities ( distance_m, universities ( id, name_en, name_he, city ) )`,
-      { count: "exact" }
-    )
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
-
-  if (city) query = query.eq("city", city);
-  if (min_price !== undefined) query = query.gte("price_nis", min_price);
-  if (max_price !== undefined) query = query.lte("price_nis", max_price);
-  if (min_rooms !== undefined) query = query.gte("rooms", min_rooms);
-  if (min_sqm !== undefined) query = query.gte("size_sqm", min_sqm);
-  if (has_balcony) query = query.eq("has_balcony", true);
-  if (pets_allowed) query = query.eq("pets_allowed", true);
-  if (smoking_allowed) query = query.eq("smoking_allowed", true);
-  if (parking_available) query = query.eq("parking_available", true);
-  if (air_conditioning) query = query.eq("air_conditioning", true);
-  if (accessible) query = query.eq("accessible", true);
-  if (furnished && furnished !== "any") query = query.eq("furnished", furnished);
-  if (roommates_status && roommates_status !== "any")
-    query = query.eq("roommates_status", roommates_status);
-  if (religious && religious !== "any")
-    query = query.eq("roommates_religious_tag", religious);
-  if (gender && gender !== "any") query = query.eq("gender_preference", gender);
-  if (max_bus !== undefined) query = query.lte("bus_stop_distance_m", max_bus);
-  if (max_train !== undefined)
-    query = query.lte("train_station_distance_m", max_train);
-
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
-  const { data, count, error } = await query.range(from, to);
+  let data: unknown[] | null = null;
+  let count: number | null = null;
+  let errorMessage: string | null = null;
 
-  if (error) {
+  try {
+    const { supabase } = await import("@/lib/supabase");
+    let query = supabase
+      .from("listings")
+      .select(
+        `*, listing_universities ( distance_m, universities ( id, name_en, name_he, city ) )`,
+        { count: "exact" }
+      )
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (city) query = query.eq("city", city);
+    if (min_price !== undefined) query = query.gte("price_nis", min_price);
+    if (max_price !== undefined) query = query.lte("price_nis", max_price);
+    if (min_rooms !== undefined) query = query.gte("rooms", min_rooms);
+    if (min_sqm !== undefined) query = query.gte("size_sqm", min_sqm);
+    if (has_balcony) query = query.eq("has_balcony", true);
+    if (pets_allowed) query = query.eq("pets_allowed", true);
+    if (smoking_allowed) query = query.eq("smoking_allowed", true);
+    if (parking_available) query = query.eq("parking_available", true);
+    if (air_conditioning) query = query.eq("air_conditioning", true);
+    if (accessible) query = query.eq("accessible", true);
+    if (furnished && furnished !== "any") query = query.eq("furnished", furnished);
+    if (roommates_status && roommates_status !== "any")
+      query = query.eq("roommates_status", roommates_status);
+    if (religious && religious !== "any")
+      query = query.eq("roommates_religious_tag", religious);
+    if (gender && gender !== "any") query = query.eq("gender_preference", gender);
+    if (max_bus !== undefined) query = query.lte("bus_stop_distance_m", max_bus);
+    if (max_train !== undefined)
+      query = query.lte("train_station_distance_m", max_train);
+
+    const result = await query.range(from, to);
+    data = result.data;
+    count = result.count;
+    errorMessage = result.error?.message ?? null;
+  } catch (error) {
+    errorMessage = error instanceof Error ? error.message : "Unknown error";
+  }
+
+  if (errorMessage) {
     return (
       <main className="mx-auto max-w-7xl px-6 py-12">
         <h1 className="text-2xl font-bold text-red-600">
           שגיאה בטעינת דירות
         </h1>
         <pre className="mt-4 whitespace-pre-wrap rounded bg-red-50 p-4 text-sm text-red-800">
-          {error.message}
+          {errorMessage}
         </pre>
       </main>
     );

@@ -1,7 +1,5 @@
-import dynamic from "next/dynamic";
 import type { Listing } from "@/lib/db-types";
-
-const MapClient = dynamic(() => import("./_components/map-client"), { ssr: false });
+import MapClientDynamic from "./_components/map-client-dynamic";
 
 async function getListings(): Promise<Listing[]> {
   try {
@@ -19,5 +17,5 @@ async function getListings(): Promise<Listing[]> {
 
 export default async function MapPage() {
   const listings = await getListings();
-  return <MapClient listings={listings} />;
+  return <MapClientDynamic listings={listings} />;
 }
