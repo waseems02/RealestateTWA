@@ -167,6 +167,14 @@
         </section>
 
         <section class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant space-y-4">
+          <h2 class="font-heading font-bold text-lg">תמונות</h2>
+          <p class="text-xs text-on-surface-variant -mt-2">העלאת תמונות מהטלפון תתווסף בקרוב. בינתיים אפשר להדביק קישורי תמונה מ-Imgur / Google Drive (תמונה אחת לפחות מומלצת). אם תשאיר/י ריק, נציג תמונת ברירת מחדל.</p>
+          <label class="field-label"><span>קישור תמונה 1</span><input id="img1" type="url" placeholder="https://..." /></label>
+          <label class="field-label"><span>קישור תמונה 2 (אופציונלי)</span><input id="img2" type="url" placeholder="https://..." /></label>
+          <label class="field-label"><span>קישור תמונה 3 (אופציונלי)</span><input id="img3" type="url" placeholder="https://..." /></label>
+        </section>
+
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant space-y-4">
           <h2 class="font-heading font-bold text-lg">פרטי קשר</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <label class="field-label"><span>שם איש קשר</span><input id="contact_name" type="text" /></label>
@@ -265,6 +273,7 @@
           contact_phone: str("contact_phone"),
           contact_email: str("contact_email"),
           available_from: str("available_from"),
+          image_urls: ["img1", "img2", "img3"].map((id) => str(id)).filter(Boolean),
         };
       }
 
@@ -293,9 +302,13 @@
           const body = await res.json();
           if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
           okBox.innerHTML =
-            "🎉 הדירה פורסמה!<br><a href='listing-details.html?id=" +
-            body.data.id +
-            "' class='underline font-bold'>צפו בדירה</a> או <a href='my-listings.html' class='underline font-bold'>נהלו את הדירות שלכם</a>.";
+            '<div class="text-lg font-bold mb-2">🎉 הדירה פורסמה בהצלחה!</div>' +
+            '<div class="flex flex-wrap gap-2 mt-2">' +
+            "  <a href='listing-details.html?id=" + body.data.id + "' class='bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm'>צפו בדירה ←</a>" +
+            "  <a href='listings.html' class='bg-white border border-emerald-700 text-emerald-700 px-4 py-2 rounded-lg font-bold text-sm'>כל הדירות</a>" +
+            "  <a href='my-listings.html' class='bg-white border border-emerald-700 text-emerald-700 px-4 py-2 rounded-lg font-bold text-sm'>הדירות שלי</a>" +
+            "  <button type='button' onclick='window.location.reload()' class='bg-brand-coral text-white px-4 py-2 rounded-lg font-bold text-sm'>+ פרסום דירה נוספת</button>" +
+            "</div>";
           okBox.classList.remove("hidden");
           form.reset();
           window.scrollTo({ top: 0, behavior: "smooth" });

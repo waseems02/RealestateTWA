@@ -74,6 +74,23 @@ const ALLOWED_FIELDS = new Set([
   "contact_phone", "contact_email",
 ]);
 
+// Same 12-image pool seeded into listing_images by migration 0005 — keeps
+// user-created listings visually consistent with the demo data.
+const PLACEHOLDER_IMAGES = [
+  "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1522444690501-d3cdef84a8c1?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+];
+
 function sanitizeInput(body) {
   const out = {};
   for (const [k, v] of Object.entries(body || {})) {
@@ -87,6 +104,10 @@ function sanitizeInput(body) {
 async function createListingForUser(token, body) {
   const user = await getUserFromToken(token);
   const fields = sanitizeInput(body);
+  // Capture image_urls separately — listing_images is its own table.
+  const imageUrls = Array.isArray(body?.image_urls)
+    ? body.image_urls.filter((u) => typeof u === "string" && /^https?:\/\//.test(u)).slice(0, 5)
+    : [];
 
   // Required fields per migration 0004 schema check constraints
   if (!fields.title || !fields.listing_type || !fields.city || fields.price == null) {
@@ -120,6 +141,21 @@ async function createListingForUser(token, body) {
     { onConflict: "id", ignoreDuplicates: false }
   );
 
+  // If the user didn't provide lat/lng but did pick a campus, fall back to
+  // the campus location (so the listing-details map at least renders the
+  // right neighbourhood instead of an empty state).
+  if ((fields.latitude == null || fields.longitude == null) && fields.campus_id) {
+    const { data: c } = await userClient
+      .from("campuses")
+      .select("latitude, longitude")
+      .eq("id", fields.campus_id)
+      .maybeSingle();
+    if (c && c.latitude != null && c.longitude != null) {
+      fields.latitude = c.latitude;
+      fields.longitude = c.longitude;
+    }
+  }
+
   const row = {
     ...fields,
     owner_id: user.id,
@@ -127,13 +163,35 @@ async function createListingForUser(token, body) {
     status: "active",
   };
 
-  const { data, error } = await userClient.from("listings").insert(row).select().single();
+  const { data: inserted, error } = await userClient
+    .from("listings")
+    .insert(row)
+    .select()
+    .single();
   if (error) {
     const err = new Error(error.message);
     err.status = 400;
     throw err;
   }
-  return data;
+
+  // Attach images. Use whatever the user pasted; if none, give them one
+  // placeholder so the listing renders properly on the grid.
+  const finalUrls = imageUrls.length ? imageUrls : [pickPlaceholderImage(inserted.id)];
+  const imageRows = finalUrls.map((url) => ({
+    listing_id: inserted.id,
+    image_url: url,
+    alt_text: "תמונה של הדירה",
+  }));
+  const { error: imgErr } = await userClient.from("listing_images").insert(imageRows);
+  if (imgErr) console.warn(`listing_images insert failed: ${imgErr.message}`);
+
+  return inserted;
+}
+
+function pickPlaceholderImage(id) {
+  // Deterministic so the same listing always shows the same fallback image.
+  const seed = String(id || "").split("").reduce((s, c) => s + c.charCodeAt(0), 0);
+  return PLACEHOLDER_IMAGES[seed % PLACEHOLDER_IMAGES.length];
 }
 
 async function getListingsForUser(token) {
