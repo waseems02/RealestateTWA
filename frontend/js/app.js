@@ -71,7 +71,7 @@ function setupLayout() {
 async function fetchListings() {
   const response = await fetch("/api/listings");
   const payload = await response.json();
-  return payload.data || [];
+  return payload.listings || payload.data || [];
 }
 
 function formatBool(value) {

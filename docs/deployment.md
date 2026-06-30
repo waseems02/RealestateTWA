@@ -40,18 +40,39 @@ Railway provides the public URL and runtime port. Set `NODE_ENV=production` in R
 
 Add these variables in Railway instead of committing secrets:
 
+### Production
+
 ```text
 NODE_ENV=production
+RAILWAY_ENVIRONMENT=production
+PUBLIC_APP_URL=https://faithful-insight-production-6465.up.railway.app
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 OPENAI_API_KEY=
 TELEGRAM_BOT_TOKEN=
-RAILWAY_ENVIRONMENT=production
-PUBLIC_APP_URL=https://your-railway-domain
+```
+
+### Staging / Development
+
+```text
+NODE_ENV=development
+RAILWAY_ENVIRONMENT=development
+PUBLIC_APP_URL=<staging railway url>
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+TELEGRAM_BOT_TOKEN=
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and `TELEGRAM_BOT_TOKEN` must stay server-side only.
+
+After deployment, set the Telegram webhook with the production `PUBLIC_APP_URL`:
+
+```text
+https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook?url=<PUBLIC_APP_URL>/api/telegram/webhook
+```
 
 ## Railway Environments
 
@@ -86,7 +107,7 @@ If the Railway CLI cannot create or link the project automatically:
 2. Click New Project.
 3. Choose Deploy from GitHub repo.
 4. Select `waseems02/RoomieFit`.
-5. Name the project `RealestateTMA`.
+5. Name or select the existing project `faithful-insight`.
 6. Add variables from `.env.example`.
 7. Deploy.
 
@@ -111,4 +132,4 @@ railway login
 railway init
 ```
 
-Use `RealestateTMA` when prompted for the project name.
+Use `faithful-insight` when prompted for the project name. Do not create a new Railway project for this app.

@@ -1,22 +1,25 @@
 const express = require("express");
+const { getTelegramStatus, handleTelegramUpdate } = require("../telegram/bot");
 
 const router = express.Router();
 
-router.post("/webhook", (req, res) => {
-  if (!process.env.TELEGRAM_BOT_TOKEN) {
-    return res.json({
-      mode: "mock",
-      ok: true,
-      message: "Telegram webhook received in mock mode",
-      updateType: req.body?.message ? "message" : "unknown"
+router.get("/status", (_req, res) => {
+  return res.json(getTelegramStatus());
+});
+
+router.post("/webhook", async (req, res) => {
+  try {
+    const result = await handleTelegramUpdate(req.body);
+    return res.json(result);
+  } catch (error) {
+    console.error(`Telegram webhook failed: ${error.message}`);
+    return res.status(500).json({
+      enabled: Boolean(process.env.TELEGRAM_BOT_TOKEN),
+      mode: process.env.TELEGRAM_BOT_TOKEN ? "webhook" : "mock",
+      ok: false,
+      message: "Telegram webhook failed"
     });
   }
-
-  return res.json({
-    mode: "telegram",
-    ok: true,
-    message: "Telegram webhook endpoint is ready"
-  });
 });
 
 module.exports = router;

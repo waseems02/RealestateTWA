@@ -1,6 +1,6 @@
 # RoomieFit / CampusNest Israel
 
-Hebrew-first student housing and roommate matching MVP for Israel. The app helps students find apartments, rooms, and roommates near universities and colleges, with Supabase-ready data, an AI assistant endpoint, and a Telegram webhook placeholder.
+Hebrew-first student housing and roommate matching MVP for Israel. The app helps students find apartments, rooms, and roommates near universities and colleges, with Supabase-backed listings, an AI assistant endpoint, Telegram bot integration, and Leaflet/OpenStreetMap listing maps.
 
 ## Project Structure
 
@@ -31,6 +31,7 @@ Open:
 http://localhost:3000
 http://localhost:3000/api/health
 http://localhost:3000/api/listings
+http://localhost:3000/api/telegram/status
 ```
 
 The app works in mock mode if Supabase, OpenAI, or Telegram variables are missing.
@@ -66,8 +67,22 @@ In production, set secrets as Railway Variables only.
 
 - `GET /api/health`
 - `GET /api/listings`
+- `GET /api/listings/:id`
 - `POST /api/ai/chat`
+- `GET /api/telegram/status`
 - `POST /api/telegram/webhook`
+
+`GET /api/listings` supports `city`, `maxPrice`, `listingType`, `campusId`, `hasBalcony`, `furnished`, `nearTransport`, `limit`, and `page`. When Supabase variables are missing or a query fails, it returns demo listings with `source: "mock"`.
+
+## Telegram Bot
+
+The Telegram bot uses `TELEGRAM_BOT_TOKEN` and the same listings service as the web API. It supports `/start`, `/help`, and simple Hebrew search messages such as `חפש חדר בתל אביב עד 3500`.
+
+See [docs/telegram-bot.md](docs/telegram-bot.md) for BotFather setup, Railway Variables, and webhook configuration.
+
+## Maps
+
+The static listings and listing details pages use Leaflet with OpenStreetMap tiles. No Google Maps key or billing account is required. Listings without coordinates are skipped on the map and handled without crashing.
 
 ## Git Branch Strategy
 
@@ -81,7 +96,7 @@ In production, set secrets as Railway Variables only.
 
 ## Railway
 
-The Railway project name is `RealestateTMA`.
+The Railway project name is `faithful-insight`.
 
 Railway uses:
 

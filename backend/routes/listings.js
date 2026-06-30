@@ -1,29 +1,26 @@
 const express = require("express");
-const { getSupabaseClient } = require("../services/supabaseClient");
-const { demoListings } = require("../utils/demoData");
+const { getListingById, listListings } = require("../services/listingsService");
 
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
-  const supabase = getSupabaseClient();
+router.get("/", async (req, res) => {
+  const result = await listListings(req.query);
+  return res.json(result);
+});
 
-  if (!supabase) {
-    return res.json({ mode: "mock", data: demoListings });
+router.get("/:id", async (req, res) => {
+  const result = await getListingById(req.params.id);
+
+  if (!result.listing) {
+    return res.status(404).json({
+      success: false,
+      source: result.source,
+      listing: null,
+      message: "Listing not found"
+    });
   }
 
-  const { data, error } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(50);
-
-  if (error) {
-    console.warn(`Supabase listings query failed: ${error.message}`);
-    return res.json({ mode: "mock", warning: "Supabase query failed", data: demoListings });
-  }
-
-  return res.json({ mode: "supabase", data });
+  return res.json(result);
 });
 
 module.exports = router;

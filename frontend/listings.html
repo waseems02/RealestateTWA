@@ -4,7 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>חיפוש דירות | RoomieFit</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="css/styles.css" />
+    <script defer src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/listings.js"></script>
   </head>
@@ -14,22 +16,27 @@
       <p class="lead">סננו דירות וחדרים לפי הצרכים של סטודנטים ליד קמפוסים בישראל.</p>
 
       <form id="filters" class="filters">
-        <label>עיר<input id="city" type="search" placeholder="ירושלים, תל אביב, חיפה" /></label>
-        <label>מחיר מקסימלי<input id="maxPrice" type="number" min="0" step="100" placeholder="3500" /></label>
-        <label>אוניברסיטה / קמפוס<input id="campus" type="search" placeholder="הטכניון" /></label>
-        <label class="checkbox-row"><input id="balcony" type="checkbox" /> מרפסת</label>
-        <label class="checkbox-row"><input id="furnished" type="checkbox" /> מרוהטת</label>
-        <label class="checkbox-row"><input id="transit" type="checkbox" /> קרוב לתחבורה ציבורית</label>
+        <label>עיר<input id="city" name="city" type="search" placeholder="Jerusalem, Tel Aviv, Haifa" /></label>
+        <label>מחיר מקסימלי<input id="maxPrice" name="maxPrice" type="number" min="0" step="100" placeholder="3500" /></label>
         <label>
-          העדפת עישון
-          <select id="smoking">
+          סוג נכס
+          <select id="listingType" name="listingType">
             <option value="">הכל</option>
-            <option value="yes">מותר לעשן</option>
-            <option value="no">לא מותר לעשן</option>
+            <option value="apartment">דירה</option>
+            <option value="room">חדר</option>
           </select>
         </label>
+        <label class="checkbox-row"><input id="hasBalcony" name="hasBalcony" type="checkbox" /> מרפסת</label>
+        <label class="checkbox-row"><input id="furnished" name="furnished" type="checkbox" /> מרוהטת</label>
+        <label class="checkbox-row"><input id="nearTransport" name="nearTransport" type="checkbox" /> קרוב לתחבורה ציבורית</label>
       </form>
 
+      <section class="map-panel" aria-label="מפת דירות">
+        <div id="map"></div>
+        <p id="mapMessage" class="map-message" hidden></p>
+      </section>
+
+      <p id="resultsMeta" class="results-meta"></p>
       <section id="listingsGrid" class="grid" aria-live="polite"></section>
     </main>
   </body>

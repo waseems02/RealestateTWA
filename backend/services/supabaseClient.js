@@ -1,34 +1,57 @@
 const { createClient } = require("@supabase/supabase-js");
 
-let cachedClient = null;
-let warned = false;
+let cachedAnonClient = null;
+let cachedServiceClient = null;
+let warnedMissingReadVars = false;
+let warnedMissingServiceVars = false;
+
+const clientOptions = {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false
+  }
+};
 
 function getSupabaseClient() {
   const url = process.env.SUPABASE_URL;
   const anonKey = process.env.SUPABASE_ANON_KEY;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const key = serviceRoleKey || anonKey;
 
-  if (!url || !key) {
-    if (!warned) {
+  if (!url || !anonKey) {
+    if (!warnedMissingReadVars) {
       console.warn(
-        "Supabase environment variables are missing. Listings will run in mock mode."
+        "SUPABASE_URL or SUPABASE_ANON_KEY is missing. Read APIs will run in mock mode."
       );
-      warned = true;
+      warnedMissingReadVars = true;
     }
     return null;
   }
 
-  if (!cachedClient) {
-    cachedClient = createClient(url, key, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false
-      }
-    });
+  if (!cachedAnonClient) {
+    cachedAnonClient = createClient(url, anonKey, clientOptions);
   }
 
-  return cachedClient;
+  return cachedAnonClient;
 }
 
-module.exports = { getSupabaseClient };
+function getSupabaseServiceClient() {
+  const url = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !serviceRoleKey) {
+    if (!warnedMissingServiceVars) {
+      console.warn(
+        "SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing. Backend admin operations will run in mock mode."
+      );
+      warnedMissingServiceVars = true;
+    }
+    return null;
+  }
+
+  if (!cachedServiceClient) {
+    cachedServiceClient = createClient(url, serviceRoleKey, clientOptions);
+  }
+
+  return cachedServiceClient;
+}
+
+module.exports = { getSupabaseClient, getSupabaseServiceClient };

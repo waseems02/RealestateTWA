@@ -194,6 +194,70 @@ textarea {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+.listing-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.listing-card h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.listing-price {
+  color: var(--brand-dark);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.listing-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.listing-facts div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  background: #fbfcfa;
+}
+
+.listing-facts dt {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.listing-facts dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.results-meta,
+.map-message {
+  color: var(--muted);
+}
+
+.map-panel {
+  margin: 18px 0;
+}
+
+#map {
+  height: 420px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.leaflet-container {
+  font-family: Arial, "Noto Sans Hebrew", sans-serif;
+}
+
 .map-placeholder {
   min-height: 260px;
   display: grid;
