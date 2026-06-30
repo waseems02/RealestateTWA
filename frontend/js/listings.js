@@ -14,10 +14,13 @@ const HERO_IMAGES = [
 ];
 
 const SOURCE_PRESENTATION = {
-  yad2:      { label: "Yad2", cls: "bg-yellow-100 text-yellow-800" },
-  facebook:  { label: "פייסבוק", cls: "bg-blue-100 text-blue-800" },
-  manual:    { label: "ידני", cls: "bg-surface-container-highest text-on-surface-variant" },
-  other:     { label: "אחר", cls: "bg-emerald-100 text-emerald-800" },
+  yad2:             { label: "Yad2", cls: "bg-yellow-100 text-yellow-800" },
+  facebook_group:   { label: "פייסבוק", cls: "bg-blue-100 text-blue-800" },
+  facebook:         { label: "פייסבוק", cls: "bg-blue-100 text-blue-800" },
+  university_board: { label: "לוח קמפוס", cls: "bg-indigo-100 text-indigo-800" },
+  public_source:    { label: "מקור פתוח", cls: "bg-emerald-100 text-emerald-800" },
+  manual:           { label: "ידני", cls: "bg-surface-container-highest text-on-surface-variant" },
+  other:            { label: "אחר", cls: "bg-emerald-100 text-emerald-800" },
 };
 
 const STATE = {
@@ -36,6 +39,17 @@ const fmtPrice = (n) => (n == null ? "—" : "₪" + Number(n).toLocaleString("h
 const fmtDist = (m) => (m == null ? "—" : m < 1000 ? `${m} מ׳` : `${(m / 1000).toFixed(1)} ק"מ`);
 const escapeHtml = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+// Walking speed ≈ 80 m/min. Cards show minutes — more useful for students than
+// raw distance. > 1.5 km we show distance instead since they wouldn't walk it.
+function walkMin(m) {
+  return m == null ? null : Math.max(1, Math.round(m / 80));
+}
+function commuteLabel(m) {
+  if (m == null) return null;
+  if (m <= 1500) return `${walkMin(m)} דק׳ הליכה`;
+  return fmtDist(m);
+}
 
 function imageFor(listing, idx) {
   return (listing.images && listing.images[0]) || listing.image_url || HERO_IMAGES[idx % HERO_IMAGES.length];
@@ -148,7 +162,18 @@ function bindChipGroup(containerId, dataAttr, hiddenInputSelector, onChange) {
 function listingCard(listing, idx) {
   const img = imageFor(listing, idx);
   const uni = listing.nearest_university;
-  const uniLabel = uni ? `${(uni.distance_m / 1000).toFixed(1)} ק"מ מ${uni.name_he || uni.name_en || uni.name || ""}` : "";
+  const uniMins = walkMin(uni?.distance_m);
+  const uniName = uni?.name_he || uni?.name_en || uni?.name || "";
+  const uniLabel = uni
+    ? (uni.distance_m <= 1500
+        ? `${uniMins} דק׳ מ${uniName}`
+        : `${(uni.distance_m / 1000).toFixed(1)} ק"מ מ${uniName}`)
+    : "";
+  const typeBadge = listing.listing_type === "room"
+    ? '<span class="bg-primary text-on-primary px-sm py-xs rounded-full text-[10px] font-bold">חדר</span>'
+    : listing.listing_type === "apartment"
+      ? '<span class="bg-brand-coral text-white px-sm py-xs rounded-full text-[10px] font-bold">דירה</span>'
+      : "";
 
   const lifestyleChips = [];
   if (listing.roommates?.status === "student") lifestyleChips.push({ t: "סטודנטים", c: "bg-indigo-50 text-indigo-700" });
@@ -172,7 +197,7 @@ function listingCard(listing, idx) {
   return `<a href="listing-details.html?id=${encodeURIComponent(listing.id)}" class="bg-white rounded-2xl overflow-hidden custom-shadow custom-shadow-hover transition-all group cursor-pointer block">
     <div class="relative h-64">
       <img loading="lazy" src="${img}" alt="${escapeHtml(listing.title || "דירה")}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-      <div class="absolute top-md start-md">${sourceBadge(listing.source)}</div>
+      <div class="absolute top-md start-md flex gap-xs flex-wrap">${typeBadge}${sourceBadge(listing.source)}</div>
       <button class="absolute top-md end-md bg-white/90 backdrop-blur-md p-sm rounded-full custom-shadow text-on-surface-variant hover:text-brand-coral" type="button" onclick="event.preventDefault(); event.stopPropagation();">
         <span class="material-symbols-outlined">favorite</span>
       </button>
@@ -189,9 +214,9 @@ function listingCard(listing, idx) {
         ${lifestyleChips.slice(0, 4).map((c) => `<span class="${c.c} px-sm py-xs rounded-lg text-[11px] font-semibold">${c.t}</span>`).join("")}
       </div>
       <div class="border-t border-surface-container pt-sm flex justify-between items-center">
-        <div class="flex gap-md text-xs text-on-surface-variant">
-          ${uniLabel ? `<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">school</span>${uniLabel}</span>` : ""}
-          ${listing.distance_to_bus_m != null ? `<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">directions_bus</span>${fmtDist(listing.distance_to_bus_m)}</span>` : ""}
+        <div class="flex gap-md text-xs text-on-surface-variant flex-wrap">
+          ${uniLabel ? `<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">school</span>${escapeHtml(uniLabel)}</span>` : ""}
+          ${listing.distance_to_bus_m != null ? `<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">directions_bus</span>${commuteLabel(listing.distance_to_bus_m)}</span>` : ""}
         </div>
         <div class="flex gap-xs">
           ${amenityIcons.slice(0, 4).map((a) => `<span title="${a.t}" class="material-symbols-outlined text-secondary text-[18px]">${a.i}</span>`).join("")}

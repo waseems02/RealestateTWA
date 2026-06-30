@@ -207,6 +207,19 @@ function normalizeSupabaseRow(row) {
     rooms: row.rooms,
     size_sqm: row.size_sqm,
     floor: row.floor,
+    // Geo data — needed for the listing-details map and the listings map view
+    latitude: row.latitude != null ? Number(row.latitude) : null,
+    longitude: row.longitude != null ? Number(row.longitude) : null,
+    campus: campus
+      ? {
+          id: campus.id,
+          name_he: campus.name_he,
+          name_en: campus.name_en,
+          city: campus.city,
+          latitude: campus.latitude != null ? Number(campus.latitude) : null,
+          longitude: campus.longitude != null ? Number(campus.longitude) : null,
+        }
+      : null,
     balcony: row.balcony,
     parking: row.parking,
     air_conditioning: row.air_conditioning,
@@ -221,6 +234,8 @@ function normalizeSupabaseRow(row) {
     elevator: row.elevator,
     suitable_for_roommates: row.suitable_for_roommates,
     lifestyle_tradition_preference: row.lifestyle_tradition_preference,
+    nearest_bus_station: row.nearest_bus_station,
+    nearest_train_station: row.nearest_train_station,
     contact: {
       name: row.contact_name,
       phone: row.contact_phone,
