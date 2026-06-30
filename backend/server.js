@@ -47,13 +47,28 @@ const server = app.listen(PORT, () => {
 
 const telegramBot = createTelegramBot();
 if (telegramBot) {
+  const tokenPrefix = (process.env.TELEGRAM_BOT_TOKEN || "").slice(0, 12);
+  console.log(`Starting Telegram bot (token prefix ${tokenPrefix}…) — long polling`);
+
+  // Loud timeout: bot.start() awaits getMe() against api.telegram.org. If the
+  // network is blocking that host (firewall, VPN, etc.) the call hangs silently
+  // forever. This timer surfaces the issue after 20s instead.
+  const initTimer = setTimeout(() => {
+    console.warn(
+      "Telegram bot init taking >20s — most likely api.telegram.org is unreachable from this network. " +
+      "Verify with: node -e \"require('https').get('https://api.telegram.org', r => console.log(r.statusCode)).on('error', e => console.log('ERR', e.code))\""
+    );
+  }, 20000);
+
   telegramBot
     .start({
       onStart: (botInfo) => {
+        clearTimeout(initTimer);
         console.log(`Telegram bot started: @${botInfo.username} (long polling)`);
       },
     })
     .catch((err) => {
+      clearTimeout(initTimer);
       console.warn(`Telegram bot failed to start: ${err.message}`);
     });
 }
