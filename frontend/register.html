@@ -4,20 +4,141 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>הרשמה | RoomieFit</title>
-    <link rel="stylesheet" href="css/styles.css" />
-    <script defer src="js/app.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: { extend: {
+          colors: {
+            surface: "#f9f9ff", "surface-container-low": "#f0f3ff", "surface-container-high": "#dee8ff",
+            "on-surface": "#111c2d", "on-surface-variant": "#464555",
+            outline: "#777587", "outline-variant": "#c7c4d8",
+            primary: "#3525cd", "on-primary": "#ffffff", "primary-container": "#4f46e5",
+            "brand-coral": "#FB7185", "brand-coral-dark": "#F43F5E",
+          },
+          borderRadius: { "2xl": "1rem" },
+          fontFamily: { heading: ["Heebo", "system-ui", "sans-serif"], body: ["Heebo", "system-ui", "sans-serif"] },
+        } },
+      };
+    </script>
+    <style>
+      body { font-family: "Heebo", system-ui, sans-serif; background: radial-gradient(circle at top right, #e2dfff 0%, #fafaf9 60%); min-height: 100vh; color: #111c2d; }
+      .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+    </style>
+    <script src="/api/config.js"></script>
+    <script src="js/auth.js" defer></script>
   </head>
   <body>
-    <main class="container section">
-      <h1 class="page-title">הרשמה</h1>
-      <section class="panel">
-        <p class="lead">מסך placeholder להרשמה עתידית דרך Supabase Auth.</p>
-        <label>שם מלא<input type="text" /></label>
-        <label>אימייל<input type="email" /></label>
-        <label>קמפוס<input type="text" /></label>
-        <label>סיסמה<input type="password" /></label>
-        <button class="button primary" type="button">יצירת חשבון</button>
-      </section>
+    <nav class="w-full px-lg md:px-12 py-4">
+      <a href="index.html" class="text-2xl font-heading font-bold">RoomieFit</a>
+    </nav>
+
+    <main class="max-w-md mx-auto px-6 py-8">
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-surface-container-high">
+        <div class="text-center mb-6">
+          <div class="inline-flex w-14 h-14 bg-brand-coral text-white rounded-2xl items-center justify-center mb-3">
+            <span class="material-symbols-outlined" style="font-size: 28px;">person_add</span>
+          </div>
+          <h1 class="font-heading font-bold text-2xl">צור/י חשבון</h1>
+          <p class="text-sm text-on-surface-variant mt-1">חינמי, לוקח 30 שניות</p>
+        </div>
+
+        <form id="regForm" class="space-y-4" novalidate>
+          <label class="block">
+            <span class="text-sm font-semibold">שם מלא</span>
+            <input id="fullName" type="text" required autocomplete="name"
+              class="mt-1 w-full bg-surface-container-low border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary focus:bg-white"
+              placeholder="שם פרטי ושם משפחה" />
+          </label>
+
+          <label class="block">
+            <span class="text-sm font-semibold">אימייל</span>
+            <input id="email" type="email" required autocomplete="email"
+              class="mt-1 w-full bg-surface-container-low border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary focus:bg-white"
+              placeholder="student@example.com" />
+          </label>
+
+          <label class="block">
+            <span class="text-sm font-semibold">סיסמה</span>
+            <input id="password" type="password" required autocomplete="new-password" minlength="6"
+              class="mt-1 w-full bg-surface-container-low border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary focus:bg-white"
+              placeholder="לפחות 6 תווים" />
+            <span class="text-xs text-on-surface-variant mt-1 block">לפחות 6 תווים. אל תשתמש/י באותה סיסמה ממקומות אחרים.</span>
+          </label>
+
+          <div id="errBox" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded-xl px-4 py-3"></div>
+          <div id="okBox" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl px-4 py-3"></div>
+
+          <button id="submitBtn" type="submit"
+            class="w-full bg-brand-coral hover:bg-brand-coral-dark text-white font-bold py-3 rounded-xl transition-all disabled:opacity-60">
+            <span id="btnLabel">יצירת חשבון</span>
+          </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm text-on-surface-variant">
+          כבר יש לך חשבון?
+          <a href="login.html" class="text-primary font-bold hover:underline">היכנס/י כאן</a>
+        </div>
+      </div>
+
+      <a href="index.html" class="block text-center mt-6 text-sm text-on-surface-variant hover:text-primary">
+        ← חזרה לדף הבית
+      </a>
     </main>
+
+    <script>
+      const form = document.getElementById("regForm");
+      const errBox = document.getElementById("errBox");
+      const okBox = document.getElementById("okBox");
+      const btn = document.getElementById("submitBtn");
+      const btnLabel = document.getElementById("btnLabel");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errBox.classList.add("hidden");
+        okBox.classList.add("hidden");
+        const fullName = document.getElementById("fullName").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        if (!fullName || !email || !password) {
+          errBox.textContent = "נא למלא את כל השדות.";
+          errBox.classList.remove("hidden");
+          return;
+        }
+        if (password.length < 6) {
+          errBox.textContent = "סיסמה חייבת להיות לפחות 6 תווים.";
+          errBox.classList.remove("hidden");
+          return;
+        }
+        btn.disabled = true;
+        btnLabel.textContent = "יוצר חשבון...";
+        try {
+          const result = await window.RfAuth.signUp(email, password, fullName);
+          // Two cases:
+          // 1. Project requires email confirmation → session is null, user gets a confirmation link.
+          // 2. Email confirmation disabled → session is present and we're logged in immediately.
+          if (result?.session) {
+            location.href = "index.html";
+          } else {
+            okBox.innerHTML =
+              "🎉 חשבון נוצר! שלחנו לך מייל לאימות הכתובת.<br>" +
+              "פתח/י את המייל ולחץ/י על הקישור, ואז בא/י <a href='login.html' class='underline font-bold'>להיכנס</a>.";
+            okBox.classList.remove("hidden");
+            form.reset();
+          }
+        } catch (err) {
+          const msg = err?.message || "שגיאה לא ידועה";
+          errBox.textContent =
+            msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("already exists")
+              ? "האימייל הזה כבר רשום. נסה/י להיכנס."
+              : "הרשמה נכשלה: " + msg;
+          errBox.classList.remove("hidden");
+        } finally {
+          btn.disabled = false;
+          btnLabel.textContent = "יצירת חשבון";
+        }
+      });
+    </script>
   </body>
 </html>

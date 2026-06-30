@@ -8,6 +8,7 @@ const healthRoutes = require("./routes/health");
 const listingsRoutes = require("./routes/listings");
 const aiRoutes = require("./routes/ai");
 const telegramRoutes = require("./routes/telegram");
+const configRoutes = require("./routes/config");
 const { createTelegramBot } = require("./telegram/bot");
 
 const app = express();
@@ -26,6 +27,7 @@ app.use("/api/health", healthRoutes);
 app.use("/api/listings", listingsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/telegram", telegramRoutes);
+app.use("/api", configRoutes);
 
 app.use(express.static(frontendDir, { extensions: ["html"] }));
 

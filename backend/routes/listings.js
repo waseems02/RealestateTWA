@@ -1,5 +1,6 @@
 const express = require("express");
 const { searchListings } = require("../services/listingsService");
+const { createListingForUser, getListingsForUser } = require("../services/userListingsService");
 
 const router = express.Router();
 
@@ -28,6 +29,51 @@ router.get("/", async (req, res) => {
     return res.status(500).json({ error: "listings query failed" });
   }
 });
+
+/**
+ * GET /api/listings/mine
+ * Authenticated. Returns listings owned by the current user (any status).
+ * Header: Authorization: Bearer <supabase access token>
+ */
+router.get("/mine", async (req, res) => {
+  const token = bearerToken(req);
+  if (!token) return res.status(401).json({ error: "missing Authorization bearer token" });
+  try {
+    const { data } = await getListingsForUser(token);
+    return res.json({ data });
+  } catch (err) {
+    const status = err.status || 500;
+    console.warn(`/api/listings/mine failed: ${err.message}`);
+    return res.status(status).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/listings
+ * Authenticated. Creates a listing owned by the current user (owner_id set
+ * server-side from the JWT, so the client can't spoof it).
+ * Header: Authorization: Bearer <supabase access token>
+ * Body: see backend/services/userListingsService.createListingForUser for the
+ *       allowed fields.
+ */
+router.post("/", async (req, res) => {
+  const token = bearerToken(req);
+  if (!token) return res.status(401).json({ error: "missing Authorization bearer token" });
+  try {
+    const inserted = await createListingForUser(token, req.body || {});
+    return res.status(201).json({ data: inserted });
+  } catch (err) {
+    const status = err.status || 500;
+    console.warn(`POST /api/listings failed: ${err.message}`);
+    return res.status(status).json({ error: err.message });
+  }
+});
+
+function bearerToken(req) {
+  const h = req.headers["authorization"] || "";
+  const m = h.match(/^Bearer\s+(.+)$/i);
+  return m ? m[1] : null;
+}
 
 function parseFilters(q) {
   const f = {};

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>הדירות שלי | RoomieFit</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: { extend: {
+          colors: {
+            surface: "#f9f9ff", "surface-container-low": "#f0f3ff", "surface-container-high": "#dee8ff",
+            "on-surface": "#111c2d", "on-surface-variant": "#464555",
+            outline: "#777587", "outline-variant": "#c7c4d8",
+            primary: "#3525cd", "on-primary": "#ffffff", "primary-container": "#4f46e5",
+            "brand-coral": "#FB7185", "brand-coral-dark": "#F43F5E",
+          },
+          borderRadius: { "2xl": "1rem" },
+          fontFamily: { heading: ["Heebo", "system-ui", "sans-serif"] },
+        } },
+      };
+    </script>
+    <style>
+      body { font-family: "Heebo", system-ui, sans-serif; background: #fafaf9; color: #111c2d; min-height: 100vh; }
+      .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+    </style>
+    <script src="/api/config.js"></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/chat-widget.js" defer></script>
+  </head>
+  <body>
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur shadow-sm">
+      <div class="max-w-5xl mx-auto px-lg py-4 flex justify-between items-center">
+        <a href="index.html" class="text-2xl font-heading font-bold">RoomieFit</a>
+        <a href="add-listing.html" class="bg-brand-coral text-white px-md py-sm rounded-xl text-sm font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined" style="font-size:18px;">add</span> פרסם דירה
+        </a>
+      </div>
+    </nav>
+
+    <div id="authGate" class="max-w-md mx-auto px-6 py-12 text-center" style="display:none;">
+      <div class="bg-white rounded-2xl p-8 shadow border border-outline-variant">
+        <span class="material-symbols-outlined text-5xl text-primary">lock</span>
+        <h2 class="font-heading font-bold text-xl mt-3">צריך להיכנס כדי לראות את הדירות שלך</h2>
+        <div class="flex gap-3 mt-6 justify-center">
+          <a href="login.html?next=my-listings.html" class="bg-primary text-white px-5 py-2 rounded-xl font-bold">כניסה</a>
+          <a href="register.html" class="bg-brand-coral text-white px-5 py-2 rounded-xl font-bold">הרשמה</a>
+        </div>
+      </div>
+    </div>
+
+    <main id="root" class="max-w-5xl mx-auto px-lg py-8" style="display:none;">
+      <h1 class="font-heading font-bold text-3xl mb-1">הדירות שלי</h1>
+      <p class="text-on-surface-variant mb-6">דירות שפרסמת על RoomieFit.</p>
+
+      <div id="status" class="text-on-surface-variant text-sm mb-4">טוען...</div>
+      <div id="grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+      <div id="empty" class="hidden bg-white border-2 border-dashed border-outline-variant rounded-2xl p-12 text-center">
+        <span class="material-symbols-outlined text-5xl text-on-surface-variant">home</span>
+        <h2 class="font-heading font-bold text-xl mt-3">עוד לא פרסמת דירה</h2>
+        <p class="text-on-surface-variant mt-1">תפרסם/י את הראשונה ב-30 שניות.</p>
+        <a href="add-listing.html" class="inline-block mt-4 bg-brand-coral text-white px-6 py-3 rounded-xl font-bold">+ פרסום דירה</a>
+      </div>
+    </main>
+
+    <script>
+      const authGate = document.getElementById("authGate");
+      const root = document.getElementById("root");
+      const status = document.getElementById("status");
+      const grid = document.getElementById("grid");
+      const empty = document.getElementById("empty");
+
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const fmtPrice = (n) => (n == null ? "—" : "₪" + Number(n).toLocaleString("he-IL"));
+
+      async function init() {
+        await window.RfAuth.ready;
+        const user = window.RfAuth.getUser();
+        if (!user) { authGate.style.display = ""; return; }
+        root.style.display = "";
+        await load();
+      }
+
+      async function load() {
+        status.textContent = "טוען...";
+        try {
+          const token = window.RfAuth.getAccessToken();
+          const res = await fetch("/api/listings/mine", { headers: { Authorization: `Bearer ${token}` } });
+          const body = await res.json();
+          if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
+          status.textContent = "";
+          renderGrid(body.data || []);
+        } catch (e) {
+          status.textContent = "טעינה נכשלה: " + e.message;
+        }
+      }
+
+      function renderGrid(items) {
+        grid.innerHTML = "";
+        if (!items.length) { empty.classList.remove("hidden"); return; }
+        empty.classList.add("hidden");
+        items.forEach((l) => grid.appendChild(card(l)));
+      }
+
+      function card(l) {
+        const img = (l.listing_images && l.listing_images[0]?.image_url) || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80";
+        const wrap = document.createElement("div");
+        wrap.className = "bg-white rounded-2xl shadow-sm border border-outline-variant overflow-hidden";
+        const statusColor = ({
+          active: "bg-emerald-100 text-emerald-700",
+          pending: "bg-amber-100 text-amber-700",
+          rented: "bg-blue-100 text-blue-700",
+          hidden: "bg-stone-100 text-stone-700",
+        })[l.status] || "bg-stone-100 text-stone-700";
+        wrap.innerHTML = `
+          <div class="flex gap-3">
+            <img src="${esc(img)}" class="w-32 h-32 object-cover" alt="" />
+            <div class="flex-1 p-3 flex flex-col">
+              <div class="flex justify-between items-start gap-2">
+                <h3 class="font-bold text-base truncate">${esc(l.title || "")}</h3>
+                <span class="${statusColor} px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap">${esc(l.status)}</span>
+              </div>
+              <p class="text-xs text-on-surface-variant truncate">${esc(l.city || "")} · ${esc(l.neighborhood || "")}</p>
+              <p class="text-primary font-bold text-lg">${fmtPrice(l.price)}<span class="text-xs text-on-surface-variant font-normal"> / חודש</span></p>
+              <div class="flex gap-1 mt-auto flex-wrap">
+                <a href="listing-details.html?id=${encodeURIComponent(l.id)}" class="bg-primary text-white px-2 py-1 rounded-md text-xs font-bold">צפייה</a>
+                <button data-id="${l.id}" data-status="${l.status === 'active' ? 'hidden' : 'active'}" class="js-toggle bg-surface-container-low px-2 py-1 rounded-md text-xs font-bold">
+                  ${l.status === 'active' ? 'הסתר' : 'פרסם מחדש'}
+                </button>
+                <button data-id="${l.id}" data-status="rented" class="js-toggle bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-xs font-bold">סמן כהושכר</button>
+              </div>
+            </div>
+          </div>`;
+        wrap.querySelectorAll(".js-toggle").forEach((b) =>
+          b.addEventListener("click", () => updateStatus(b.dataset.id, b.dataset.status))
+        );
+        return wrap;
+      }
+
+      async function updateStatus(id, newStatus) {
+        const sb = await window.RfAuth.getClient();
+        const { error } = await sb.from("listings").update({ status: newStatus }).eq("id", id);
+        if (error) { alert("עדכון נכשל: " + error.message); return; }
+        await load();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

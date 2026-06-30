@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>פרסום דירה | RoomieFit</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: { extend: {
+          colors: {
+            surface: "#f9f9ff", "surface-container-low": "#f0f3ff", "surface-container-high": "#dee8ff",
+            "on-surface": "#111c2d", "on-surface-variant": "#464555",
+            outline: "#777587", "outline-variant": "#c7c4d8",
+            primary: "#3525cd", "on-primary": "#ffffff", "primary-container": "#4f46e5",
+            "brand-coral": "#FB7185", "brand-coral-dark": "#F43F5E",
+          },
+          borderRadius: { "2xl": "1rem" },
+          fontFamily: { heading: ["Heebo", "system-ui", "sans-serif"], body: ["Heebo", "system-ui", "sans-serif"] },
+        } },
+      };
+    </script>
+    <style>
+      body { font-family: "Heebo", system-ui, sans-serif; background: #fafaf9; color: #111c2d; min-height: 100vh; }
+      .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+      .field-label { display:block; }
+      .field-label > span:first-child { font-size: 0.875rem; font-weight: 600; display: block; margin-bottom: 4px; }
+      .field-label input, .field-label select, .field-label textarea {
+        width: 100%;
+        background: #f0f3ff;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.6rem 0.9rem;
+        font-family: inherit;
+      }
+      .field-label input:focus, .field-label select:focus, .field-label textarea:focus {
+        outline: none;
+        background: #fff;
+        box-shadow: 0 0 0 2px #3525cd;
+      }
+    </style>
+    <script src="/api/config.js"></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/chat-widget.js" defer></script>
+  </head>
+  <body>
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur shadow-sm">
+      <div class="max-w-3xl mx-auto px-lg py-4 flex justify-between items-center">
+        <a href="index.html" class="text-2xl font-heading font-bold">RoomieFit</a>
+        <a href="my-listings.html" class="text-sm text-on-surface-variant hover:text-primary">הדירות שלי ←</a>
+      </div>
+    </nav>
+
+    <div id="authGate" class="max-w-md mx-auto px-6 py-12 text-center" style="display:none;">
+      <div class="bg-white rounded-2xl p-8 shadow border border-outline-variant">
+        <span class="material-symbols-outlined text-5xl text-primary">lock</span>
+        <h2 class="font-heading font-bold text-xl mt-3">צריך להיכנס כדי לפרסם דירה</h2>
+        <p class="text-sm text-on-surface-variant mt-1">חינמי. לוקח 30 שניות.</p>
+        <div class="flex gap-3 mt-6 justify-center">
+          <a href="login.html?next=add-listing.html" class="bg-primary text-white px-5 py-2 rounded-xl font-bold">כניסה</a>
+          <a href="register.html" class="bg-brand-coral text-white px-5 py-2 rounded-xl font-bold">הרשמה</a>
+        </div>
+      </div>
+    </div>
+
+    <main id="formRoot" class="max-w-3xl mx-auto px-lg py-8" style="display:none;">
+      <h1 class="font-heading font-bold text-3xl mb-1">פרסום דירה חדשה</h1>
+      <p class="text-on-surface-variant mb-6">מלא/י את הפרטים. הדירה תופיע מיידית בעמוד הדירות.</p>
+
+      <form id="addForm" class="space-y-6">
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant space-y-4">
+          <h2 class="font-heading font-bold text-lg">פרטי הדירה</h2>
+
+          <label class="field-label">
+            <span>כותרת *</span>
+            <input id="title" type="text" required placeholder='לדוגמה: חדר מרוהט בדירת שותפים ליד אונ׳ ת"א' />
+          </label>
+
+          <label class="field-label">
+            <span>תיאור</span>
+            <textarea id="description" rows="3" placeholder="ספר/י על הדירה: שותפים, סביבה, גישה לקמפוס..."></textarea>
+          </label>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label class="field-label">
+              <span>סוג הנכס *</span>
+              <select id="listing_type" required>
+                <option value="room">חדר בדירת שותפים</option>
+                <option value="apartment">דירה שלמה</option>
+              </select>
+            </label>
+            <label class="field-label">
+              <span>שכר דירה חודשי (₪) *</span>
+              <input id="price" type="number" min="0" step="50" required placeholder="2500" />
+            </label>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant space-y-4">
+          <h2 class="font-heading font-bold text-lg">מיקום</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label class="field-label">
+              <span>עיר *</span>
+              <select id="city" required>
+                <option value="">בחר/י עיר</option>
+                <option>Jerusalem</option>
+                <option>Tel Aviv</option>
+                <option>Haifa</option>
+                <option>Be'er Sheva</option>
+                <option>Ramat Gan</option>
+                <option>Herzliya</option>
+                <option>Ariel</option>
+                <option>Holon</option>
+                <option>Netanya</option>
+                <option>Rehovot</option>
+                <option>Raanana</option>
+                <option>Sderot</option>
+              </select>
+            </label>
+            <label class="field-label">
+              <span>שכונה</span>
+              <input id="neighborhood" type="text" placeholder="לדוגמה: רמת אביב" />
+            </label>
+          </div>
+
+          <label class="field-label">
+            <span>רחוב + מספר</span>
+            <input id="street" type="text" placeholder="רחוב + מס׳ בית" />
+          </label>
+
+          <label class="field-label">
+            <span>קמפוס קרוב (אופציונלי)</span>
+            <select id="campus_id">
+              <option value="">— בחר/י קמפוס —</option>
+            </select>
+          </label>
+
+          <label class="field-label">
+            <span>מרחק לקמפוס (ק"מ)</span>
+            <input id="distance_to_campus_km" type="number" min="0" step="0.1" placeholder="1.0" />
+          </label>
+        </section>
+
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant space-y-4">
+          <h2 class="font-heading font-bold text-lg">מאפייני הדירה</h2>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <label class="field-label"><span>חדרים</span><input id="rooms" type="number" min="0" step="0.5" placeholder="2.5" /></label>
+            <label class="field-label"><span>קומה</span><input id="floor" type="number" min="0" placeholder="2" /></label>
+            <label class="field-label"><span>גודל (מ"ר)</span><input id="size_sqm" type="number" min="0" placeholder="50" /></label>
+            <label class="field-label"><span>שותפים כעת</span><input id="current_roommates_count" type="number" min="0" placeholder="0" /></label>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="balcony" /> מרפסת</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="elevator" /> מעלית</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="parking" /> חניה</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="air_conditioning" checked /> מזגן</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="furnished" /> מרוהטת</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="pets_allowed" /> חיות מחמד</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="smoking_allowed" /> מותר עישון</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="suitable_for_roommates" /> מתאים לשותפים</label>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant space-y-4">
+          <h2 class="font-heading font-bold text-lg">פרטי קשר</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label class="field-label"><span>שם איש קשר</span><input id="contact_name" type="text" /></label>
+            <label class="field-label"><span>טלפון</span><input id="contact_phone" type="tel" placeholder="050-1234567" /></label>
+            <label class="field-label"><span>אימייל</span><input id="contact_email" type="email" /></label>
+          </div>
+          <label class="field-label">
+            <span>פנוי מתאריך</span>
+            <input id="available_from" type="date" />
+          </label>
+        </section>
+
+        <div id="errBox" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded-xl px-4 py-3"></div>
+        <div id="okBox" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl px-4 py-3"></div>
+
+        <div class="flex gap-3 sticky bottom-0 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-lg border border-outline-variant">
+          <a href="my-listings.html" class="px-6 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low font-bold">ביטול</a>
+          <button id="submitBtn" type="submit" class="flex-1 bg-brand-coral hover:bg-brand-coral-dark text-white font-bold py-3 rounded-xl transition-all disabled:opacity-60">
+            <span id="btnLabel">פרסם דירה</span>
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <script>
+      const authGate = document.getElementById("authGate");
+      const formRoot = document.getElementById("formRoot");
+      const form = document.getElementById("addForm");
+      const errBox = document.getElementById("errBox");
+      const okBox = document.getElementById("okBox");
+      const btn = document.getElementById("submitBtn");
+      const btnLabel = document.getElementById("btnLabel");
+
+      async function init() {
+        await window.RfAuth.ready;
+        const user = window.RfAuth.getUser();
+        if (!user) { authGate.style.display = ""; return; }
+        formRoot.style.display = "";
+        await loadCampuses();
+
+        // Pre-fill contact email
+        document.getElementById("contact_email").value = user.email || "";
+        document.getElementById("contact_name").value =
+          user.user_metadata?.full_name || "";
+      }
+
+      async function loadCampuses() {
+        try {
+          const sb = await window.RfAuth.getClient();
+          const { data } = await sb.from("campuses")
+            .select("id, name_he, name_en, city")
+            .order("city");
+          const sel = document.getElementById("campus_id");
+          (data || []).forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = `${c.city} · ${c.name_he || c.name_en}`;
+            sel.appendChild(opt);
+          });
+        } catch (e) {
+          console.warn("loadCampuses:", e);
+        }
+      }
+
+      function readForm() {
+        const $ = (id) => document.getElementById(id);
+        const num = (id) => {
+          const v = $(id).value;
+          return v === "" ? null : Number(v);
+        };
+        const str = (id) => $(id).value.trim() || null;
+        const bool = (id) => !!$(id).checked;
+        return {
+          title: str("title"),
+          description: str("description"),
+          listing_type: $("listing_type").value,
+          price: num("price"),
+          city: $("city").value || null,
+          neighborhood: str("neighborhood"),
+          street: str("street"),
+          campus_id: $("campus_id").value || null,
+          distance_to_campus_km: num("distance_to_campus_km"),
+          rooms: num("rooms"),
+          floor: num("floor"),
+          size_sqm: num("size_sqm"),
+          current_roommates_count: num("current_roommates_count"),
+          balcony: bool("balcony"),
+          elevator: bool("elevator"),
+          parking: bool("parking"),
+          air_conditioning: bool("air_conditioning"),
+          furnished: bool("furnished"),
+          pets_allowed: bool("pets_allowed"),
+          smoking_allowed: bool("smoking_allowed"),
+          suitable_for_roommates: bool("suitable_for_roommates"),
+          contact_name: str("contact_name"),
+          contact_phone: str("contact_phone"),
+          contact_email: str("contact_email"),
+          available_from: str("available_from"),
+        };
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errBox.classList.add("hidden");
+        okBox.classList.add("hidden");
+        const payload = readForm();
+        if (!payload.title || !payload.city || payload.price == null) {
+          errBox.textContent = "כותרת, עיר ומחיר הם שדות חובה.";
+          errBox.classList.remove("hidden");
+          return;
+        }
+        btn.disabled = true;
+        btnLabel.textContent = "שולח...";
+        try {
+          const token = window.RfAuth.getAccessToken();
+          const res = await fetch("/api/listings", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+          });
+          const body = await res.json();
+          if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
+          okBox.innerHTML =
+            "🎉 הדירה פורסמה!<br><a href='listing-details.html?id=" +
+            body.data.id +
+            "' class='underline font-bold'>צפו בדירה</a> או <a href='my-listings.html' class='underline font-bold'>נהלו את הדירות שלכם</a>.";
+          okBox.classList.remove("hidden");
+          form.reset();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (err) {
+          errBox.textContent = "פרסום נכשל: " + (err.message || err);
+          errBox.classList.remove("hidden");
+        } finally {
+          btn.disabled = false;
+          btnLabel.textContent = "פרסם דירה";
+        }
+      });
+
+      init();
+    </script>
+  </body>
+</html>
