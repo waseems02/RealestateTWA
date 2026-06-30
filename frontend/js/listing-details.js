@@ -33,6 +33,15 @@ function listingTypeLabel(t) {
 function furnishedLabel(f) {
   return ({ none: "ללא ריהוט", partial: "ריהוט חלקי", full: "מרוהטת לגמרי" })[f] || "—";
 }
+function statusLabel(s) {
+  return ({ student: "סטודנטים", professional: "עובדים", mixed: "מעורב" })[s] || null;
+}
+function religiousLabel(t) {
+  return ({ secular: "חילוני", traditional: "מסורתי", religious: "דתי", mixed: "מעורב" })[t] || null;
+}
+function genderLabel(g) {
+  return ({ female: "בנות בלבד", male: "בנים בלבד", any: "לא משנה" })[g] || null;
+}
 function sourceTone(src) {
   return ({
     yad2: "bg-yellow-100 text-yellow-800",
@@ -100,8 +109,29 @@ function render(listing) {
   const rm = listing.roommates || {};
 
   root.innerHTML = `
-    <!-- Gallery (click to zoom) -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[500px]">
+    <!-- Compact title strip — sits ABOVE the gallery so the apartment name
+         is the first thing visible and the title row isn't pushed below
+         the fold by tall images. -->
+    <section class="bg-white rounded-2xl p-md md:p-lg custom-shadow border border-surface-container flex flex-col md:flex-row md:items-center justify-between gap-md">
+      <div class="min-w-0">
+        <div class="flex items-center gap-xs flex-wrap mb-xs">
+          ${listingTypeLabel(listing.listing_type) ? `<span class="bg-primary text-on-primary px-sm py-xs rounded-full text-[11px] font-bold">${listingTypeLabel(listing.listing_type)}</span>` : ""}
+          <span class="${sourceTone(listing.source)} px-sm py-xs rounded-full text-[11px] font-bold">${sourceLabel(listing.source)} · דמו</span>
+        </div>
+        <h1 class="font-heading font-bold text-2xl md:text-3xl truncate">${escapeHtml(listing.title)}</h1>
+        <p class="text-sm text-on-surface-variant flex items-center gap-xs flex-wrap mt-xs">
+          <span class="material-symbols-outlined text-primary" style="font-size:18px;">location_on</span>
+          <span>${escapeHtml(listing.city || "")}${listing.neighborhood ? ` · ${escapeHtml(listing.neighborhood)}` : ""}${listing.street ? ` · ${escapeHtml(listing.street)}` : ""}</span>
+        </p>
+      </div>
+      <div class="text-end shrink-0">
+        <div class="text-primary font-heading font-bold text-2xl md:text-3xl leading-none">${fmtPrice(listing.price)}</div>
+        <div class="text-[11px] text-on-surface-variant mt-xs">לחודש</div>
+      </div>
+    </section>
+
+    <!-- Gallery (click to zoom) — shorter so it doesn't push the rest down -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[380px]">
       <button type="button" class="js-lightbox group md:col-span-3 h-96 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
         <img src="${galleryImgs[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${escapeHtml(listing.title)}" />
         <span class="absolute bottom-md end-md bg-black/55 text-white text-xs font-bold px-md py-xs rounded-full flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
@@ -125,25 +155,6 @@ function render(listing) {
     <div class="grid lg:grid-cols-3 gap-xl items-start">
       <!-- Left column -->
       <div class="lg:col-span-2 space-y-xl">
-        <!-- Title -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
-          <div>
-            <div class="flex items-center gap-sm mb-sm flex-wrap">
-              ${listingTypeLabel(listing.listing_type) ? `<span class="bg-primary text-on-primary px-sm py-xs rounded-full text-xs font-bold">${listingTypeLabel(listing.listing_type)}</span>` : ""}
-              <span class="${sourceTone(listing.source)} px-sm py-xs rounded-full text-xs font-bold">מקור: ${sourceLabel(listing.source)} (דמו)</span>
-              ${listing.source_url ? `<a href="${listing.source_url}" target="_blank" rel="noopener" class="text-xs text-on-surface-variant underline">קישור מקור</a>` : ""}
-            </div>
-            <h1 class="font-heading font-bold text-3xl md:text-4xl">${escapeHtml(listing.title)}</h1>
-            <p class="text-on-surface-variant text-base flex items-center gap-xs mt-xs flex-wrap">
-              <span class="material-symbols-outlined text-primary">location_on</span>
-              <span>${escapeHtml(listing.city || "")}${listing.neighborhood ? ` · ${escapeHtml(listing.neighborhood)}` : ""}${listing.street ? ` · ${escapeHtml(listing.street)}` : ""}</span>
-            </p>
-          </div>
-          <div class="text-end">
-            <div class="text-primary font-heading font-bold text-3xl md:text-4xl leading-none">${fmtPrice(listing.price)}<span class="text-xs font-normal text-on-surface-variant"> / חודש</span></div>
-          </div>
-        </div>
-
         <!-- Description -->
         ${listing.description ? `<p class="text-base leading-relaxed text-on-surface-variant">${escapeHtml(listing.description)}</p>` : ""}
 
@@ -170,17 +181,23 @@ function render(listing) {
             ${amenityChip("chair", "מרוהטת", listing.furnished)}
             ${amenityChip("pets", "מותר חיות מחמד", listing.pets_allowed)}
             ${amenityChip("smoke_free", "עישון אסור", !listing.smoking_allowed)}
+            ${amenityChip("accessible", "נגישות", listing.accessible)}
           </div>
         </div>
 
-        <!-- House rules -->
+        <!-- Lifestyle / roommates rules -->
         <div class="bg-white p-xl rounded-2xl custom-shadow border border-surface-container">
-          <h2 class="font-heading font-semibold text-xl mb-md">כללי הבית</h2>
+          <h2 class="font-heading font-semibold text-xl mb-md">סגנון חיים בדירה</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-md text-sm">
-            ${ruleRow("smoking_rooms", "עישון", listing.smoking_allowed ? "מותר" : "אסור", !listing.smoking_allowed)}
-            ${ruleRow("pets", "חיות מחמד", listing.pets_allowed ? "מותרות" : "לא מותרות", listing.pets_allowed)}
-            ${ruleRow("group", "מתאים לשותפים", listing.suitable_for_roommates ? "כן" : "לא צוין", listing.suitable_for_roommates)}
-            ${listing.lifestyle_tradition_preference ? ruleRow("local_florist", "סגנון חיים", String(listing.lifestyle_tradition_preference), true) : ""}
+            ${ruleRow("smoking_rooms", "עישון", listing.smoking_allowed ? "מותר" : "לא מותר", !listing.smoking_allowed)}
+            ${ruleRow("pets", "חיות מחמד", listing.pets_allowed ? "מותר" : "לא מותר", !!listing.pets_allowed)}
+            ${ruleRow("group", "סוג השותפים", statusLabel(rm.status) || "לא צוין", !!statusLabel(rm.status))}
+            ${ruleRow("local_florist", "אורח חיים", religiousLabel(rm.religious_tag) || listing.lifestyle_tradition_preference || "לא צוין", !!(religiousLabel(rm.religious_tag) || listing.lifestyle_tradition_preference))}
+            ${ruleRow("face", "העדפת מגדר", genderLabel(rm.gender_preference) || "לא משנה", true)}
+            ${ruleRow("groups", "שותפים בדירה", rm.count != null ? `${rm.count} שותפים` : "—", rm.count != null)}
+            ${ruleRow("accessible", "נגישות לכיסא גלגלים / מעלית", listing.accessible == null ? "לא צוין" : listing.accessible ? "כן" : "לא", !!listing.accessible)}
+            ${listing.noise_level != null ? ruleRow("volume_up", "רעש (1=שקט, 5=תוסס)", `${listing.noise_level} / 5`, listing.noise_level <= 2) : ""}
+            ${listing.safety_rating != null ? ruleRow("shield", "ביטחון (1-5)", `${listing.safety_rating} / 5`, listing.safety_rating >= 4) : ""}
           </div>
         </div>
       </div>
@@ -191,11 +208,16 @@ function render(listing) {
         ${rm.count > 0 ? `
         <div class="bg-white p-xl rounded-2xl custom-shadow border border-surface-container">
           <h3 class="font-heading font-semibold text-xl mb-md">השותפים בדירה</h3>
-          <div class="flex items-center gap-md">
+          <div class="flex items-center gap-md mb-md">
             <div class="flex -space-x-3 rtl:space-x-reverse">
               ${[...Array(Math.min(rm.count, 4))].map((_, i) => `<div class="w-12 h-12 rounded-full border-4 border-white bg-primary-fixed flex items-center justify-center text-primary font-bold">${["א","ב","ג","ד"][i]}</div>`).join("")}
             </div>
-            <p class="text-sm text-on-surface-variant">${rm.count} שותפים גרים בדירה כרגע</p>
+            <p class="text-sm text-on-surface-variant">${rm.count} שותפים נוכחיים</p>
+          </div>
+          <div class="flex flex-wrap gap-sm">
+            ${statusLabel(rm.status) ? `<span class="bg-primary-fixed text-primary px-md py-xs rounded-full text-xs font-semibold">${statusLabel(rm.status)}</span>` : ""}
+            ${religiousLabel(rm.religious_tag) ? `<span class="bg-emerald-50 text-emerald-700 px-md py-xs rounded-full text-xs font-semibold">${religiousLabel(rm.religious_tag)}</span>` : ""}
+            ${genderLabel(rm.gender_preference) && rm.gender_preference !== "any" ? `<span class="bg-rose-50 text-rose-700 px-md py-xs rounded-full text-xs font-semibold">${genderLabel(rm.gender_preference)}</span>` : ""}
           </div>
         </div>` : ""}
 
