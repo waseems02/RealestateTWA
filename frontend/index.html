@@ -4,43 +4,590 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RoomieFit / CampusNest Israel</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              surface: "#f9f9ff",
+              "surface-bright": "#f9f9ff",
+              "surface-dim": "#cfdaf2",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f0f3ff",
+              "surface-container": "#e7eeff",
+              "surface-container-high": "#dee8ff",
+              "surface-container-highest": "#d8e3fb",
+              "on-surface": "#111c2d",
+              "on-surface-variant": "#464555",
+              outline: "#777587",
+              "outline-variant": "#c7c4d8",
+              primary: "#3525cd",
+              "on-primary": "#ffffff",
+              "primary-container": "#4f46e5",
+              "on-primary-container": "#dad7ff",
+              "primary-fixed": "#e2dfff",
+              secondary: "#5a5f62",
+              "secondary-container": "#dce0e4",
+              tertiary: "#8b1b34",
+              "brand-coral": "#FB7185",
+              "brand-coral-dark": "#F43F5E",
+            },
+            borderRadius: {
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              full: "9999px",
+            },
+            spacing: {
+              xs: "4px",
+              sm: "8px",
+              md: "16px",
+              lg: "24px",
+              xl: "40px",
+              "2xl": "64px",
+              "container-max": "1280px",
+            },
+            fontFamily: {
+              heading: ["Heebo", "Geist", "system-ui", "sans-serif"],
+              body: ["Heebo", "Geist", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Heebo", "Geist", system-ui, sans-serif;
+        background-color: #fafaf9;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .glass-nav {
+        backdrop-filter: blur(8px);
+      }
+      .hero-gradient {
+        background: radial-gradient(
+          circle at top left,
+          #e2dfff 0%,
+          #fafaf9 60%
+        );
+      }
+      [dir="rtl"] .hero-gradient {
+        background: radial-gradient(
+          circle at top right,
+          #e2dfff 0%,
+          #fafaf9 60%
+        );
+      }
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #eef0ff 0%,
+          #f6f7ff 50%,
+          #eef0ff 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite linear;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+    </style>
     <script defer src="js/app.js"></script>
   </head>
-  <body>
-    <main class="container">
-      <section class="hero">
-        <div>
-          <h1>RoomieFit / CampusNest Israel</h1>
-          <p class="lead">
-            פלטפורמה לסטודנטים שמחפשים דירות, חדרים ושותפים ליד אוניברסיטאות ומכללות בישראל.
-            המערכת משלבת סינון דירות, התאמת שותפים, עוזר AI וחיבור עתידי לטלגרם.
-          </p>
-          <div class="actions">
-            <a class="button primary" href="listings.html">חיפוש דירות</a>
-            <a class="button secondary" href="dashboard.html">פרסום דירה</a>
-            <a class="button" href="dashboard.html">מציאת שותף</a>
-            <a class="button" href="ai-assistant.html">שיחה עם AI</a>
+  <body class="text-on-surface" data-no-auto-layout>
+    <!-- Top nav -->
+    <nav
+      class="sticky top-0 z-50 bg-surface-container-lowest/80 glass-nav shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)]"
+    >
+      <div
+        class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto"
+      >
+        <div class="flex items-center gap-xl">
+          <a
+            href="index.html"
+            class="text-2xl font-heading font-bold text-on-surface"
+            >RoomieFit</a
+          >
+          <div class="hidden md:flex gap-lg items-center">
+            <a
+              href="index.html"
+              class="text-primary font-bold border-b-2 border-primary pb-1 text-sm"
+              data-i18n="navHome"
+              >בית</a
+            >
+            <a
+              href="listings.html"
+              class="text-on-surface-variant text-sm hover:text-primary transition-colors"
+              data-i18n="navListings"
+              >דירות</a
+            >
+            <a
+              href="dashboard.html"
+              class="text-on-surface-variant text-sm hover:text-primary transition-colors"
+              data-i18n="navRoommates"
+              >שותפים</a
+            >
+            <a
+              href="ai-assistant.html"
+              class="text-on-surface-variant text-sm hover:text-primary transition-colors"
+              data-i18n="navAI"
+              >AI</a
+            >
           </div>
           <p class="lead">הממשק מותאם ל-RTL בעברית ומוכן להצגה ב- staging.</p>
         </div>
-        <div class="hero-media" aria-hidden="true"></div>
+        <div class="flex items-center gap-md">
+          <button
+            class="bg-surface-container-low px-sm py-xs rounded-full flex items-center gap-xs text-xs font-semibold border border-outline-variant"
+            data-language-toggle
+            type="button"
+            aria-label="Toggle language"
+          >
+            <span data-lang-he class="bg-primary text-on-primary px-2 py-0.5 rounded-full">עב</span>
+            <span data-lang-en class="px-2 text-on-surface-variant">EN</span>
+          </button>
+          <a
+            href="login.html"
+            class="text-primary font-bold text-sm hover:opacity-80 transition-all"
+            data-i18n="navLogin"
+            >כניסה</a
+          >
+          <a
+            href="register.html"
+            class="bg-primary text-on-primary px-lg py-sm rounded-xl text-sm font-semibold shadow-lg hover:scale-95 transition-all"
+            data-i18n="getStarted"
+            >הרשמה</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <main class="hero-gradient overflow-hidden">
+      <!-- Hero -->
+      <section
+        class="max-w-container-max mx-auto px-lg md:px-xl pt-2xl pb-2xl md:pt-24 md:pb-32 flex flex-col items-center text-center relative"
+      >
+        <div class="max-w-3xl mb-xl">
+          <h1
+            class="font-heading font-bold text-4xl md:text-6xl leading-tight mb-md text-on-surface"
+            data-i18n="heroTitle"
+          >
+            הבית המושלם והשותף המתאים, באוניברסיטה שלך
+          </h1>
+          <p class="text-lg text-on-surface-variant" data-i18n="heroSubtitle">
+            פלטפורמה לסטודנטים בישראל: דירות מאומתות, התאמת שותפים חכמה ועוזר AI
+            שמלווה אותך מהחיפוש ועד החתימה על החוזה.
+          </p>
+        </div>
+
+        <!-- Search bar -->
+        <form
+          id="heroSearch"
+          class="w-full max-w-5xl bg-white p-sm md:p-md rounded-2xl md:rounded-full shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] flex flex-col md:flex-row items-center gap-sm md:gap-md"
+        >
+          <div
+            class="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-sm items-center px-md"
+          >
+            <label
+              class="flex items-center gap-sm border-b md:border-b-0 md:border-l border-outline-variant py-2"
+            >
+              <span class="material-symbols-outlined text-primary">school</span>
+              <select
+                id="heroUniversity"
+                class="w-full bg-transparent border-none focus:ring-0 text-sm font-medium py-1"
+              >
+                <option value="" data-i18n="anyUniversity">כל אוניברסיטה</option>
+                <option value="Tel Aviv University">אוניברסיטת תל אביב</option>
+                <option value="Hebrew University of Jerusalem">
+                  האוניברסיטה העברית בירושלים
+                </option>
+                <option value="University of Haifa">אוניברסיטת חיפה</option>
+                <option value="Ben-Gurion University of the Negev">
+                  אוניברסיטת בן גוריון
+                </option>
+                <option value="Bar-Ilan University">אוניברסיטת בר אילן</option>
+                <option value="Ariel University">אוניברסיטת אריאל</option>
+              </select>
+            </label>
+            <label
+              class="flex items-center gap-sm border-b md:border-b-0 md:border-l border-outline-variant py-2"
+            >
+              <span class="material-symbols-outlined text-primary">payments</span>
+              <input
+                id="heroMaxPrice"
+                type="number"
+                min="0"
+                step="100"
+                class="w-full bg-transparent border-none focus:ring-0 text-sm font-medium py-1"
+                placeholder="מחיר מקס׳ (₪)"
+                data-i18n-placeholder="placeholderMaxPrice"
+              />
+            </label>
+            <label class="flex items-center gap-sm py-2">
+              <span class="material-symbols-outlined text-primary">door_front</span>
+              <input
+                id="heroMinRooms"
+                type="number"
+                min="1"
+                max="6"
+                step="0.5"
+                class="w-full bg-transparent border-none focus:ring-0 text-sm font-medium py-1"
+                placeholder="חדרים"
+                data-i18n-placeholder="placeholderRooms"
+              />
+            </label>
+          </div>
+          <button
+            type="submit"
+            class="bg-brand-coral text-white font-bold px-10 py-4 rounded-full hover:scale-105 transition-all text-sm w-full md:w-auto"
+            data-i18n="searchCta"
+          >
+            חפש
+          </button>
+        </form>
+
+        <a
+          href="ai-assistant.html"
+          class="mt-xl flex items-center gap-sm text-primary font-bold text-sm hover:opacity-80 transition-all bg-primary/10 px-md py-sm rounded-full"
+        >
+          <span class="material-symbols-outlined">auto_awesome</span>
+          <span data-i18n="askAi">שאל את עוזר ה-AI</span>
+        </a>
       </section>
 
-      <section class="section grid">
-        <article class="card">
-          <h2>חיפוש לפי קמפוס</h2>
-          <p>השוואת דירות לפי עיר, שכונה, מחיר, תחבורה ציבורית וזמן הגעה לקמפוס.</p>
-        </article>
-        <article class="card">
-          <h2>שותפים מתאימים</h2>
-          <p>העדפות מגורים כמו עישון, ריהוט, תקציב וסגנון חיים נשמרות כהכנה להתאמה חכמה.</p>
-        </article>
-        <article class="card">
-          <h2>AI לסטודנטים</h2>
-          <p>העוזר עוזר לשאול שאלות נכונות על חוזה, חשבונות, מיקום ותנאי הדירה.</p>
-        </article>
+      <!-- Featured listings -->
+      <section class="max-w-container-max mx-auto px-lg md:px-xl py-2xl">
+        <div class="flex justify-between items-end mb-xl">
+          <div>
+            <h2
+              class="font-heading font-semibold text-2xl md:text-3xl text-on-surface"
+              data-i18n="featuredTitle"
+            >
+              דירות פופולריות ליד הקמפוס
+            </h2>
+            <p
+              class="text-sm md:text-base text-on-surface-variant"
+              data-i18n="featuredSubtitle"
+            >
+              דירות מאומתות שמוכנות לכניסה
+            </p>
+          </div>
+          <a
+            href="listings.html"
+            class="text-primary font-bold text-sm flex items-center gap-xs"
+          >
+            <span data-i18n="viewAll">לכל הדירות</span>
+            <span class="material-symbols-outlined rtl:rotate-180"
+              >chevron_right</span
+            >
+          </a>
+        </div>
+
+        <div
+          id="featuredGrid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg"
+          aria-live="polite"
+        >
+          <!-- skeletons; replaced by JS -->
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-48 skeleton"></div>
+            <div class="p-md space-y-sm">
+              <div class="h-6 w-24 skeleton rounded"></div>
+              <div class="h-4 w-40 skeleton rounded"></div>
+              <div class="h-4 w-32 skeleton rounded"></div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-48 skeleton"></div>
+            <div class="p-md space-y-sm">
+              <div class="h-6 w-24 skeleton rounded"></div>
+              <div class="h-4 w-40 skeleton rounded"></div>
+              <div class="h-4 w-32 skeleton rounded"></div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-48 skeleton"></div>
+            <div class="p-md space-y-sm">
+              <div class="h-6 w-24 skeleton rounded"></div>
+              <div class="h-4 w-40 skeleton rounded"></div>
+              <div class="h-4 w-32 skeleton rounded"></div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div class="h-48 skeleton"></div>
+            <div class="p-md space-y-sm">
+              <div class="h-6 w-24 skeleton rounded"></div>
+              <div class="h-4 w-40 skeleton rounded"></div>
+              <div class="h-4 w-32 skeleton rounded"></div>
+            </div>
+          </div>
+        </div>
       </section>
+
+      <!-- How it works -->
+      <section class="bg-surface-container-low/50 py-2xl">
+        <div class="max-w-container-max mx-auto px-lg md:px-xl">
+          <div class="text-center mb-16">
+            <h2
+              class="font-heading font-semibold text-2xl md:text-3xl text-on-surface"
+              data-i18n="howTitle"
+            >
+              שלושה צעדים פשוטים
+            </h2>
+            <p
+              class="text-sm md:text-base text-on-surface-variant"
+              data-i18n="howSubtitle"
+            >
+              מהחיפוש ועד למפתחות, בלי לחץ ובלי הפתעות
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
+            <div
+              class="flex flex-col items-center text-center p-lg bg-white rounded-2xl shadow-sm"
+            >
+              <div
+                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-md"
+              >
+                <span class="material-symbols-outlined text-primary text-3xl"
+                  >search</span
+                >
+              </div>
+              <h3
+                class="font-heading font-semibold text-xl mb-sm text-on-surface"
+                data-i18n="step1Title"
+              >
+                חפש
+              </h3>
+              <p class="text-on-surface-variant" data-i18n="step1Body">
+                סנן לפי אוניברסיטה, תקציב והעדפות סגנון חיים. כל הדירות עם תיוג
+                מקור (Yad2 / קבוצות פייסבוק / לוחות אוניברסיטה).
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center text-center p-lg bg-white rounded-2xl shadow-sm"
+            >
+              <div
+                class="w-16 h-16 bg-brand-coral/10 rounded-full flex items-center justify-center mb-md"
+              >
+                <span
+                  class="material-symbols-outlined text-brand-coral text-3xl"
+                  >handshake</span
+                >
+              </div>
+              <h3
+                class="font-heading font-semibold text-xl mb-sm text-on-surface"
+                data-i18n="step2Title"
+              >
+                התאמה
+              </h3>
+              <p class="text-on-surface-variant" data-i18n="step2Body">
+                עוזר ה-AI מנתח את ההעדפות שלך ומציע דירות ושותפים בהתאמה אישית,
+                כולל ניקיון, שעות שקט וכשרות.
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center text-center p-lg bg-white rounded-2xl shadow-sm"
+            >
+              <div
+                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-md"
+              >
+                <span class="material-symbols-outlined text-primary text-3xl"
+                  >key</span
+                >
+              </div>
+              <h3
+                class="font-heading font-semibold text-xl mb-sm text-on-surface"
+                data-i18n="step3Title"
+              >
+                כניסה לדירה
+              </h3>
+              <p class="text-on-surface-variant" data-i18n="step3Body">
+                שאל שאלות לבעל הדירה דרך הצ׳אט, קבל טיפים לחתימת חוזה, ועבור
+                לדירה החדשה.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Floating AI + Telegram side icons injected by js/app.js -->
     </main>
+
+    <footer class="bg-surface border-t border-surface-container">
+      <div
+        class="w-full px-lg md:px-xl py-2xl max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md"
+      >
+        <div class="flex flex-col gap-sm items-center md:items-start">
+          <span class="font-heading font-semibold text-xl">RoomieFit</span>
+          <p class="text-xs text-on-surface-variant" data-i18n="footerTagline">
+            פרויקט קורס מסדי נתונים · נתוני דמו בלבד
+          </p>
+        </div>
+        <div class="flex gap-lg text-xs text-on-surface-variant">
+          <a href="#" class="hover:text-primary" data-i18n="footerAbout">אודות</a>
+          <a href="#" class="hover:text-primary" data-i18n="footerContact"
+            >צור קשר</a
+          >
+          <a href="#" class="hover:text-primary" data-i18n="footerTerms"
+            >תנאי שימוש</a
+          >
+          <a href="#" class="hover:text-primary" data-i18n="footerPrivacy"
+            >פרטיות</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // ------- Home page hero search + featured listings -------
+      const HERO_PLACEHOLDER_IMAGES = [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80",
+      ];
+
+      function fmtPrice(n) {
+        if (n == null) return "—";
+        return "₪" + Number(n).toLocaleString("he-IL");
+      }
+
+      function listingHref(id) {
+        return `listing-details.html?id=${encodeURIComponent(id)}`;
+      }
+
+      function listingCard(listing, idx) {
+        const img =
+          (listing.images && listing.images[0]) ||
+          listing.image_url ||
+          HERO_PLACEHOLDER_IMAGES[idx % HERO_PLACEHOLDER_IMAGES.length];
+        const rooms = listing.rooms ?? "?";
+        const sqm = listing.size_sqm ?? "?";
+        const floor = listing.floor ?? "—";
+        const uni = listing.nearest_university;
+        const uniLabel = uni
+          ? `${(uni.distance_m / 1000).toFixed(1)} ק"מ מ${uni.name || ""}`
+          : listing.city || "";
+        const tags = [];
+        if (listing.roommates?.status === "student") tags.push("סטודנטים");
+        if (listing.balcony) tags.push("מרפסת");
+        if (listing.furnished) tags.push("מרוהטת");
+        if (!tags.length && listing.neighborhood) tags.push(listing.neighborhood);
+
+        const amenities = [];
+        if (listing.air_conditioning) amenities.push("ac_unit");
+        if (listing.balcony) amenities.push("balcony");
+        if (listing.parking) amenities.push("garage");
+        if (listing.pets_allowed) amenities.push("pets");
+        const amenityIcons = amenities
+          .slice(0, 3)
+          .map(
+            (icon) =>
+              `<span class="bg-primary/10 text-primary p-1 rounded"><span class="material-symbols-outlined text-[18px]">${icon}</span></span>`
+          )
+          .join("");
+
+        return `<a href="${listingHref(listing.id)}" class="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)] group hover:shadow-[0_10px_30px_-4px_rgba(30,41,59,0.08)] transition-all duration-300 block">
+          <div class="relative h-48 overflow-hidden">
+            <img loading="lazy" src="${img}" alt="${escapeHtml(listing.title || "דירה")}"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <span class="absolute top-md start-md bg-white/90 backdrop-blur-sm px-sm py-xs rounded-full text-[11px] font-semibold text-on-surface-variant">
+              ${sourceLabel(listing.source)}
+            </span>
+          </div>
+          <div class="p-md">
+            <div class="flex justify-between items-start mb-sm">
+              <span class="font-heading text-xl font-semibold text-on-surface">${fmtPrice(listing.price)}<span class="text-xs font-normal text-on-surface-variant"> / חודש</span></span>
+            </div>
+            <p class="text-on-surface-variant text-xs mb-md">${rooms} חדרים · ${sqm} מ"ר · קומה ${floor}</p>
+            ${amenityIcons ? `<div class="flex gap-sm mb-md">${amenityIcons}</div>` : ""}
+            <div class="flex flex-wrap gap-xs mb-md">
+              ${tags
+                .map(
+                  (t) =>
+                    `<span class="bg-surface-container-highest text-on-surface-variant px-sm py-0.5 rounded-full text-xs">${escapeHtml(t)}</span>`
+                )
+                .join("")}
+            </div>
+            <div class="flex items-center gap-xs text-on-surface-variant text-xs">
+              <span class="material-symbols-outlined text-[16px]">location_on</span>
+              <span>${escapeHtml(uniLabel)}</span>
+            </div>
+          </div>
+        </a>`;
+      }
+
+      function sourceLabel(src) {
+        if (!src) return "דמו";
+        if (src.includes("yad2")) return "Yad2 (דמו)";
+        if (src.includes("facebook")) return "פייסבוק (דמו)";
+        if (src.includes("university")) return "לוח אוניברסיטה";
+        return "דמו";
+      }
+
+      function escapeHtml(s) {
+        return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        }[c]));
+      }
+
+      async function loadFeatured() {
+        const grid = document.querySelector("#featuredGrid");
+        try {
+          const response = await fetch("/api/listings?limit=4");
+          const payload = await response.json();
+          const listings = payload.data || [];
+          if (!listings.length) {
+            grid.innerHTML = `<div class="col-span-full text-center text-on-surface-variant py-xl">לא נמצאו דירות להצגה.</div>`;
+            return;
+          }
+          grid.innerHTML = listings.slice(0, 4).map(listingCard).join("");
+        } catch (err) {
+          grid.innerHTML = `<div class="col-span-full text-center text-on-surface-variant py-xl">שגיאה בטעינת הדירות. נסה שוב בעוד רגע.</div>`;
+        }
+      }
+
+      document
+        .querySelector("#heroSearch")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+          const params = new URLSearchParams();
+          const uni = document.querySelector("#heroUniversity").value;
+          const maxPrice = document.querySelector("#heroMaxPrice").value;
+          const minRooms = document.querySelector("#heroMinRooms").value;
+          if (uni) params.set("university_name", uni);
+          if (maxPrice) params.set("max_price", maxPrice);
+          if (minRooms) params.set("min_rooms", minRooms);
+          const qs = params.toString();
+          location.href = qs ? `listings.html?${qs}` : "listings.html";
+        });
+
+      document.addEventListener("DOMContentLoaded", loadFeatured);
+    </script>
   </body>
 </html>

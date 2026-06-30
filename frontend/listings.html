@@ -4,33 +4,297 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>חיפוש דירות | RoomieFit</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              surface: "#f9f9ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f0f3ff",
+              "surface-container": "#e7eeff",
+              "surface-container-high": "#dee8ff",
+              "surface-container-highest": "#d8e3fb",
+              "on-surface": "#111c2d",
+              "on-surface-variant": "#464555",
+              outline: "#777587",
+              "outline-variant": "#c7c4d8",
+              primary: "#3525cd",
+              "on-primary": "#ffffff",
+              "primary-container": "#4f46e5",
+              "on-primary-container": "#dad7ff",
+              tertiary: "#8b1b34",
+              "brand-coral": "#FB7185",
+              "brand-coral-dark": "#F43F5E",
+              "brand-telegram": "#229ED9",
+            },
+            borderRadius: { lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+            spacing: { xs: "4px", sm: "8px", md: "16px", lg: "24px", xl: "40px", "2xl": "64px", "container-max": "1280px" },
+            fontFamily: { heading: ["Heebo", "system-ui", "sans-serif"], body: ["Heebo", "system-ui", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: "Heebo", system-ui, sans-serif; background-color: #fafaf9; color: #111c2d; }
+      .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+      .custom-shadow { box-shadow: 0 4px 20px -2px rgba(30, 41, 59, 0.05); }
+      .custom-shadow-hover:hover { box-shadow: 0 10px 30px -4px rgba(30, 41, 59, 0.08); }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #4f46e5; border-radius: 50%; cursor: pointer; }
+      .skeleton { background: linear-gradient(90deg, #eef0ff 0%, #f6f7ff 50%, #eef0ff 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite linear; }
+      @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+      /* Leaflet price pin */
+      .price-pin { background: #3525cd; color: white; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: 13px; box-shadow: 0 4px 12px rgba(30,41,59,0.18); border: 2px solid white; white-space: nowrap; cursor: pointer; transition: transform .15s; }
+      .price-pin:hover, .price-pin.is-active { transform: scale(1.12); background: #8b1b34; z-index: 1000; }
+      .uni-pin { background: #FB7185; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 11px; border: 2px solid white; box-shadow: 0 4px 12px rgba(30,41,59,0.18); white-space: nowrap; }
+      .leaflet-container { font-family: "Heebo", system-ui, sans-serif; }
+      #map { z-index: 1; }
+    </style>
     <script defer src="js/app.js"></script>
-    <script defer src="js/listings.js"></script>
   </head>
-  <body>
-    <main class="container section">
-      <h1 class="page-title">חיפוש דירות</h1>
-      <p class="lead">סננו דירות וחדרים לפי הצרכים של סטודנטים ליד קמפוסים בישראל.</p>
+  <body class="text-on-surface" data-no-auto-layout>
+    <!-- Top nav -->
+    <nav class="sticky top-0 z-50 bg-surface-container-lowest/90 backdrop-blur shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)]">
+      <div class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto">
+        <div class="flex items-center gap-xl">
+          <a href="index.html" class="text-2xl font-heading font-bold">RoomieFit</a>
+          <div class="hidden md:flex gap-lg items-center">
+            <a href="index.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navHome">בית</a>
+            <a href="listings.html" class="text-primary font-bold border-b-2 border-primary pb-1 text-sm" data-i18n="navListings">דירות</a>
+            <a href="dashboard.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navRoommates">שותפים</a>
+            <a href="ai-assistant.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navAI">AI</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-md">
+          <button class="bg-surface-container-low px-sm py-xs rounded-full flex items-center gap-xs text-xs font-semibold border border-outline-variant" data-language-toggle type="button">
+            <span data-lang-he class="bg-primary text-on-primary px-2 py-0.5 rounded-full">עב</span>
+            <span data-lang-en class="px-2 text-on-surface-variant">EN</span>
+          </button>
+          <a href="login.html" class="text-primary font-bold text-sm hover:opacity-80" data-i18n="navLogin">כניסה</a>
+        </div>
+      </div>
+    </nav>
 
-      <form id="filters" class="filters">
-        <label>עיר<input id="city" type="search" placeholder="ירושלים, תל אביב, חיפה" /></label>
-        <label>מחיר מקסימלי<input id="maxPrice" type="number" min="0" step="100" placeholder="3500" /></label>
-        <label>אוניברסיטה / קמפוס<input id="campus" type="search" placeholder="הטכניון" /></label>
-        <label class="checkbox-row"><input id="balcony" type="checkbox" /> מרפסת</label>
-        <label class="checkbox-row"><input id="furnished" type="checkbox" /> מרוהטת</label>
-        <label class="checkbox-row"><input id="transit" type="checkbox" /> קרוב לתחבורה ציבורית</label>
-        <label>
-          העדפת עישון
-          <select id="smoking">
-            <option value="">הכל</option>
-            <option value="yes">מותר לעשן</option>
-            <option value="no">לא מותר לעשן</option>
-          </select>
-        </label>
-      </form>
+    <main class="flex-1 max-w-container-max mx-auto w-full flex flex-col md:flex-row gap-lg px-lg md:px-xl py-lg">
+      <!-- Filter sidebar -->
+      <aside class="w-full md:w-[300px] shrink-0">
+        <form id="filters" class="bg-white rounded-2xl p-lg custom-shadow md:sticky md:top-[100px] max-h-[calc(100vh-140px)] overflow-y-auto no-scrollbar">
+          <div class="flex justify-between items-center mb-lg">
+            <h2 class="font-heading font-semibold text-xl" data-i18n="filtersTitle">סינון</h2>
+            <button type="button" id="clearFilters" class="text-primary text-xs underline" data-i18n="clearAll">נקה הכל</button>
+          </div>
 
-      <section id="listingsGrid" class="grid" aria-live="polite"></section>
+          <!-- City -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterCity">עיר</label>
+            <input id="f_city" type="search" placeholder="תל אביב, ירושלים, חיפה..." class="w-full bg-surface-container-low rounded-xl px-md py-sm text-sm border-none focus:ring-2 focus:ring-primary" />
+          </div>
+
+          <!-- University -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterUni">אוניברסיטה</label>
+            <select id="f_university" class="w-full bg-surface-container-low rounded-xl px-md py-sm text-sm border-none focus:ring-2 focus:ring-primary">
+              <option value="">הכל</option>
+              <option value="Tel Aviv University">אוניברסיטת תל אביב</option>
+              <option value="Hebrew University of Jerusalem">האוניברסיטה העברית בירושלים</option>
+              <option value="Technion">הטכניון</option>
+              <option value="Bar-Ilan University">אוניברסיטת בר-אילן</option>
+              <option value="Ben-Gurion University">אוניברסיטת בן-גוריון</option>
+              <option value="University of Haifa">אוניברסיטת חיפה</option>
+              <option value="Reichman University">אוניברסיטת רייכמן</option>
+              <option value="Ariel University">אוניברסיטת אריאל</option>
+              <option value="Sapir Academic College">המכללה האקדמית ספיר</option>
+              <option value="Open University of Israel">האוניברסיטה הפתוחה</option>
+              <option value="Bezalel Academy">בצלאל</option>
+              <option value="Holon Institute of Technology">HIT חולון</option>
+            </select>
+          </div>
+
+          <!-- Max distance to campus -->
+          <div class="mb-lg">
+            <label class="text-sm font-semibold mb-sm flex justify-between">
+              <span data-i18n="filterDistance">מרחק מקסימלי מהקמפוס</span>
+              <span id="distLabel" class="text-primary font-bold">3.0 ק"מ</span>
+            </label>
+            <input id="f_max_uni_distance" type="range" min="200" max="15000" step="100" value="3000" class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer" />
+          </div>
+
+          <!-- Price range -->
+          <div class="mb-lg">
+            <label class="text-sm font-semibold mb-sm flex justify-between">
+              <span data-i18n="filterPrice">מחיר חודשי</span>
+              <span class="text-primary font-bold"><span id="priceMinLabel">₪1,000</span> — <span id="priceMaxLabel">₪10,000</span></span>
+            </label>
+            <div class="flex gap-sm">
+              <input id="f_min_price" type="number" placeholder="מ" min="0" step="100" class="w-1/2 bg-surface-container-low rounded-xl px-sm py-sm text-sm border-none focus:ring-2 focus:ring-primary" />
+              <input id="f_max_price" type="number" placeholder="עד" min="0" step="100" class="w-1/2 bg-surface-container-low rounded-xl px-sm py-sm text-sm border-none focus:ring-2 focus:ring-primary" />
+            </div>
+          </div>
+
+          <!-- Rooms -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterRooms">חדרים (מינ׳)</label>
+            <div class="flex flex-wrap gap-xs" id="roomsChips">
+              <button type="button" data-rooms="" class="px-md py-sm rounded-xl bg-primary text-white text-xs is-active">הכל</button>
+              <button type="button" data-rooms="1" class="px-md py-sm rounded-xl border border-outline-variant text-xs hover:border-primary">1+</button>
+              <button type="button" data-rooms="2" class="px-md py-sm rounded-xl border border-outline-variant text-xs hover:border-primary">2+</button>
+              <button type="button" data-rooms="3" class="px-md py-sm rounded-xl border border-outline-variant text-xs hover:border-primary">3+</button>
+              <button type="button" data-rooms="4" class="px-md py-sm rounded-xl border border-outline-variant text-xs hover:border-primary">4+</button>
+            </div>
+            <input type="hidden" id="f_min_rooms" />
+          </div>
+
+          <!-- Lifestyle toggles -->
+          <div class="space-y-sm mb-lg">
+            <label class="flex justify-between items-center cursor-pointer">
+              <span class="text-sm" data-i18n="filterBalcony">מרפסת</span>
+              <input id="f_has_balcony" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
+            </label>
+            <label class="flex justify-between items-center cursor-pointer">
+              <span class="text-sm" data-i18n="filterPets">מותר חיות מחמד</span>
+              <input id="f_pets_allowed" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
+            </label>
+            <label class="flex justify-between items-center cursor-pointer">
+              <span class="text-sm" data-i18n="filterParking">חניה</span>
+              <input id="f_parking" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
+            </label>
+            <label class="flex justify-between items-center cursor-pointer">
+              <span class="text-sm" data-i18n="filterAC">מזגן</span>
+              <input id="f_ac" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
+            </label>
+            <label class="flex justify-between items-center cursor-pointer">
+              <span class="text-sm" data-i18n="filterAccessible">נגישות</span>
+              <input id="f_accessible" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
+            </label>
+          </div>
+
+          <!-- Smoking -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterSmoking">עישון</label>
+            <div class="flex gap-xs" id="smokingChips">
+              <button type="button" data-smk="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
+              <button type="button" data-smk="false" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">לא מעשנים</button>
+              <button type="button" data-smk="true" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מעשנים</button>
+            </div>
+            <input type="hidden" id="f_smoking_allowed" />
+          </div>
+
+          <!-- Furnished -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterFurnished">ריהוט</label>
+            <select id="f_furnished" class="w-full bg-surface-container-low rounded-xl px-md py-sm text-sm border-none focus:ring-2 focus:ring-primary">
+              <option value="">הכל</option>
+              <option value="none">ללא ריהוט</option>
+              <option value="partial">חלקי</option>
+              <option value="full">מרוהטת לגמרי</option>
+            </select>
+          </div>
+
+          <!-- Roommate status -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterRmStatus">שותפים</label>
+            <div class="flex flex-wrap gap-xs" id="rmStatusChips">
+              <button type="button" data-rms="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
+              <button type="button" data-rms="student" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">סטודנטים</button>
+              <button type="button" data-rms="professional" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">עובדים</button>
+              <button type="button" data-rms="mixed" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מעורב</button>
+            </div>
+            <input type="hidden" id="f_roommates_status" />
+          </div>
+
+          <!-- Religious tag -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterReligious">אורח חיים</label>
+            <div class="flex flex-wrap gap-xs" id="religiousChips">
+              <button type="button" data-rel="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
+              <button type="button" data-rel="secular" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">חילוני</button>
+              <button type="button" data-rel="traditional" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מסורתי</button>
+              <button type="button" data-rel="religious" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">דתי</button>
+              <button type="button" data-rel="mixed" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מעורב</button>
+            </div>
+            <input type="hidden" id="f_religious" />
+          </div>
+
+          <!-- Gender -->
+          <div class="mb-md">
+            <label class="block text-sm font-semibold mb-sm" data-i18n="filterGender">העדפת מגדר</label>
+            <div class="flex gap-xs" id="genderChips">
+              <button type="button" data-gnd="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
+              <button type="button" data-gnd="female" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">נשים</button>
+              <button type="button" data-gnd="male" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">גברים</button>
+              <button type="button" data-gnd="any" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">לא משנה</button>
+            </div>
+            <input type="hidden" id="f_gender_preference" />
+          </div>
+        </form>
+      </aside>
+
+      <!-- Results -->
+      <section class="flex-1 min-w-0">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-lg">
+          <div>
+            <h1 class="font-heading font-semibold text-2xl"><span id="resultsCount">—</span> <span data-i18n="resultsLabel">דירות נמצאו</span></h1>
+            <p class="text-sm text-on-surface-variant" data-i18n="resultsSubtitle">נתונים חיים ממסד הנתונים, כולל דמו מ-Yad2 וקבוצות פייסבוק</p>
+          </div>
+          <div class="flex items-center gap-md w-full md:w-auto">
+            <div class="flex bg-white rounded-xl p-1 custom-shadow items-center">
+              <button id="viewList" class="bg-primary text-white px-md py-sm rounded-lg text-xs flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[18px]">grid_view</span>
+                <span data-i18n="viewList">רשימה</span>
+              </button>
+              <button id="viewMap" class="text-on-surface-variant px-md py-sm rounded-lg text-xs flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[18px]">map</span>
+                <span data-i18n="viewMap">מפה</span>
+              </button>
+            </div>
+            <select id="sortBy" class="bg-white border-none rounded-xl px-md py-sm custom-shadow text-xs focus:ring-2 focus:ring-primary">
+              <option value="price_asc" data-i18n="sortPriceAsc">מחיר: נמוך לגבוה</option>
+              <option value="price_desc" data-i18n="sortPriceDesc">מחיר: גבוה לנמוך</option>
+              <option value="distance_asc" data-i18n="sortDistance">קרבה לקמפוס</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Map (hidden until toggled) -->
+        <div id="mapPanel" class="hidden bg-white rounded-2xl overflow-hidden custom-shadow" style="height: calc(100vh - 220px); min-height: 540px;">
+          <div id="map" class="w-full h-full"></div>
+        </div>
+
+        <!-- Grid -->
+        <div id="grid" class="grid grid-cols-1 lg:grid-cols-2 gap-lg" aria-live="polite">
+          <div class="bg-white rounded-2xl overflow-hidden custom-shadow"><div class="h-64 skeleton"></div><div class="p-lg space-y-sm"><div class="h-6 w-32 skeleton rounded"></div><div class="h-4 w-48 skeleton rounded"></div></div></div>
+          <div class="bg-white rounded-2xl overflow-hidden custom-shadow"><div class="h-64 skeleton"></div><div class="p-lg space-y-sm"><div class="h-6 w-32 skeleton rounded"></div><div class="h-4 w-48 skeleton rounded"></div></div></div>
+          <div class="bg-white rounded-2xl overflow-hidden custom-shadow"><div class="h-64 skeleton"></div><div class="p-lg space-y-sm"><div class="h-6 w-32 skeleton rounded"></div><div class="h-4 w-48 skeleton rounded"></div></div></div>
+          <div class="bg-white rounded-2xl overflow-hidden custom-shadow"><div class="h-64 skeleton"></div><div class="p-lg space-y-sm"><div class="h-6 w-32 skeleton rounded"></div><div class="h-4 w-48 skeleton rounded"></div></div></div>
+        </div>
+      </section>
     </main>
+
+    <footer class="bg-surface border-t border-surface-container mt-2xl">
+      <div class="w-full px-lg md:px-xl py-xl max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md text-xs text-on-surface-variant">
+        <span>RoomieFit · פרויקט קורס מסדי נתונים · נתוני דמו בלבד</span>
+        <span>© 2026</span>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="js/listings.js"></script>
   </body>
 </html>

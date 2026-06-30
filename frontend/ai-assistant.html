@@ -4,21 +4,125 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>עוזר AI | RoomieFit</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: { extend: {
+          colors: {
+            surface: "#f9f9ff", "surface-container-lowest": "#ffffff", "surface-container-low": "#f0f3ff",
+            "surface-container": "#e7eeff", "surface-container-high": "#dee8ff", "surface-container-highest": "#d8e3fb",
+            "on-surface": "#111c2d", "on-surface-variant": "#464555",
+            outline: "#777587", "outline-variant": "#c7c4d8",
+            primary: "#3525cd", "on-primary": "#ffffff", "primary-container": "#4f46e5", "on-primary-container": "#dad7ff",
+            "brand-coral": "#FB7185", "brand-coral-dark": "#F43F5E", "brand-telegram": "#229ED9",
+          },
+          borderRadius: { lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+          spacing: { xs: "4px", sm: "8px", md: "16px", lg: "24px", xl: "40px", "2xl": "64px", "container-max": "1280px" },
+          fontFamily: { heading: ["Heebo", "system-ui", "sans-serif"], body: ["Heebo", "system-ui", "sans-serif"] },
+        } },
+      };
+    </script>
+    <style>
+      body { font-family: "Heebo", system-ui, sans-serif; background-color: #fafaf9; color: #111c2d; }
+      .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+      .custom-shadow { box-shadow: 0 4px 20px -2px rgba(30, 41, 59, 0.05); }
+      .typing-dot { animation: typing 1.4s infinite ease-in-out; display: inline-block; width: 8px; height: 8px; background: #3525cd; border-radius: 50%; margin: 0 2px; }
+      .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+      .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+    </style>
     <script defer src="js/app.js"></script>
-    <script defer src="js/ai.js"></script>
   </head>
-  <body>
-    <main class="container section">
-      <h1 class="page-title">שיחה עם AI</h1>
-      <p class="lead">העוזר עוזר להשוות דירות, להבין פשרות ולשאול שאלות חכמות לפני חתימה.</p>
-      <section class="panel">
-        <div id="chatBox" class="chat-box" aria-live="polite"></div>
-        <form id="chatForm" class="chat-form">
-          <input id="message" type="text" placeholder="לדוגמה: איזו דירה עדיפה ליד גבעת רם בתקציב 3000?" />
-          <button class="button primary" type="submit">שליחה</button>
-        </form>
-      </section>
+  <body class="text-on-surface" data-no-auto-layout>
+    <nav class="sticky top-0 z-50 bg-surface-container-lowest/90 backdrop-blur shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)]">
+      <div class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto">
+        <div class="flex items-center gap-xl">
+          <a href="index.html" class="text-2xl font-heading font-bold">RoomieFit</a>
+          <div class="hidden md:flex gap-lg items-center">
+            <a href="index.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navHome">בית</a>
+            <a href="listings.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navListings">דירות</a>
+            <a href="dashboard.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navRoommates">שותפים</a>
+            <a href="ai-assistant.html" class="text-primary font-bold border-b-2 border-primary pb-1 text-sm" data-i18n="navAI">AI</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-md">
+          <button class="bg-surface-container-low px-sm py-xs rounded-full flex items-center gap-xs text-xs font-semibold border border-outline-variant" data-language-toggle type="button">
+            <span data-lang-he class="bg-primary text-on-primary px-2 py-0.5 rounded-full">עב</span>
+            <span data-lang-en class="px-2 text-on-surface-variant">EN</span>
+          </button>
+          <a href="login.html" class="text-primary font-bold text-sm" data-i18n="navLogin">כניסה</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-lg md:px-xl py-xl">
+      <!-- Chat card -->
+      <div class="bg-white rounded-2xl custom-shadow border border-surface-container overflow-hidden flex flex-col" style="height: calc(100vh - 200px); min-height: 600px;">
+        <!-- Header -->
+        <header class="p-lg flex items-center justify-between border-b border-outline-variant">
+          <div class="flex items-center gap-md">
+            <div class="w-12 h-12 bg-primary-container rounded-2xl flex items-center justify-center text-on-primary-container shadow-sm">
+              <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1">auto_awesome</span>
+            </div>
+            <div>
+              <h1 class="font-heading font-bold text-xl leading-tight">עוזר RoomieFit</h1>
+              <div class="flex items-center gap-xs">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span class="text-xs text-outline">מקוון · מחפש לך דירות בזמן אמת</span>
+              </div>
+            </div>
+          </div>
+          <a href="https://t.me/RealestateTWA" target="_blank" rel="noopener" class="hidden md:flex items-center gap-sm bg-brand-telegram text-white px-md py-sm rounded-full text-xs font-bold hover:opacity-90 transition-all">
+            <span class="material-symbols-outlined text-[18px]">send</span>
+            פתח בטלגרם
+          </a>
+        </header>
+
+        <!-- Conversation -->
+        <div id="chatBox" class="flex-1 overflow-y-auto p-lg space-y-lg scroll-smooth"></div>
+
+        <!-- Sticky bottom -->
+        <footer class="p-lg border-t border-outline-variant bg-surface-container-lowest">
+          <!-- Suggestion chips -->
+          <div id="suggestionChips" class="flex flex-wrap gap-sm mb-lg">
+            <button class="suggestion px-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-xs hover:bg-primary-container hover:text-on-primary-container hover:border-primary transition-all">
+              דירת 2 חדרים ליד ת"א עד 4000 ₪
+            </button>
+            <button class="suggestion px-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-xs hover:bg-primary-container hover:text-on-primary-container hover:border-primary transition-all">
+              חדר בדירת בנות בירושלים
+            </button>
+            <button class="suggestion px-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-xs hover:bg-primary-container hover:text-on-primary-container hover:border-primary transition-all">
+              דירה לא מעשנת ליד הטכניון
+            </button>
+            <button class="suggestion px-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-xs hover:bg-primary-container hover:text-on-primary-container hover:border-primary transition-all">
+              דירה דתית ליד בר-אילן
+            </button>
+            <button class="suggestion px-md py-sm bg-surface-container-low border border-outline-variant rounded-full text-xs hover:bg-primary-container hover:text-on-primary-container hover:border-primary transition-all">
+              חדר זול עם חיות מחמד בבאר שבע
+            </button>
+          </div>
+
+          <form id="chatForm" class="relative flex items-center gap-md">
+            <div class="flex-1 relative">
+              <input id="message" type="text" placeholder="שאל/י על דירות, שותפים, אזורים, תקציב..." autocomplete="off" class="w-full bg-surface-container-low border-none rounded-2xl py-md ps-md pe-12 text-base focus:ring-2 focus:ring-primary focus:bg-white transition-all" />
+            </div>
+            <button type="submit" class="w-14 h-14 bg-brand-coral hover:bg-brand-coral-dark text-white rounded-2xl flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all" aria-label="שלח">
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </form>
+        </footer>
+      </div>
     </main>
+
+    <footer class="bg-surface border-t border-surface-container mt-lg">
+      <div class="w-full px-lg md:px-xl py-lg max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md text-xs text-on-surface-variant">
+        <span>RoomieFit · פרויקט קורס מסדי נתונים · נתוני דמו בלבד</span>
+        <span>© 2026</span>
+      </div>
+    </footer>
+
+    <script src="js/ai.js"></script>
   </body>
 </html>
