@@ -1,44 +1,26 @@
 /**
  * RoomieFit AI search service.
  *
- * Single entry point for "natural language → structured filters → listings".
+ * Thin compatibility shim around the new agentService (OpenAI Agents SDK).
  * Used by:
- *   - POST /api/ai/chat (HTTP route)
- *   - Telegram bot (in-process, no HTTP)
+ *   - POST /api/ai/chat            (HTTP route)
+ *   - Telegram bot (in-process)
  *
- * Returns:
- *   { mode: 'openai' | 'mock',
- *     reply: string,          // formatted Hebrew/English text
- *     filters: object,        // structured filters that were applied
+ * Response shape (kept stable so the frontend and bot don't need to change):
+ *   { mode: 'agent' | 'mock',
+ *     reply: string,
+ *     filters: object,
  *     listings: NormalizedListing[],
- *     search_mode: 'supabase' | 'mock',
+ *     search_mode: 'supabase' | 'mock' | null,
+ *     listing_detail?: NormalizedListing | null,
+ *     tool_trace?: Array<{ tool, input }>,
  *     warning?: string }
  */
 
-const { getOpenAIClient } = require("./openaiClient");
-const { searchListings, getFilterParameterSchema } = require("./listingsService");
+const { runAgent } = require("./agentService");
+const { searchListings } = require("./listingsService");
 
-const SYSTEM_PROMPT = `You are RoomieFit's apartment-search assistant for students in Israel.
-When the user describes what they're looking for (apartment, room, roommate, budget,
-city, campus, amenities, lifestyle), call the search_listings tool with structured
-filters extracted from their message. Use Hebrew city names if the user wrote Hebrew.
-Only call the tool when the user is searching — for general advice or questions
-(e.g. "what should I check before signing a lease?"), reply directly in the user's
-language without calling the tool. Replies must be in the user's language (Hebrew or English).`;
-
-const TOOLS = [
-  {
-    type: "function",
-    function: {
-      name: "search_listings",
-      description:
-        "Search RoomieFit apartments and rooms using structured filters. Returns up to `limit` matching listings.",
-      parameters: getFilterParameterSchema(),
-    },
-  },
-];
-
-async function aiSearch(rawMessage) {
+async function aiSearch(rawMessage, opts = {}) {
   const message = String(rawMessage || "").trim();
   if (!message) {
     const err = new Error("message is required");
@@ -46,48 +28,25 @@ async function aiSearch(rawMessage) {
     throw err;
   }
 
-  const client = getOpenAIClient();
-  if (!client) return mockSearchReply(message);
+  if (!process.env.OPENAI_API_KEY) {
+    return mockSearchReply(message);
+  }
 
   try {
-    const completion = await client.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: message },
-      ],
-      tools: TOOLS,
-      tool_choice: "auto",
-      temperature: 0.3,
-    });
-
-    const choice = completion.choices?.[0];
-    const toolCall = choice?.message?.tool_calls?.[0];
-
-    if (toolCall?.function?.name === "search_listings") {
-      let filters;
-      try {
-        filters = JSON.parse(toolCall.function.arguments || "{}");
-      } catch {
-        filters = {};
-      }
-      const { data, mode: searchMode } = await searchListings(filters);
-      const reply = formatSearchReply(data, filters);
-      return {
-        mode: "openai",
-        reply,
-        filters,
-        listings: data,
-        search_mode: searchMode,
-      };
-    }
-
-    const text = choice?.message?.content || "לא התקבלה תשובה מה-AI.";
-    return { mode: "openai", reply: text, filters: {}, listings: [] };
+    const result = await runAgent(message, { history: opts.history });
+    return {
+      mode: result.mode,
+      reply: result.reply,
+      filters: result.filters || {},
+      listings: result.listings || [],
+      listing_detail: result.listing_detail || null,
+      search_mode: result.search_mode,
+      tool_trace: result.tool_trace,
+    };
   } catch (error) {
-    console.warn(`OpenAI request failed: ${error.message}`);
+    console.warn(`Agent run failed: ${error.message}`);
     const fallback = await mockSearchReply(message);
-    return { ...fallback, warning: `OpenAI request failed: ${error.message}` };
+    return { ...fallback, warning: `Agent run failed: ${error.message}` };
   }
 }
 
@@ -95,7 +54,15 @@ async function mockSearchReply(message) {
   const filters = heuristicFilters(message);
   const { data, mode: searchMode } = await searchListings(filters);
   const reply = formatSearchReply(data, filters, { mock: true });
-  return { mode: "mock", reply, filters, listings: data, search_mode: searchMode };
+  return {
+    mode: "mock",
+    reply,
+    filters,
+    listings: data,
+    listing_detail: null,
+    search_mode: searchMode,
+    tool_trace: [],
+  };
 }
 
 function heuristicFilters(msg) {

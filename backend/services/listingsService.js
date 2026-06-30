@@ -69,6 +69,13 @@ const SELECT =
  * @property {number=} limit
  */
 
+// Bidirectional substring match so e.g. user-given "Technion - Israel Institute of Technology"
+// still matches a row whose name_en is just "Technion", and vice versa.
+function universityNameMatches(target, uni) {
+  const candidates = [uni.name_he, uni.name_en].filter(Boolean).map((s) => s.toLowerCase().trim());
+  return candidates.some((name) => name.includes(target) || target.includes(name));
+}
+
 function canonicalCity(input) {
   if (!input) return null;
   return CITY_ALIASES[input] || input;
@@ -124,14 +131,11 @@ async function searchListings(filters = {}) {
     let rows = (data || []).map(normalizeSupabaseRow);
 
     if (filters.university_name) {
-      const target = filters.university_name.toLowerCase();
+      const target = filters.university_name.toLowerCase().trim();
       const maxDist = filters.max_university_distance_m ?? Infinity;
       rows = rows.filter((r) => {
         if (!r.nearest_university) return false;
-        const nameMatch =
-          r.nearest_university.name_he?.toLowerCase().includes(target) ||
-          r.nearest_university.name_en?.toLowerCase().includes(target);
-        if (!nameMatch) return false;
+        if (!universityNameMatches(target, r.nearest_university)) return false;
         return r.nearest_university.distance_m <= maxDist;
       });
     } else if (filters.max_university_distance_m != null) {

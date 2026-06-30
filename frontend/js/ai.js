@@ -82,6 +82,11 @@ function listingResultCard(listing, idx) {
   </a>`;
 }
 
+// Conversation history in memory — sent on each turn so the agent can answer
+// follow-ups ("tell me more about #2", "do they sleep early?") that need
+// context from previous turns. Capped to the last 6 messages (3 turns).
+const conversation = [];
+
 async function sendMessage(text) {
   if (!text || !text.trim()) return;
   bubbleUser(text);
@@ -90,11 +95,15 @@ async function sendMessage(text) {
     const res = await fetch("/api/ai/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text }),
+      body: JSON.stringify({ message: text, history: conversation.slice(-6) }),
     });
     const payload = await res.json();
     removeTyping();
-    bubbleAssistant(payload.reply || "לא התקבלה תשובה.", payload.listings || payload.results || payload.data);
+    const listings = payload.listings || payload.results || payload.data;
+    const reply = payload.reply || "לא התקבלה תשובה.";
+    bubbleAssistant(reply, listings);
+    conversation.push({ role: "user", content: text });
+    conversation.push({ role: "assistant", content: reply });
   } catch (err) {
     removeTyping();
     bubbleAssistant("מצטער, נכשלה הבקשה. נסה שוב בעוד רגע.");

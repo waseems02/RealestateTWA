@@ -5,17 +5,20 @@ const router = express.Router();
 
 /**
  * POST /api/ai/chat
- * Body: { message: string }
+ * Body: { message: string, history?: Array<{role, content}> }
  *
- * Response: { mode, reply, listings?, filters?, search_mode?, warning? }
- *   mode: 'openai' | 'mock'
- *   reply: assistant text (Hebrew or English depending on user input)
- *   listings: present when the user's message triggered a search
- *   filters: the structured filters the agent extracted (for the UI to show)
+ * Response: { mode, reply, listings?, listing_detail?, filters?, search_mode?, tool_trace?, warning? }
+ *   mode: 'agent' | 'mock'
+ *   reply: assistant text (Hebrew or English, matching the user's input)
+ *   listings: most-recent search results (if a search was performed this turn)
+ *   listing_detail: full detail object if the agent asked about a specific listing
+ *   filters: structured filters the agent extracted (for debugging / UI tags)
+ *   tool_trace: ordered list of which tools the agent called (debugging)
  */
 router.post("/chat", async (req, res) => {
   try {
-    const result = await aiSearch(req.body?.message);
+    const history = Array.isArray(req.body?.history) ? req.body.history : [];
+    const result = await aiSearch(req.body?.message, { history });
     return res.json(result);
   } catch (err) {
     if (err.code === "EMPTY_MESSAGE") {
