@@ -1,20 +1,35 @@
 /**
- * RoomieFit listings service.
+ * RoomieFit listings service (new schema, post 0004 migration).
  *
  * Single source of truth for searching listings. Used by both
- * /api/listings (REST) and /api/ai/chat (NL → structured filters via
- * OpenAI tool calling). Falls back to demoData when Supabase is not
- * configured so the app stays usable in mock mode.
+ * /api/listings (REST) and the AI agent (NL → structured filters via
+ * @openai/agents). Falls back to demoData when Supabase is not configured
+ * so the app stays usable in mock mode.
  *
- * Normalized listing shape (returned regardless of source):
+ * The Supabase schema changed in migration 0004_adopt_new_schema.sql:
+ *   listings.price_nis        → listings.price
+ *   listings.has_balcony      → listings.balcony
+ *   listings.parking_available→ listings.parking
+ *   listings.num_roommates    → listings.current_roommates_count
+ *   listings.source           → listings.source_type (with _demo suffixes)
+ *   listings.is_active        → listings.status = 'active'
+ *   listing_universities join → listings.campus_id → campuses.university_id
+ *   (new) listings.listing_type ('apartment' | 'room')
+ *   (new) listings.contact_*   contact fields
+ *   (new) listing_images       one-to-many image URLs
+ *
+ * This service translates the new columns back into the existing normalised
+ * shape the frontend and the AI agent expect, so neither needs to know the
+ * schema changed:
  *   { id, title, description, price, city, neighborhood, rooms, size_sqm,
- *     floor, balcony, parking, air_conditioning, accessible, furnished
- *     (boolean — true if 'partial' or 'full'), furnished_level
- *     ('none'|'partial'|'full'), pets_allowed, smoking_allowed,
- *     roommates: { count, status, religious_tag, gender_preference },
- *     distance_to_bus_m, distance_to_train_m, distance_to_supermarket_m,
- *     nearest_university: { name, distance_m } | null,
- *     available_from, source, source_url, mode_source ('supabase'|'demo') }
+ *     floor, balcony, parking, air_conditioning, accessible (always null
+ *     post-migration), furnished (boolean), furnished_level
+ *     ('full'|'none'), pets_allowed, smoking_allowed,
+ *     listing_type, street, elevator, contact, images[],
+ *     roommates: { count, status (null), religious_tag, gender_preference (null) },
+ *     distance_to_bus_m, distance_to_train_m, distance_to_supermarket_m (null),
+ *     nearest_university: { name, name_he, name_en, distance_m } | null,
+ *     available_from, source, source_url (null), mode_source ('supabase'|'demo') }
  */
 
 const { getSupabaseClient } = require("./supabaseClient");
@@ -25,25 +40,33 @@ const CITY_ALIASES = {
   "תל אביב": "Tel Aviv",
   "ירושלים": "Jerusalem",
   "חיפה": "Haifa",
-  "באר שבע": "Beer Sheva",
+  "באר שבע": "Be'er Sheva",
+  "באר שבע ": "Be'er Sheva",
   "רמת גן": "Ramat Gan",
   "הרצליה": "Herzliya",
   "אריאל": "Ariel",
   "שדרות": "Sderot",
   "רעננה": "Raanana",
   "חולון": "Holon",
+  "נתניה": "Netanya",
+  "רחובות": "Rehovot",
+  // English aliases for the apostrophe variant
+  "Beer Sheva": "Be'er Sheva",
 };
 
+// Tareq's schema uses "Be'er Sheva" (with apostrophe) in the city text.
 const CANONICAL_CITY_TO_DEMO_CITY = {
-  // canonical English → demoData's Hebrew city values
   "Tel Aviv": "תל אביב",
   Jerusalem: "ירושלים",
   Haifa: "חיפה",
-  "Beer Sheva": "באר שבע",
+  "Be'er Sheva": "באר שבע",
 };
 
+// SELECT joins:
+//   - campus (one) → its university (one)
+//   - listing_images (many)
 const SELECT =
-  "*, listing_universities ( distance_m, universities ( id, name_en, name_he, city ) )";
+  "*, campuses ( id, name_he, name_en, city, latitude, longitude, universities ( id, name_he, name_en ) ), listing_images ( image_url, alt_text )";
 
 /**
  * @typedef {Object} Filters
@@ -52,16 +75,14 @@ const SELECT =
  * @property {number=} max_price
  * @property {number=} min_rooms
  * @property {number=} min_sqm
- * @property {('none'|'partial'|'full')=} furnished
+ * @property {boolean=} furnished
  * @property {boolean=} has_balcony
  * @property {boolean=} parking_available
  * @property {boolean=} air_conditioning
- * @property {boolean=} accessible
+ * @property {boolean=} elevator
  * @property {boolean=} pets_allowed
  * @property {boolean=} smoking_allowed
- * @property {('student'|'professional'|'mixed')=} roommates_status
- * @property {('secular'|'traditional'|'religious'|'mixed')=} religious
- * @property {('any'|'male'|'female')=} gender_preference
+ * @property {('apartment'|'room')=} listing_type
  * @property {number=} max_bus_distance_m
  * @property {number=} max_train_distance_m
  * @property {string=} university_name
@@ -69,16 +90,16 @@ const SELECT =
  * @property {number=} limit
  */
 
-// Bidirectional substring match so e.g. user-given "Technion - Israel Institute of Technology"
-// still matches a row whose name_en is just "Technion", and vice versa.
-function universityNameMatches(target, uni) {
-  const candidates = [uni.name_he, uni.name_en].filter(Boolean).map((s) => s.toLowerCase().trim());
-  return candidates.some((name) => name.includes(target) || target.includes(name));
-}
-
 function canonicalCity(input) {
   if (!input) return null;
   return CITY_ALIASES[input] || input;
+}
+
+// Bidirectional substring match — works whether the agent passes the canonical
+// "Technion - Israel Institute of Technology" or the bare "Technion".
+function universityNameMatches(target, uni) {
+  const candidates = [uni?.name_he, uni?.name_en].filter(Boolean).map((s) => s.toLowerCase().trim());
+  return candidates.some((name) => name.includes(target) || target.includes(name));
 }
 
 async function searchListings(filters = {}) {
@@ -95,32 +116,32 @@ async function searchListings(filters = {}) {
     let query = supabase
       .from("listings")
       .select(SELECT)
-      .eq("is_active", true)
+      .eq("status", "active")
       .order("created_at", { ascending: false });
 
     const city = canonicalCity(filters.city);
     if (city) query = query.eq("city", city);
-    if (filters.min_price != null) query = query.gte("price_nis", filters.min_price);
-    if (filters.max_price != null) query = query.lte("price_nis", filters.max_price);
+    if (filters.min_price != null) query = query.gte("price", filters.min_price);
+    if (filters.max_price != null) query = query.lte("price", filters.max_price);
     if (filters.min_rooms != null) query = query.gte("rooms", filters.min_rooms);
     if (filters.min_sqm != null) query = query.gte("size_sqm", filters.min_sqm);
-    if (filters.furnished) query = query.eq("furnished", filters.furnished);
-    if (filters.has_balcony === true) query = query.eq("has_balcony", true);
-    if (filters.parking_available === true) query = query.eq("parking_available", true);
+    if (filters.furnished === true) query = query.eq("furnished", true);
+    if (filters.furnished === false) query = query.eq("furnished", false);
+    if (filters.has_balcony === true) query = query.eq("balcony", true);
+    if (filters.parking_available === true) query = query.eq("parking", true);
     if (filters.air_conditioning === true) query = query.eq("air_conditioning", true);
-    if (filters.accessible === true) query = query.eq("accessible", true);
+    if (filters.elevator === true) query = query.eq("elevator", true);
     if (filters.pets_allowed === true) query = query.eq("pets_allowed", true);
     if (filters.smoking_allowed === true) query = query.eq("smoking_allowed", true);
-    if (filters.roommates_status) query = query.eq("roommates_status", filters.roommates_status);
-    if (filters.religious) query = query.eq("roommates_religious_tag", filters.religious);
-    if (filters.gender_preference) query = query.eq("gender_preference", filters.gender_preference);
+    if (filters.smoking_allowed === false) query = query.eq("smoking_allowed", false);
+    if (filters.listing_type) query = query.eq("listing_type", filters.listing_type);
     if (filters.max_bus_distance_m != null)
-      query = query.lte("bus_stop_distance_m", filters.max_bus_distance_m);
+      query = query.lte("distance_to_bus_station_m", filters.max_bus_distance_m);
     if (filters.max_train_distance_m != null)
-      query = query.lte("train_station_distance_m", filters.max_train_distance_m);
+      query = query.lte("distance_to_train_station_km", filters.max_train_distance_m / 1000);
 
     const limit = clampLimit(filters.limit);
-    query = query.limit(limit + 50); // slight overshoot for university post-filter
+    query = query.limit(limit + 50); // overshoot for university post-filter
 
     const { data, error } = await query;
     if (error) {
@@ -136,13 +157,13 @@ async function searchListings(filters = {}) {
       rows = rows.filter((r) => {
         if (!r.nearest_university) return false;
         if (!universityNameMatches(target, r.nearest_university)) return false;
-        return r.nearest_university.distance_m <= maxDist;
+        return (r.nearest_university.distance_m ?? Infinity) <= maxDist;
       });
     } else if (filters.max_university_distance_m != null) {
       rows = rows.filter(
         (r) =>
           r.nearest_university != null &&
-          r.nearest_university.distance_m <= filters.max_university_distance_m
+          (r.nearest_university.distance_m ?? Infinity) <= filters.max_university_distance_m
       );
     }
 
@@ -154,50 +175,75 @@ async function searchListings(filters = {}) {
 }
 
 function normalizeSupabaseRow(row) {
-  const unis = (row.listing_universities || [])
-    .filter((j) => j.universities)
-    .sort((a, b) => a.distance_m - b.distance_m);
-  const nearest = unis[0]
+  const campus = row.campuses;
+  const uni = campus?.universities;
+  // distance_to_campus_km lives on the listing row itself (post-migration);
+  // we treat it as the nearest_university distance for back-compat.
+  const nearestDistanceM =
+    row.distance_to_campus_km != null ? Math.round(row.distance_to_campus_km * 1000) : null;
+
+  const nearest_university = uni
     ? {
-        name_he: unis[0].universities.name_he,
-        name_en: unis[0].universities.name_en,
-        distance_m: unis[0].distance_m,
-        // backwards-compat single 'name' field for templates
-        name: unis[0].universities.name_he,
+        name_he: uni.name_he,
+        name_en: uni.name_en,
+        name: uni.name_he,
+        distance_m: nearestDistanceM,
       }
     : null;
+
+  const images = (row.listing_images || []).map((img) => img.image_url).filter(Boolean);
+
+  // Source: strip the "_demo" suffix so the frontend pill renders the same
+  // values it did under the old schema (manual / yad2 / facebook / other).
+  const source = row.source_type ? row.source_type.replace(/_demo$/, "") : null;
 
   return {
     id: row.id,
     title: row.title,
     description: row.description,
-    price: row.price_nis,
+    price: row.price,
     city: row.city,
     neighborhood: row.neighborhood,
     rooms: row.rooms,
     size_sqm: row.size_sqm,
     floor: row.floor,
-    balcony: row.has_balcony,
-    parking: row.parking_available,
+    balcony: row.balcony,
+    parking: row.parking,
     air_conditioning: row.air_conditioning,
-    accessible: row.accessible,
-    furnished: row.furnished !== "none",
-    furnished_level: row.furnished,
+    accessible: null, // not in new schema
+    furnished: row.furnished === true,
+    furnished_level: row.furnished ? "full" : "none",
     pets_allowed: row.pets_allowed,
     smoking_allowed: row.smoking_allowed,
-    roommates: {
-      count: row.num_roommates,
-      status: row.roommates_status,
-      religious_tag: row.roommates_religious_tag,
-      gender_preference: row.gender_preference,
+    // New fields surfaced through the existing API:
+    listing_type: row.listing_type,
+    street: row.street,
+    elevator: row.elevator,
+    suitable_for_roommates: row.suitable_for_roommates,
+    lifestyle_tradition_preference: row.lifestyle_tradition_preference,
+    contact: {
+      name: row.contact_name,
+      phone: row.contact_phone,
+      email: row.contact_email,
     },
-    distance_to_bus_m: row.bus_stop_distance_m,
-    distance_to_train_m: row.train_station_distance_m,
-    distance_to_supermarket_m: row.nearest_supermarket_m,
-    nearest_university: nearest,
+    images,
+    image_url: images[0] || null,
+    roommates: {
+      count: row.current_roommates_count,
+      status: null, // not in new schema
+      religious_tag: row.lifestyle_tradition_preference || null,
+      gender_preference: null, // not in new schema
+    },
+    distance_to_bus_m: row.distance_to_bus_station_m,
+    distance_to_train_m:
+      row.distance_to_train_station_km != null
+        ? Math.round(row.distance_to_train_station_km * 1000)
+        : null,
+    distance_to_supermarket_m: null,
+    nearest_university,
     available_from: row.available_from,
-    source: row.source,
-    source_url: row.source_url,
+    source,
+    source_url: null,
     mode_source: "supabase",
   };
 }
@@ -218,8 +264,7 @@ function searchDemo(filters, meta = {}) {
   if (filters.parking_available === true) rows = rows.filter((r) => r.parking === true);
   if (filters.smoking_allowed === true) rows = rows.filter((r) => r.smoking_allowed === true);
   if (filters.smoking_allowed === false) rows = rows.filter((r) => r.smoking_allowed === false);
-  // demo data has no fields for: AC, accessible, pets, roommate status enums,
-  // gender, religious — those filters degrade to no-op in mock mode.
+  if (filters.listing_type) rows = rows.filter((r) => r.listing_type === filters.listing_type);
 
   if (filters.university_name) {
     const t = filters.university_name.toLowerCase();
@@ -238,19 +283,27 @@ function normalizeDemoRow(d) {
     title: d.title,
     description: d.description,
     price: d.price,
-    city: d.city, // already Hebrew in demoData
+    city: d.city,
     neighborhood: d.neighborhood,
     rooms: estimateRoomsFromDemo(d),
     size_sqm: d.size_sqm,
     floor: d.floor,
     balcony: d.balcony,
     parking: d.parking,
-    air_conditioning: null, // not in demo schema
+    air_conditioning: null,
     accessible: null,
     furnished: d.furnished === true,
     furnished_level: d.furnished ? "full" : "none",
     pets_allowed: null,
     smoking_allowed: d.smoking_allowed,
+    listing_type: d.title?.includes("חדר") ? "room" : "apartment",
+    street: null,
+    elevator: null,
+    suitable_for_roommates: null,
+    lifestyle_tradition_preference: null,
+    contact: { name: null, phone: null, email: null },
+    images: [],
+    image_url: null,
     roommates: {
       count: d.roommates,
       status: null,
@@ -276,7 +329,6 @@ function normalizeDemoRow(d) {
 }
 
 function estimateRoomsFromDemo(d) {
-  // demoData has roommates count but not rooms — rough estimate
   if (d.title?.includes("חדר")) return 1;
   if (typeof d.roommates === "number") return d.roommates + 1;
   return null;
@@ -284,7 +336,7 @@ function estimateRoomsFromDemo(d) {
 
 function minutesToMetres(min) {
   if (min == null) return null;
-  return Math.round(min * 80); // ~80m / min walking
+  return Math.round(min * 80);
 }
 
 function clampLimit(n) {
@@ -294,8 +346,12 @@ function clampLimit(n) {
 }
 
 /**
- * JSON-Schema-ish parameter spec for OpenAI function calling. Single
- * source of truth so REST and AI agent stay in sync.
+ * JSON-Schema-ish parameter spec for OpenAI function calling. Single source
+ * of truth so REST and AI agent stay in sync. Reflects the post-0004 schema:
+ *  - `furnished` is now a boolean (was an enum)
+ *  - `listing_type` ('apartment'|'room') replaces the old roommates_status
+ *  - `roommates_status`, `religious`, `gender_preference`, `accessible` are
+ *    no longer in the schema and have been removed from the filter set.
  */
 function getFilterParameterSchema() {
   return {
@@ -304,7 +360,7 @@ function getFilterParameterSchema() {
       city: {
         type: "string",
         description:
-          "City name in English (Tel Aviv, Jerusalem, Haifa, Beer Sheva, Ramat Gan, Herzliya, Ariel, Sderot, Raanana, Holon) or Hebrew (תל אביב, ירושלים, חיפה, באר שבע, רמת גן, הרצליה, אריאל, שדרות, רעננה, חולון)",
+          "City name in English (Tel Aviv, Jerusalem, Haifa, Be'er Sheva, Ramat Gan, Herzliya, Ariel, Holon, Netanya, Rehovot) or Hebrew (תל אביב, ירושלים, חיפה, באר שבע, רמת גן, הרצליה, אריאל, חולון, נתניה, רחובות)",
       },
       min_price: { type: "integer", description: "Minimum monthly rent in NIS" },
       max_price: { type: "integer", description: "Maximum monthly rent in NIS" },
@@ -314,30 +370,20 @@ function getFilterParameterSchema() {
       },
       min_sqm: { type: "integer", description: "Minimum apartment size in square metres" },
       furnished: {
-        type: "string",
-        enum: ["none", "partial", "full"],
-        description: "Furnishing level requested",
+        type: "boolean",
+        description: "true = must be furnished, false = must be unfurnished. Only set if user asked.",
       },
       has_balcony: { type: "boolean" },
       parking_available: { type: "boolean" },
       air_conditioning: { type: "boolean" },
-      accessible: { type: "boolean", description: "Wheelchair/elevator accessible" },
+      elevator: { type: "boolean" },
       pets_allowed: { type: "boolean" },
       smoking_allowed: { type: "boolean" },
-      roommates_status: {
+      listing_type: {
         type: "string",
-        enum: ["student", "professional", "mixed"],
-        description: "Whether existing roommates are students, working professionals, or mixed",
-      },
-      religious: {
-        type: "string",
-        enum: ["secular", "traditional", "religious", "mixed"],
-        description: "Religious observance level of roommates",
-      },
-      gender_preference: {
-        type: "string",
-        enum: ["any", "male", "female"],
-        description: "Gender restriction on the apartment (e.g. female-only)",
+        enum: ["apartment", "room"],
+        description:
+          "Whether the user wants a full apartment ('apartment') or a single room in a shared apartment ('room' — חדר בדירת שותפים)",
       },
       max_bus_distance_m: {
         type: "integer",
@@ -354,7 +400,7 @@ function getFilterParameterSchema() {
       },
       max_university_distance_m: {
         type: "integer",
-        description: "Max distance to the named university in metres",
+        description: "Max distance to the named university in metres (1500 = walking, 3000 = close)",
       },
       limit: {
         type: "integer",
