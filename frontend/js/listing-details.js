@@ -109,29 +109,8 @@ function render(listing) {
   const rm = listing.roommates || {};
 
   root.innerHTML = `
-    <!-- Compact title strip — sits ABOVE the gallery so the apartment name
-         is the first thing visible and the title row isn't pushed below
-         the fold by tall images. -->
-    <section class="bg-white rounded-2xl p-md md:p-lg custom-shadow border border-surface-container flex flex-col md:flex-row md:items-center justify-between gap-md">
-      <div class="min-w-0">
-        <div class="flex items-center gap-xs flex-wrap mb-xs">
-          ${listingTypeLabel(listing.listing_type) ? `<span class="bg-primary text-on-primary px-sm py-xs rounded-full text-[11px] font-bold">${listingTypeLabel(listing.listing_type)}</span>` : ""}
-          <span class="${sourceTone(listing.source)} px-sm py-xs rounded-full text-[11px] font-bold">${sourceLabel(listing.source)} · דמו</span>
-        </div>
-        <h1 class="font-heading font-bold text-2xl md:text-3xl truncate">${escapeHtml(listing.title)}</h1>
-        <p class="text-sm text-on-surface-variant flex items-center gap-xs flex-wrap mt-xs">
-          <span class="material-symbols-outlined text-primary" style="font-size:18px;">location_on</span>
-          <span>${escapeHtml(listing.city || "")}${listing.neighborhood ? ` · ${escapeHtml(listing.neighborhood)}` : ""}${listing.street ? ` · ${escapeHtml(listing.street)}` : ""}</span>
-        </p>
-      </div>
-      <div class="text-end shrink-0">
-        <div class="text-primary font-heading font-bold text-2xl md:text-3xl leading-none">${fmtPrice(listing.price)}</div>
-        <div class="text-[11px] text-on-surface-variant mt-xs">לחודש</div>
-      </div>
-    </section>
-
-    <!-- Gallery (click to zoom) — shorter so it doesn't push the rest down -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[380px]">
+    <!-- Gallery (click to zoom) -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[500px]">
       <button type="button" class="js-lightbox group md:col-span-3 h-96 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
         <img src="${galleryImgs[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${escapeHtml(listing.title)}" />
         <span class="absolute bottom-md end-md bg-black/55 text-white text-xs font-bold px-md py-xs rounded-full flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
@@ -155,6 +134,25 @@ function render(listing) {
     <div class="grid lg:grid-cols-3 gap-xl items-start">
       <!-- Left column -->
       <div class="lg:col-span-2 space-y-xl">
+        <!-- Title -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+          <div>
+            <div class="flex items-center gap-sm mb-sm flex-wrap">
+              ${listingTypeLabel(listing.listing_type) ? `<span class="bg-primary text-on-primary px-sm py-xs rounded-full text-xs font-bold">${listingTypeLabel(listing.listing_type)}</span>` : ""}
+              <span class="${sourceTone(listing.source)} px-sm py-xs rounded-full text-xs font-bold">מקור: ${sourceLabel(listing.source)} (דמו)</span>
+              ${listing.source_url ? `<a href="${listing.source_url}" target="_blank" rel="noopener" class="text-xs text-on-surface-variant underline">קישור מקור</a>` : ""}
+            </div>
+            <h1 class="font-heading font-bold text-3xl md:text-4xl">${escapeHtml(listing.title)}</h1>
+            <p class="text-on-surface-variant text-base flex items-center gap-xs mt-xs flex-wrap">
+              <span class="material-symbols-outlined text-primary">location_on</span>
+              <span>${escapeHtml(listing.city || "")}${listing.neighborhood ? ` · ${escapeHtml(listing.neighborhood)}` : ""}${listing.street ? ` · ${escapeHtml(listing.street)}` : ""}</span>
+            </p>
+          </div>
+          <div class="text-end">
+            <div class="text-primary font-heading font-bold text-3xl md:text-4xl leading-none">${fmtPrice(listing.price)}<span class="text-xs font-normal text-on-surface-variant"> / חודש</span></div>
+          </div>
+        </div>
+
         <!-- Description -->
         ${listing.description ? `<p class="text-base leading-relaxed text-on-surface-variant">${escapeHtml(listing.description)}</p>` : ""}
 
