@@ -55,6 +55,31 @@ function imageFor(listing, idx) {
   return (listing.images && listing.images[0]) || listing.image_url || HERO_IMAGES[idx % HERO_IMAGES.length];
 }
 
+// ---------- Wishlist (localStorage) ----------
+const WISHLIST_KEY = "rf_wishlist_v1";
+function loadWishlist() {
+  try { return new Set(JSON.parse(localStorage.getItem(WISHLIST_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function saveWishlist(set) {
+  localStorage.setItem(WISHLIST_KEY, JSON.stringify([...set]));
+}
+function isFavourited(id) { return loadWishlist().has(String(id)); }
+function toggleFavourite(id) {
+  const ids = loadWishlist();
+  const key = String(id);
+  if (ids.has(key)) ids.delete(key); else ids.add(key);
+  saveWishlist(ids);
+  return ids.has(key);
+}
+
+// "חדש" badge — listings created in the last 14 days
+function isFreshListing(createdAt) {
+  if (!createdAt) return false;
+  const ms = Date.now() - new Date(createdAt).getTime();
+  return ms < 14 * 24 * 3600 * 1000;
+}
+
 function sourceBadge(src) {
   const p = SOURCE_PRESENTATION[src] || SOURCE_PRESENTATION.manual;
   return `<span class="${p.cls} px-sm py-0.5 rounded-full text-[11px] font-semibold">${p.label} · דמו</span>`;
@@ -75,6 +100,7 @@ const URL_KEYS = [
   "accessible",
   "smoking_allowed",
   "furnished",
+  "listing_type",
   "roommates_status",
   "religious",
   "gender_preference",
@@ -110,6 +136,9 @@ function buildQuery() {
   push("min_price", $("#f_min_price").value);
   push("max_price", $("#f_max_price").value);
   push("min_rooms", $("#f_min_rooms").value);
+  // listing_type comes from the URL (set by hero quick-toggle); not a form input yet
+  const lt = new URLSearchParams(location.search).get("listing_type");
+  if (lt) push("listing_type", lt);
   push("furnished", $("#f_furnished").value);
   if ($("#f_has_balcony").checked) push("has_balcony", "true");
   if ($("#f_pets_allowed").checked) push("pets_allowed", "true");
@@ -197,9 +226,13 @@ function listingCard(listing, idx) {
   return `<a href="listing-details.html?id=${encodeURIComponent(listing.id)}" class="bg-white rounded-2xl overflow-hidden custom-shadow custom-shadow-hover transition-all group cursor-pointer block">
     <div class="relative h-64">
       <img loading="lazy" src="${img}" alt="${escapeHtml(listing.title || "דירה")}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-      <div class="absolute top-md start-md flex gap-xs flex-wrap">${typeBadge}${sourceBadge(listing.source)}</div>
-      <button class="absolute top-md end-md bg-white/90 backdrop-blur-md p-sm rounded-full custom-shadow text-on-surface-variant hover:text-brand-coral" type="button" onclick="event.preventDefault(); event.stopPropagation();">
-        <span class="material-symbols-outlined">favorite</span>
+      <div class="absolute top-md start-md flex gap-xs flex-wrap">
+        ${isFreshListing(listing.created_at) ? '<span class="badge-new bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-sm py-xs rounded-full text-[10px] font-bold shadow">✨ חדש</span>' : ""}
+        ${typeBadge}
+        ${sourceBadge(listing.source)}
+      </div>
+      <button class="js-fav absolute top-md end-md bg-white/90 backdrop-blur-md p-sm rounded-full custom-shadow text-on-surface-variant hover:text-brand-coral transition-colors" type="button" data-id="${listing.id}" aria-label="שמור למועדפים" onclick="event.preventDefault(); event.stopPropagation();">
+        <span class="material-symbols-outlined ${isFavourited(listing.id) ? "heart-active" : ""}">favorite</span>
       </button>
       ${listing.available_from ? `<div class="absolute bottom-md start-md bg-emerald-50 text-emerald-800 px-sm py-xs rounded-lg text-[11px] font-bold">פנוי מ-${new Date(listing.available_from).toLocaleDateString("he-IL")}</div>` : ""}
     </div>
@@ -233,6 +266,16 @@ function renderGrid() {
     return;
   }
   grid.innerHTML = STATE.listings.map((l, i) => listingCard(l, i)).join("");
+  // Wire wishlist hearts
+  grid.querySelectorAll(".js-fav").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const id = btn.dataset.id;
+      const nowOn = toggleFavourite(id);
+      const icon = btn.querySelector(".material-symbols-outlined");
+      icon.classList.toggle("heart-active", nowOn);
+    });
+  });
 }
 
 function renderCount() {

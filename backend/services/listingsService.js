@@ -243,6 +243,7 @@ function normalizeSupabaseRow(row) {
     },
     images,
     image_url: images[0] || null,
+    created_at: row.created_at,
     roommates: {
       count: row.current_roommates_count,
       status: null, // not in new schema
