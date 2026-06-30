@@ -23,12 +23,8 @@
   const conversation = [];
   let panelOpen = false;
 
-  const HERO_IMAGES = [
-    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=400&q=80",
-  ];
+  const placeholderImageFor = (id) =>
+    `https://picsum.photos/seed/${encodeURIComponent(id || Math.random())}/400/300`;
 
   const fmtPrice = (n) => (n == null ? "—" : "₪" + Number(n).toLocaleString("he-IL"));
   const fmtDist = (m) =>
@@ -422,11 +418,11 @@
   function renderListings(listings) {
     const cards = listings
       .slice(0, 4)
-      .map((listing, idx) => {
+      .map((listing) => {
         const img =
           (listing.images && listing.images[0]) ||
           listing.image_url ||
-          HERO_IMAGES[idx % HERO_IMAGES.length];
+          placeholderImageFor(listing.id);
         const uni = listing.nearest_university;
         return `
           <a href="listing-details.html?id=${encodeURIComponent(listing.id)}" class="rf-listing-card">

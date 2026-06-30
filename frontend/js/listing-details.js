@@ -1,12 +1,12 @@
 // RoomieFit listing details — fetches single listing from /api/listings, renders
 // gallery + key facts + amenities + roommates + commute + embedded mini-map.
 
-const GALLERY_FALLBACKS = [
-  "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80",
-];
+// Per-listing deterministic placeholder gallery — picsum varies the seed so
+// each tile gets a different photo, and they always load.
+function galleryFallbacks(listingId) {
+  const base = `https://picsum.photos/seed/${encodeURIComponent(listingId || "x")}`;
+  return [`${base}-1/1600/900`, `${base}-2/800/600`, `${base}-3/800/600`, `${base}-4/800/600`];
+}
 
 const fmtPrice = (n) => (n == null ? "—" : "₪" + Number(n).toLocaleString("he-IL"));
 const fmtDist = (m) => (m == null ? "—" : m < 1000 ? `${m} מ׳` : `${(m / 1000).toFixed(1)} ק"מ`);
@@ -30,17 +30,8 @@ function listingTypeLabel(t) {
   return t === "room" ? "חדר בדירת שותפים" : t === "apartment" ? "דירה שלמה" : null;
 }
 
-function statusLabel(status) {
-  return ({ student: "סטודנטים", professional: "עובדים", mixed: "מעורב" })[status] || null;
-}
-function religiousLabel(t) {
-  return ({ secular: "חילוני", traditional: "מסורתי", religious: "דתי", mixed: "מעורב" })[t] || null;
-}
-function genderLabel(g) {
-  return ({ female: "בנות בלבד", male: "בנים בלבד", any: "לא משנה" })[g] || null;
-}
 function furnishedLabel(f) {
-  return ({ none: "ללא", partial: "חלקי", full: "מלא" })[f] || "—";
+  return ({ none: "ללא ריהוט", partial: "ריהוט חלקי", full: "מרוהטת לגמרי" })[f] || "—";
 }
 function sourceTone(src) {
   return ({
@@ -102,21 +93,32 @@ function errorBox(msg) {
 }
 
 function render(listing) {
-  const galleryImgs = (listing.images && listing.images.length ? listing.images : []).concat(GALLERY_FALLBACKS).slice(0, 4);
+  const fb = galleryFallbacks(listing.id);
+  const galleryImgs = (listing.images && listing.images.length ? listing.images : []).concat(fb).slice(0, 4);
   const root = document.getElementById("detailRoot");
   const uni = listing.nearest_university;
   const rm = listing.roommates || {};
 
   root.innerHTML = `
-    <!-- Gallery -->
+    <!-- Gallery (click to zoom) -->
     <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[500px]">
-      <div class="md:col-span-3 h-96 md:h-full rounded-2xl overflow-hidden custom-shadow">
-        <img src="${galleryImgs[0]}" class="w-full h-full object-cover" alt="${escapeHtml(listing.title)}" />
-      </div>
+      <button type="button" class="js-lightbox group md:col-span-3 h-96 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
+        <img src="${galleryImgs[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${escapeHtml(listing.title)}" />
+        <span class="absolute bottom-md end-md bg-black/55 text-white text-xs font-bold px-md py-xs rounded-full flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+          <span class="material-symbols-outlined" style="font-size:16px;">zoom_in</span>
+          הגדל
+        </span>
+      </button>
       <div class="grid grid-cols-3 md:grid-cols-1 gap-md h-full">
-        <div class="rounded-2xl overflow-hidden custom-shadow"><img src="${galleryImgs[1]}" class="w-full h-full object-cover" alt="" /></div>
-        <div class="rounded-2xl overflow-hidden custom-shadow"><img src="${galleryImgs[2]}" class="w-full h-full object-cover" alt="" /></div>
-        <div class="rounded-2xl overflow-hidden custom-shadow"><img src="${galleryImgs[3]}" class="w-full h-full object-cover" alt="" /></div>
+        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0" data-img-idx="1">
+          <img src="${galleryImgs[1]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 2" />
+        </button>
+        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0" data-img-idx="2">
+          <img src="${galleryImgs[2]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 3" />
+        </button>
+        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0" data-img-idx="3">
+          <img src="${galleryImgs[3]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 4" />
+        </button>
       </div>
     </section>
 
@@ -148,41 +150,37 @@ function render(listing) {
         <!-- Key facts -->
         <div class="bg-white p-xl rounded-2xl custom-shadow border border-surface-container">
           <div class="grid grid-cols-2 md:grid-cols-3 gap-xl">
-            ${factCell("חדרים", listing.rooms ?? "?")}
+            ${factCell("חדרים", listing.rooms ?? "—")}
             ${factCell("גודל", listing.size_sqm ? `${listing.size_sqm} מ"ר` : "—")}
             ${factCell("קומה", listing.floor ?? "—")}
             ${factCell("ריהוט", furnishedLabel(listing.furnished_level))}
-            ${factCell("חוזה", listing.lease_months ? `${listing.lease_months} חודשים` : "12 חודשים")}
-            ${factCell("פנוי מ-", listing.available_from ? new Date(listing.available_from).toLocaleDateString("he-IL") : "מיידי")}
+            ${factCell("שותפים בדירה", rm.count != null ? `${rm.count}` : "—")}
+            ${factCell("פנוי מתאריך", listing.available_from ? new Date(listing.available_from).toLocaleDateString("he-IL") : "מיידי")}
           </div>
         </div>
 
         <!-- Amenities row -->
         <div>
-          <h2 class="font-heading font-semibold text-xl mb-md">מה יש בדירה</h2>
+          <h2 class="font-heading font-semibold text-xl mb-md">מה כלול בדירה</h2>
           <div class="flex flex-wrap gap-sm">
             ${amenityChip("balcony", "מרפסת", listing.balcony)}
             ${amenityChip("ac_unit", "מזגן", listing.air_conditioning)}
             ${amenityChip("garage", "חניה", listing.parking)}
-            ${amenityChip("accessible", "נגישות", listing.accessible)}
-            ${amenityChip("chair", "מרוהט", listing.furnished)}
+            ${amenityChip("elevator", "מעלית", listing.elevator)}
+            ${amenityChip("chair", "מרוהטת", listing.furnished)}
             ${amenityChip("pets", "מותר חיות מחמד", listing.pets_allowed)}
-            ${amenityChip("smoking_rooms", "מותר לעשן", listing.smoking_allowed)}
+            ${amenityChip("smoke_free", "עישון אסור", !listing.smoking_allowed)}
           </div>
         </div>
 
-        <!-- Lifestyle / roommates rules -->
+        <!-- House rules -->
         <div class="bg-white p-xl rounded-2xl custom-shadow border border-surface-container">
-          <h2 class="font-heading font-semibold text-xl mb-md">סגנון חיים בדירה</h2>
+          <h2 class="font-heading font-semibold text-xl mb-md">כללי הבית</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-md text-sm">
-            ${ruleRow("smoking_rooms", "עישון", listing.smoking_allowed ? "מותר" : "לא מותר", !listing.smoking_allowed)}
-            ${ruleRow("pets", "חיות מחמד", listing.pets_allowed ? "מותר" : "לא מותר", listing.pets_allowed)}
-            ${ruleRow("group", "סוג השותפים", statusLabel(rm.status) || "—", true)}
-            ${ruleRow("local_florist", "אורח חיים", religiousLabel(rm.religious_tag) || "—", true)}
-            ${ruleRow("face", "העדפת מגדר", genderLabel(rm.gender_preference) || "לא משנה", true)}
-            ${ruleRow("groups", "שותפים בדירה", rm.count != null ? `${rm.count} שותפים` : "—", true)}
-            ${listing.noise_level != null ? ruleRow("volume_up", "רעש (1=שקט, 5=תוסס)", `${listing.noise_level} / 5`, listing.noise_level <= 2) : ""}
-            ${listing.safety_rating != null ? ruleRow("shield", "ביטחון (1-5)", `${listing.safety_rating} / 5`, listing.safety_rating >= 4) : ""}
+            ${ruleRow("smoking_rooms", "עישון", listing.smoking_allowed ? "מותר" : "אסור", !listing.smoking_allowed)}
+            ${ruleRow("pets", "חיות מחמד", listing.pets_allowed ? "מותרות" : "לא מותרות", listing.pets_allowed)}
+            ${ruleRow("group", "מתאים לשותפים", listing.suitable_for_roommates ? "כן" : "לא צוין", listing.suitable_for_roommates)}
+            ${listing.lifestyle_tradition_preference ? ruleRow("local_florist", "סגנון חיים", String(listing.lifestyle_tradition_preference), true) : ""}
           </div>
         </div>
       </div>
@@ -193,16 +191,11 @@ function render(listing) {
         ${rm.count > 0 ? `
         <div class="bg-white p-xl rounded-2xl custom-shadow border border-surface-container">
           <h3 class="font-heading font-semibold text-xl mb-md">השותפים בדירה</h3>
-          <div class="flex items-center gap-md mb-md">
+          <div class="flex items-center gap-md">
             <div class="flex -space-x-3 rtl:space-x-reverse">
               ${[...Array(Math.min(rm.count, 4))].map((_, i) => `<div class="w-12 h-12 rounded-full border-4 border-white bg-primary-fixed flex items-center justify-center text-primary font-bold">${["א","ב","ג","ד"][i]}</div>`).join("")}
             </div>
-            <p class="text-sm text-on-surface-variant">${rm.count} שותפים נוכחיים</p>
-          </div>
-          <div class="flex flex-wrap gap-sm">
-            ${statusLabel(rm.status) ? `<span class="bg-primary-fixed text-primary px-md py-xs rounded-full text-xs font-semibold">${statusLabel(rm.status)}</span>` : ""}
-            ${religiousLabel(rm.religious_tag) ? `<span class="bg-emerald-50 text-emerald-700 px-md py-xs rounded-full text-xs font-semibold">${religiousLabel(rm.religious_tag)}</span>` : ""}
-            ${genderLabel(rm.gender_preference) && rm.gender_preference !== "any" ? `<span class="bg-rose-50 text-rose-700 px-md py-xs rounded-full text-xs font-semibold">${genderLabel(rm.gender_preference)}</span>` : ""}
+            <p class="text-sm text-on-surface-variant">${rm.count} שותפים גרים בדירה כרגע</p>
           </div>
         </div>` : ""}
 
@@ -237,11 +230,20 @@ function render(listing) {
   document.getElementById("stickyPrice").textContent = fmtPrice(listing.price);
   document.getElementById("stickyBar").classList.remove("hidden");
 
-  // Contact buttons (placeholder)
-  const onContact = () => alert(`להציג טופס יצירת קשר (פלייסהולדר).\nהדירה: ${listing.title}`);
+  // Contact buttons — open a small modal with the owner's contact info,
+  // not a placeholder alert.
+  const onContact = () => openContactModal(listing);
   document.getElementById("contactBtn").addEventListener("click", onContact);
   const sideBtn = document.getElementById("contactBtnSide");
   if (sideBtn) sideBtn.addEventListener("click", onContact);
+
+  // Lightbox — clicking any gallery tile opens a full-screen overlay.
+  root.querySelectorAll(".js-lightbox").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.imgIdx) || 0;
+      openLightbox(galleryImgs, idx);
+    });
+  });
 
   // Mini map — apartment pin (price) + campus pin (uni name) + dashed walking
   // line between them, auto-fit to show both.
@@ -332,6 +334,80 @@ function commuteRow(icon, label, value) {
     </div>
     <span class="font-bold">${escapeHtml(String(value))}</span>
   </div>`;
+}
+
+// ---------- Lightbox ----------
+function openLightbox(images, startIdx = 0) {
+  let idx = startIdx;
+  const overlay = document.createElement("div");
+  overlay.id = "rfLightbox";
+  overlay.style.cssText =
+    "position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;backdrop-filter:blur(4px);";
+  overlay.innerHTML = `
+    <button type="button" id="lbClose" aria-label="סגור" style="position:absolute;top:24px;inset-inline-end:24px;background:rgba(255,255,255,.15);color:white;border:none;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <img id="lbImg" src="${images[idx]}" style="max-width:90%;max-height:80%;object-fit:contain;border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.5);" />
+    <div style="display:flex;gap:16px;align-items:center;margin-top:24px;color:white;">
+      <button type="button" id="lbPrev" aria-label="הקודמת" style="background:rgba(255,255,255,.15);color:white;border:none;border-radius:50%;width:44px;height:44px;cursor:pointer;font-size:24px;">
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+      <span id="lbCount" style="font-weight:bold;font-size:14px;">${idx + 1} / ${images.length}</span>
+      <button type="button" id="lbNext" aria-label="הבאה" style="background:rgba(255,255,255,.15);color:white;border:none;border-radius:50%;width:44px;height:44px;cursor:pointer;font-size:24px;">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+    </div>
+  `;
+  const close = () => { overlay.remove(); document.removeEventListener("keydown", onKey); };
+  const show = (n) => {
+    idx = (n + images.length) % images.length;
+    overlay.querySelector("#lbImg").src = images[idx];
+    overlay.querySelector("#lbCount").textContent = `${idx + 1} / ${images.length}`;
+  };
+  const onKey = (e) => {
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowLeft") show(idx + 1);  // RTL: left = next
+    if (e.key === "ArrowRight") show(idx - 1); // RTL: right = prev
+  };
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+  overlay.querySelector("#lbClose").addEventListener("click", close);
+  overlay.querySelector("#lbPrev").addEventListener("click", () => show(idx - 1));
+  overlay.querySelector("#lbNext").addEventListener("click", () => show(idx + 1));
+  document.addEventListener("keydown", onKey);
+  document.body.appendChild(overlay);
+}
+
+// ---------- Contact modal ----------
+function openContactModal(listing) {
+  const c = listing.contact || {};
+  const overlay = document.createElement("div");
+  overlay.style.cssText =
+    "position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);";
+  const cleanPhone = c.phone ? String(c.phone).replace(/[^\d+]/g, "") : null;
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:24px;max-width:420px;width:100%;padding:28px;font-family:Heebo,system-ui,sans-serif;" dir="rtl">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:8px;">
+        <div>
+          <h3 style="font-size:18px;font-weight:bold;margin:0;">צור קשר עם בעל/ת הדירה</h3>
+          <p style="font-size:12px;color:#777587;margin:4px 0 0 0;">${escapeHtml(listing.title || "")}</p>
+        </div>
+        <button id="rfCloseContact" aria-label="סגור" style="background:none;border:none;cursor:pointer;color:#777587;">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+        ${c.name ? `<div style="background:#f0f3ff;border-radius:12px;padding:12px 14px;"><div style="font-size:11px;color:#777587;">שם</div><div style="font-weight:bold;">${escapeHtml(c.name)}</div></div>` : ""}
+        ${c.phone ? `<a href="tel:${escapeHtml(cleanPhone)}" style="background:#3525cd;color:white;border-radius:12px;padding:14px;text-align:center;font-weight:bold;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;"><span class="material-symbols-outlined">call</span><span dir="ltr">${escapeHtml(c.phone)}</span></a>` : ""}
+        ${c.phone && cleanPhone ? `<a href="https://wa.me/${escapeHtml(cleanPhone.replace(/^\+?/, "972").replace(/^9720/, "972"))}" target="_blank" rel="noopener" style="background:#25D366;color:white;border-radius:12px;padding:14px;text-align:center;font-weight:bold;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">💬 שלח/י WhatsApp</a>` : ""}
+        ${c.email ? `<a href="mailto:${escapeHtml(c.email)}?subject=פנייה%20לגבי%20דירה%20ב-RoomieFit&body=שלום,%20ראיתי%20את%20המודעה%20%22${encodeURIComponent(listing.title || "")}%22%20ואשמח%20לפרטים." style="background:white;color:#3525cd;border:2px solid #3525cd;border-radius:12px;padding:12px;text-align:center;font-weight:bold;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;"><span class="material-symbols-outlined">mail</span>${escapeHtml(c.email)}</a>` : ""}
+        ${!c.name && !c.phone && !c.email ? `<p style="text-align:center;color:#777587;font-size:14px;padding:12px;">לא הוזנו פרטי קשר עדיין. נסה/י לפנות דרך פלטפורמת הפרסום (Yad2 / קבוצת פייסבוק וכו׳).</p>` : ""}
+      </div>
+    </div>
+  `;
+  const close = () => overlay.remove();
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+  overlay.querySelector("#rfCloseContact").addEventListener("click", close);
+  document.body.appendChild(overlay);
 }
 
 document.addEventListener("DOMContentLoaded", load);

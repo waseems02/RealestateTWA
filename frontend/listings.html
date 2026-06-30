@@ -106,13 +106,35 @@
       <aside class="w-full md:w-[300px] shrink-0">
         <form id="filters" class="bg-white rounded-2xl p-lg custom-shadow md:sticky md:top-[100px] max-h-[calc(100vh-140px)] overflow-y-auto no-scrollbar">
           <div class="flex justify-between items-center mb-lg">
-            <h2 class="font-heading font-semibold text-xl" data-i18n="filtersTitle">סינון</h2>
-            <button type="button" id="clearFilters" class="text-primary text-xs underline" data-i18n="clearAll">נקה הכל</button>
+            <h2 class="font-heading font-semibold text-xl">סינון</h2>
+            <button type="button" id="clearFilters" class="text-primary text-xs underline">נקה הכל</button>
+          </div>
+
+          <!-- Favourites toggle -->
+          <div class="mb-lg">
+            <label class="flex justify-between items-center cursor-pointer bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl px-md py-sm transition-colors">
+              <span class="text-sm font-bold text-rose-700 flex items-center gap-xs">
+                <span class="material-symbols-outlined text-[18px]">favorite</span>
+                המועדפים שלי בלבד
+              </span>
+              <input id="f_favourites_only" type="checkbox" class="w-5 h-5 rounded text-rose-600 focus:ring-rose-500" />
+            </label>
+          </div>
+
+          <!-- Type -->
+          <div class="mb-lg">
+            <label class="block text-sm font-semibold mb-sm">סוג הנכס</label>
+            <div class="flex gap-xs" id="typeChips">
+              <button type="button" data-typ="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active flex-1">הכל</button>
+              <button type="button" data-typ="room" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">חדר</button>
+              <button type="button" data-typ="apartment" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">דירה</button>
+            </div>
+            <input type="hidden" id="f_listing_type" />
           </div>
 
           <!-- City -->
           <div class="mb-lg">
-            <label class="block text-sm font-semibold mb-sm" data-i18n="filterCity">עיר</label>
+            <label class="block text-sm font-semibold mb-sm">עיר</label>
             <input id="f_city" type="search" placeholder="תל אביב, ירושלים, חיפה..." class="w-full bg-surface-container-low rounded-xl px-md py-sm text-sm border-none focus:ring-2 focus:ring-primary" />
           </div>
 
@@ -173,84 +195,40 @@
           <!-- Lifestyle toggles -->
           <div class="space-y-sm mb-lg">
             <label class="flex justify-between items-center cursor-pointer">
-              <span class="text-sm" data-i18n="filterBalcony">מרפסת</span>
+              <span class="text-sm">מרפסת</span>
               <input id="f_has_balcony" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
             </label>
             <label class="flex justify-between items-center cursor-pointer">
-              <span class="text-sm" data-i18n="filterPets">מותר חיות מחמד</span>
+              <span class="text-sm">מותר חיות מחמד</span>
               <input id="f_pets_allowed" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
             </label>
             <label class="flex justify-between items-center cursor-pointer">
-              <span class="text-sm" data-i18n="filterParking">חניה</span>
+              <span class="text-sm">חניה</span>
               <input id="f_parking" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
             </label>
             <label class="flex justify-between items-center cursor-pointer">
-              <span class="text-sm" data-i18n="filterAC">מזגן</span>
+              <span class="text-sm">מזגן</span>
               <input id="f_ac" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
             </label>
             <label class="flex justify-between items-center cursor-pointer">
-              <span class="text-sm" data-i18n="filterAccessible">נגישות</span>
-              <input id="f_accessible" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
+              <span class="text-sm">מעלית</span>
+              <input id="f_elevator" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
+            </label>
+            <label class="flex justify-between items-center cursor-pointer">
+              <span class="text-sm">מרוהטת</span>
+              <input id="f_furnished_bool" type="checkbox" class="w-5 h-5 rounded text-primary focus:ring-primary" />
             </label>
           </div>
 
           <!-- Smoking -->
-          <div class="mb-lg">
-            <label class="block text-sm font-semibold mb-sm" data-i18n="filterSmoking">עישון</label>
+          <div class="mb-md">
+            <label class="block text-sm font-semibold mb-sm">עישון</label>
             <div class="flex gap-xs" id="smokingChips">
-              <button type="button" data-smk="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
-              <button type="button" data-smk="false" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">לא מעשנים</button>
-              <button type="button" data-smk="true" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מעשנים</button>
+              <button type="button" data-smk="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active flex-1">הכל</button>
+              <button type="button" data-smk="false" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">לא מעשנים</button>
+              <button type="button" data-smk="true" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">מעשנים</button>
             </div>
             <input type="hidden" id="f_smoking_allowed" />
-          </div>
-
-          <!-- Furnished -->
-          <div class="mb-lg">
-            <label class="block text-sm font-semibold mb-sm" data-i18n="filterFurnished">ריהוט</label>
-            <select id="f_furnished" class="w-full bg-surface-container-low rounded-xl px-md py-sm text-sm border-none focus:ring-2 focus:ring-primary">
-              <option value="">הכל</option>
-              <option value="none">ללא ריהוט</option>
-              <option value="partial">חלקי</option>
-              <option value="full">מרוהטת לגמרי</option>
-            </select>
-          </div>
-
-          <!-- Roommate status -->
-          <div class="mb-lg">
-            <label class="block text-sm font-semibold mb-sm" data-i18n="filterRmStatus">שותפים</label>
-            <div class="flex flex-wrap gap-xs" id="rmStatusChips">
-              <button type="button" data-rms="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
-              <button type="button" data-rms="student" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">סטודנטים</button>
-              <button type="button" data-rms="professional" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">עובדים</button>
-              <button type="button" data-rms="mixed" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מעורב</button>
-            </div>
-            <input type="hidden" id="f_roommates_status" />
-          </div>
-
-          <!-- Religious tag -->
-          <div class="mb-lg">
-            <label class="block text-sm font-semibold mb-sm" data-i18n="filterReligious">אורח חיים</label>
-            <div class="flex flex-wrap gap-xs" id="religiousChips">
-              <button type="button" data-rel="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
-              <button type="button" data-rel="secular" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">חילוני</button>
-              <button type="button" data-rel="traditional" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מסורתי</button>
-              <button type="button" data-rel="religious" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">דתי</button>
-              <button type="button" data-rel="mixed" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">מעורב</button>
-            </div>
-            <input type="hidden" id="f_religious" />
-          </div>
-
-          <!-- Gender -->
-          <div class="mb-md">
-            <label class="block text-sm font-semibold mb-sm" data-i18n="filterGender">העדפת מגדר</label>
-            <div class="flex gap-xs" id="genderChips">
-              <button type="button" data-gnd="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
-              <button type="button" data-gnd="female" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">נשים</button>
-              <button type="button" data-gnd="male" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">גברים</button>
-              <button type="button" data-gnd="any" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">לא משנה</button>
-            </div>
-            <input type="hidden" id="f_gender_preference" />
           </div>
         </form>
       </aside>

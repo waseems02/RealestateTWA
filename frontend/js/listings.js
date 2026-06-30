@@ -4,14 +4,8 @@
 // can deep-link here. Talks to /api/listings with the filter shape the backend
 // route already supports.
 
-const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=80",
-];
+const placeholderImageFor = (id) =>
+  `https://picsum.photos/seed/${encodeURIComponent(id || Math.random())}/800/600`;
 
 const SOURCE_PRESENTATION = {
   yad2:             { label: "Yad2", cls: "bg-yellow-100 text-yellow-800" },
@@ -51,8 +45,8 @@ function commuteLabel(m) {
   return fmtDist(m);
 }
 
-function imageFor(listing, idx) {
-  return (listing.images && listing.images[0]) || listing.image_url || HERO_IMAGES[idx % HERO_IMAGES.length];
+function imageFor(listing) {
+  return (listing.images && listing.images[0]) || listing.image_url || placeholderImageFor(listing.id);
 }
 
 // ---------- Wishlist (localStorage) ----------
@@ -86,26 +80,6 @@ function sourceBadge(src) {
 }
 
 // ---------- URL <-> form state ----------
-const URL_KEYS = [
-  "city",
-  "university_name",
-  "max_university_distance_m",
-  "min_price",
-  "max_price",
-  "min_rooms",
-  "has_balcony",
-  "pets_allowed",
-  "parking_available",
-  "air_conditioning",
-  "accessible",
-  "smoking_allowed",
-  "furnished",
-  "listing_type",
-  "roommates_status",
-  "religious",
-  "gender_preference",
-];
-
 function readUrlIntoForm() {
   const q = new URLSearchParams(location.search);
   const set = (id, key) => { const v = q.get(key); if (v != null) $(id).value = v; };
@@ -114,17 +88,16 @@ function readUrlIntoForm() {
   set("#f_max_uni_distance", "max_university_distance_m");
   set("#f_min_price", "min_price");
   set("#f_max_price", "max_price");
-  set("#f_furnished", "furnished");
   if (q.get("has_balcony") === "true") $("#f_has_balcony").checked = true;
   if (q.get("pets_allowed") === "true") $("#f_pets_allowed").checked = true;
   if (q.get("parking_available") === "true") $("#f_parking").checked = true;
   if (q.get("air_conditioning") === "true") $("#f_ac").checked = true;
-  if (q.get("accessible") === "true") $("#f_accessible").checked = true;
+  if (q.get("elevator") === "true") $("#f_elevator").checked = true;
+  if (q.get("furnished") === "true") $("#f_furnished_bool").checked = true;
+  if (q.get("favourites_only") === "true") $("#f_favourites_only").checked = true;
   setChip("roomsChips", "rooms", q.get("min_rooms") ?? "", "#f_min_rooms");
   setChip("smokingChips", "smk", q.get("smoking_allowed") ?? "", "#f_smoking_allowed");
-  setChip("rmStatusChips", "rms", q.get("roommates_status") ?? "", "#f_roommates_status");
-  setChip("religiousChips", "rel", q.get("religious") ?? "", "#f_religious");
-  setChip("genderChips", "gnd", q.get("gender_preference") ?? "", "#f_gender_preference");
+  setChip("typeChips", "typ", q.get("listing_type") ?? "", "#f_listing_type");
 }
 
 function buildQuery() {
@@ -136,20 +109,16 @@ function buildQuery() {
   push("min_price", $("#f_min_price").value);
   push("max_price", $("#f_max_price").value);
   push("min_rooms", $("#f_min_rooms").value);
-  // listing_type comes from the URL (set by hero quick-toggle); not a form input yet
-  const lt = new URLSearchParams(location.search).get("listing_type");
-  if (lt) push("listing_type", lt);
-  push("furnished", $("#f_furnished").value);
+  push("listing_type", $("#f_listing_type").value);
+  if ($("#f_furnished_bool").checked) push("furnished", "true");
   if ($("#f_has_balcony").checked) push("has_balcony", "true");
   if ($("#f_pets_allowed").checked) push("pets_allowed", "true");
   if ($("#f_parking").checked) push("parking_available", "true");
   if ($("#f_ac").checked) push("air_conditioning", "true");
-  if ($("#f_accessible").checked) push("accessible", "true");
+  if ($("#f_elevator").checked) push("elevator", "true");
   push("smoking_allowed", $("#f_smoking_allowed").value);
-  push("roommates_status", $("#f_roommates_status").value);
-  push("religious", $("#f_religious").value);
-  push("gender_preference", $("#f_gender_preference").value);
-  push("limit", "100");
+  if ($("#f_favourites_only").checked) push("favourites_only", "true");
+  push("limit", "200");
   return q;
 }
 
@@ -371,11 +340,18 @@ function buildPopup(listing) {
 // ---------- Fetching ----------
 async function fetchAndRender() {
   const q = buildQuery();
-  // Hit /api/listings with our filters
+  // Client-side toggle: don't send to backend, apply locally after fetch.
+  const favouritesOnly = q.get("favourites_only") === "true";
+  q.delete("favourites_only");
   try {
     const res = await fetch(`/api/listings?${q.toString()}`);
     const payload = await res.json();
-    STATE.listings = payload.data || [];
+    let rows = payload.data || [];
+    if (favouritesOnly) {
+      const ids = loadWishlist();
+      rows = rows.filter((l) => ids.has(String(l.id)));
+    }
+    STATE.listings = rows;
     applySort();
     renderCount();
     renderGrid();
@@ -437,9 +413,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Chip groups
   bindChipGroup("roomsChips", "rooms", "#f_min_rooms", fetchAndRender);
   bindChipGroup("smokingChips", "smk", "#f_smoking_allowed", fetchAndRender);
-  bindChipGroup("rmStatusChips", "rms", "#f_roommates_status", fetchAndRender);
-  bindChipGroup("religiousChips", "rel", "#f_religious", fetchAndRender);
-  bindChipGroup("genderChips", "gnd", "#f_gender_preference", fetchAndRender);
+  bindChipGroup("typeChips", "typ", "#f_listing_type", fetchAndRender);
 
   // Filter form re-fetch on any change
   let debounceTimer;
@@ -451,9 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const CHIP_GROUPS = [
     ["roomsChips", "rooms", "#f_min_rooms"],
     ["smokingChips", "smk", "#f_smoking_allowed"],
-    ["rmStatusChips", "rms", "#f_roommates_status"],
-    ["religiousChips", "rel", "#f_religious"],
-    ["genderChips", "gnd", "#f_gender_preference"],
+    ["typeChips", "typ", "#f_listing_type"],
   ];
   $("#clearFilters").addEventListener("click", (e) => {
     e.preventDefault();
