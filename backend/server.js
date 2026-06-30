@@ -41,13 +41,8 @@ app.get("*", (req, res) => {
   return res.sendFile(path.join(frontendDir, "index.html"));
 });
 
-<<<<<<< HEAD
-app.listen(PORT, () => {
-  console.log(`RoomieFit server is running on port ${PORT}`);
-=======
 const server = app.listen(PORT, () => {
   console.log(`RoomieFit / RealestateTMA server is running on port ${PORT}`);
->>>>>>> 452d57e (updated version on Telegram bot (waseem))
 });
 
 const telegramBot = createTelegramBot();
