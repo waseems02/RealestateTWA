@@ -1,6 +1,7 @@
 function listingMatchesFilters(listing) {
   const city = document.querySelector("#city").value.trim();
   const campus = document.querySelector("#campus").value.trim();
+  const listingType = document.querySelector("#listingType").value;
   const maxPrice = Number(document.querySelector("#maxPrice").value || 0);
   const balcony = document.querySelector("#balcony").checked;
   const furnished = document.querySelector("#furnished").checked;
@@ -9,6 +10,7 @@ function listingMatchesFilters(listing) {
 
   if (city && !String(listing.city || "").includes(city)) return false;
   if (campus && !String(listing.campus || listing.campus_name || "").includes(campus)) return false;
+  if (listingType && listing.listing_type !== listingType) return false;
   if (maxPrice && Number(listing.price || listing.monthly_rent || 0) > maxPrice) return false;
   if (balcony && !listing.balcony) return false;
   if (furnished && !listing.furnished) return false;
@@ -30,7 +32,12 @@ function renderListings(listings) {
           <span>${listing.city || ""} ${listing.neighborhood ? "- " + listing.neighborhood : ""}</span>
           <span>${listing.price || listing.monthly_rent || "לא צוין"} ₪ לחודש</span>
           <span>${listing.campus || listing.campus_name || "קמפוס לא צוין"}</span>
-          <span>מרפסת: ${formatBool(listing.balcony)} | מרוהטת: ${formatBool(listing.furnished)}</span>
+          <span>${listing.listing_type === "room" ? "חדר בדירת שותפים" : "דירה מלאה"}</span>
+          <span>מרפסת: ${formatBool(listing.balcony)} | מעלית: ${formatBool(listing.elevator)} | חניה: ${formatBool(listing.parking)}</span>
+          <span>מרוהטת: ${formatBool(listing.furnished)} | מזגן: ${formatBool(listing.air_conditioning)}</span>
+          <span>מרחק לקמפוס: ${listing.distance_to_campus_km ?? "לא צוין"} ק״מ</span>
+          <span>אוטובוס: ${listing.nearest_bus_station || "לא צוין"} (${listing.distance_to_bus_station_m ?? "?"} מ׳)</span>
+          <span>רכבת/רק״ל: ${listing.nearest_train_station || "לא צוין"} (${listing.distance_to_train_station_km ?? "?"} ק״מ)</span>
         </div>
         <p>${listing.description || ""}</p>
         <a class="button primary" href="listing-details.html?id=${encodeURIComponent(listing.id)}">פרטים</a>

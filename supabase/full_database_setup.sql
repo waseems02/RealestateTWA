@@ -104,7 +104,7 @@ create table public.listings (
   contact_name text,
   contact_phone text,
   contact_email text,
-  source_type text not null default 'manual_demo' check (source_type in ('manual_demo', 'university_board_demo', 'facebook_group_demo', 'yad2_demo', 'manual_user')),
+  source_type text not null default 'manual_demo' check (source_type in ('manual_demo', 'university_board_demo', 'facebook_group_demo', 'yad2_demo', 'public_source_demo', 'manual_user')),
   status text not null default 'active' check (status in ('active', 'pending', 'rented', 'hidden')),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -587,6 +587,110 @@ insert into public.listings (
   ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa7', 'דירת שני חדרים באריאל', 'דירה נעימה ומתאימה לזוג סטודנטים.', 'apartment', 'Ariel', 'Ariel West', 'רחוב דמו 18', 32.1065000, 35.1980000, 2850, 2.0, 1, 46, true, false, true, true, false, true, false, 0, false, null, 1.40, 190, 13.00, 'תחנת דרך הציונות', 'ראש העין צפון', current_date + 19, 'דמו קשר', '050-0000018', 'demo18@example.com', 'manual_demo', 'active'),
   ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa7', 'חדר לשותף באריאל מזרח', 'חדר מרוהט עם חניה, מתאים למי שמגיע ברכב.', 'room', 'Ariel', 'Ariel East', 'רחוב דמו 19', 32.1017000, 35.2145000, 1650, 1.0, 3, 12, false, false, true, true, true, false, true, 1, true, null, 1.80, 220, 14.00, 'תחנת פארק אריאל', 'ראש העין צפון', current_date + 24, 'דמו קשר', '050-0000019', 'demo19@example.com', 'facebook_group_demo', 'active'),
   ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3', 'דירת שותפים ליד רכבת אוניברסיטה', 'דירה גדולה עם גישה מהירה לאוטובוסים ורכבת.', 'apartment', 'Tel Aviv', 'Ramat Aviv', 'רחוב דמו 20', 32.1035000, 34.8048000, 6900, 4.0, 7, 92, true, true, true, true, true, true, true, 3, false, null, 1.50, 100, 0.60, 'תחנת קלאוזנר', 'תחנת אוניברסיטה', current_date + 35, 'דמו קשר', '050-0000020', 'demo20@example.com', 'yad2_demo', 'active');
+
+-- Expanded fake demo listings for academic use only.
+-- Not scraped from Yad2, Facebook, WhatsApp groups, or protected/private sources.
+
+insert into public.universities (id, name_he, name_en, city) values
+  ('77777777-7777-4777-8777-777777777777', 'אוניברסיטת רייכמן', 'Reichman University', 'Herzliya'),
+  ('88888888-8888-4888-8888-888888888888', 'המכון הטכנולוגי חולון', 'Holon Institute of Technology', 'Holon'),
+  ('99999999-9999-4999-8999-999999999999', 'המכללה האקדמית נתניה', 'Netanya Academic College', 'Netanya'),
+  ('10101010-1010-4010-8010-101010101010', 'עזריאלי מכללה אקדמית להנדסה ירושלים', 'Azrieli College of Engineering Jerusalem', 'Jerusalem'),
+  ('12121212-1212-4212-8212-121212121212', 'בצלאל אקדמיה לאמנות ועיצוב', 'Bezalel Academy of Arts and Design', 'Jerusalem'),
+  ('13131313-1313-4313-8313-131313131313', 'המכללה האקדמית הדסה', 'Hadassah Academic College', 'Jerusalem')
+on conflict (id) do nothing;
+
+insert into public.campuses (id, university_id, name_he, name_en, city, latitude, longitude) values
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa8', '77777777-7777-4777-8777-777777777777', 'קמפוס רייכמן', 'Reichman University Campus', 'Herzliya', 32.1668000, 34.8123000),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9', '88888888-8888-4888-8888-888888888888', 'קמפוס HIT', 'HIT Main Campus', 'Holon', 32.0170000, 34.7780000),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa10', '99999999-9999-4999-8999-999999999999', 'הקמפוס המרכזי', 'Netanya Academic College Main Campus', 'Netanya', 32.3075000, 34.8796000),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa11', '10101010-1010-4010-8010-101010101010', 'קמפוס עזריאלי', 'Azrieli College Main Campus', 'Jerusalem', 31.7685000, 35.2043000),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa12', '12121212-1212-4212-8212-121212121212', 'קמפוס בצלאל', 'Bezalel Main Campus', 'Jerusalem', 31.7857000, 35.2007000),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa13', '13131313-1313-4313-8313-131313131313', 'קמפוס מרכז העיר', 'Hadassah Academic College City Campus', 'Jerusalem', 31.7831000, 35.2206000),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa14', '11111111-1111-4111-8111-111111111111', 'הפקולטה לחקלאות רחובות', 'Robert H. Smith Faculty of Agriculture Rehovot', 'Rehovot', 31.9072000, 34.8089000)
+on conflict (id) do nothing;
+
+with campus_profiles (
+  campus_id, city, neighborhood, street, base_lat, base_lng, room_price, apartment_price,
+  bus_station, train_station, train_km
+) as (
+  values
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1'::uuid, 'Jerusalem', 'French Hill', 'אזור ההגנה', 31.7982, 35.2427, 2450, 5100, 'תחנת אוטובוס הר הצופים', 'הרכבת הקלה - גבעת התחמושת', 2.1),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2'::uuid, 'Jerusalem', 'Rehavia', 'אזור עזה', 31.7745, 35.2142, 2850, 6400, 'תחנת אוטובוס גבעת רם', 'הרכבת הקלה - מרכז העיר', 1.6),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3'::uuid, 'Tel Aviv', 'Ramat Aviv', 'אזור חיים לבנון', 32.1139, 34.8027, 3900, 7600, 'תחנת אוטובוס חיים לבנון', 'תחנת רכבת אוניברסיטה', 1.2),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa4'::uuid, 'Haifa', 'Ahuza', 'אזור חורב', 32.7770, 35.0003, 2100, 4300, 'תחנת אוטובוס אוניברסיטת חיפה', 'מרכזית חוף הכרמל', 4.2),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5'::uuid, 'Beer Sheva', 'Gimel', 'אזור רגר', 31.2628, 34.7999, 1750, 3450, 'תחנת אוטובוס אוניברסיטת בן גוריון', 'תחנת רכבת באר שבע צפון', 1.1),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa6'::uuid, 'Ramat Gan', 'Ramat Ilan', 'אזור אלוף שדה', 32.0684, 34.8436, 2950, 5600, 'תחנת אוטובוס אוניברסיטת בר אילן', 'תחנת רכבת בני ברק', 2.7),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa7'::uuid, 'Ariel', 'Ariel Center', 'אזור דרך הציונות', 32.1048, 35.2057, 1650, 2950, 'תחנת אוניברסיטת אריאל', 'תחנת רכבת ראש העין צפון', 13.0),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa14'::uuid, 'Rehovot', 'Rehovot Science', 'אזור הרצל', 31.9072, 34.8089, 2500, 4700, 'תחנת אוטובוס הפקולטה לחקלאות', 'תחנת רכבת רחובות', 1.4),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa8'::uuid, 'Herzliya', 'Herzliya Bet', 'אזור כנפי נשרים', 32.1668, 34.8123, 3400, 6800, 'תחנת אוטובוס רייכמן', 'תחנת רכבת הרצליה', 2.2),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa9'::uuid, 'Holon', 'Kiryat Sharet', 'אזור גולומב', 32.0170, 34.7780, 2600, 5000, 'תחנת אוטובוס HIT', 'תחנת רכבת קוממיות', 2.1),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa10'::uuid, 'Netanya', 'Kiryat Hasharon', 'אזור האוניברסיטה', 32.3075, 34.8796, 2450, 4700, 'תחנת אוטובוס המכללה האקדמית נתניה', 'תחנת רכבת נתניה', 2.8),
+    ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa12'::uuid, 'Jerusalem', 'Nachlaot', 'אזור בצלאל', 31.7820, 35.2090, 2750, 5900, 'תחנת אוטובוס בצלאל', 'הרכבת הקלה - מרכז העיר', 1.2)
+),
+expanded as (
+  select
+    p.*,
+    n,
+    case n % 2 when 1 then 'room' else 'apartment' end as listing_type,
+    case n % 4
+      when 0 then 'student_friendly'
+      when 1 then 'no_preference'
+      when 2 then 'quiet_lifestyle'
+      else 'traditional_friendly'
+    end as lifestyle_preference,
+    (array['manual_demo', 'university_board_demo', 'facebook_group_demo', 'yad2_demo', 'public_source_demo'])[1 + (n % 5)] as demo_source
+  from campus_profiles p
+  cross join generate_series(1, 5) as n
+)
+insert into public.listings (
+  campus_id, title, description, listing_type, city, neighborhood, street, latitude, longitude,
+  price, rooms, floor, size_sqm, balcony, elevator, parking, air_conditioning, furnished,
+  pets_allowed, suitable_for_roommates, current_roommates_count, smoking_allowed,
+  lifestyle_tradition_preference, distance_to_campus_km, distance_to_bus_station_m,
+  distance_to_train_station_km, nearest_bus_station, nearest_train_station,
+  available_from, contact_name, contact_phone, contact_email, source_type, status
+)
+select
+  campus_id,
+  case
+    when listing_type = 'room' then 'חדר מרוהט בדירת שותפים ליד הקמפוס'
+    else 'דירת סטודנטים מתאימה לשותפים ליד תחבורה ציבורית'
+  end || ' - ' || neighborhood,
+  'מודעת דמו אקדמית בלבד. הנכס מדמה מידע טיפוסי לסטודנטים באזור ' || neighborhood ||
+    ', כולל מרחק לקמפוס, תחנות אוטובוס ורכבת, ומאפייני דירה שימושיים.',
+  listing_type,
+  city,
+  neighborhood,
+  street || ' ' || n,
+  round((base_lat + ((n - 3) * 0.0011))::numeric, 7),
+  round((base_lng + ((n - 3) * 0.0013))::numeric, 7),
+  case when listing_type = 'room' then room_price + (n * 90) else apartment_price + (n * 180) end,
+  case when listing_type = 'room' then 1.0 else case n % 3 when 0 then 2.5 when 1 then 3.0 else 4.0 end end,
+  (n % 6) + 1,
+  case when listing_type = 'room' then 13 + n else 42 + (n * 8) end,
+  n % 2 = 0,
+  n % 3 = 0,
+  n % 4 = 0,
+  true,
+  listing_type = 'room' or n % 3 <> 0,
+  n % 5 = 0,
+  listing_type = 'room' or n % 2 = 0,
+  case when listing_type = 'room' then (n % 3) + 1 when n % 2 = 0 then 0 else 2 end,
+  n % 6 = 0,
+  lifestyle_preference,
+  round((0.35 + (n * 0.28))::numeric, 2),
+  70 + (n * 35),
+  round((train_km + (n * 0.12))::numeric, 2),
+  bus_station,
+  train_station,
+  current_date + (n * 7),
+  'איש קשר דמו',
+  '050-700' || lpad(n::text, 4, '0'),
+  'expanded-demo-' || replace(lower(city), ' ', '-') || '-' || replace(lower(neighborhood), ' ', '-') || '-' || n || '@example.com',
+  demo_source,
+  'active'
+from expanded;
 
 insert into public.listing_images (listing_id, image_url, alt_text)
 select

@@ -69,6 +69,21 @@ In production, set secrets as Railway Variables only.
 - `POST /api/ai/chat`
 - `POST /api/telegram/webhook`
 
+## Demo Data
+
+The Supabase setup includes 60+ fake academic demo listings for apartments and rooms near Israeli universities and colleges. The data is for coursework and development only.
+
+The project does not scrape Yad2, Facebook, WhatsApp groups, or protected/private sources. Demo source labels such as `yad2_demo` and `facebook_group_demo` are placeholders only.
+
+To run only the expanded listing seed in Supabase, open the Supabase SQL Editor and run:
+
+```sql
+-- after the main schema exists
+-- paste and execute supabase/seed_listings_expanded.sql
+```
+
+To recreate the full database with demo data, run `supabase/full_database_setup.sql`. Future real data should come only from approved APIs, permitted public data, or manual user submissions. See [docs/data-sources.md](docs/data-sources.md).
+
 ## Git Branch Strategy
 
 - `main`: production-ready version
