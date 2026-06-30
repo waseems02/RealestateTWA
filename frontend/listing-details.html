@@ -45,7 +45,7 @@
             <a href="index.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navHome">בית</a>
             <a href="listings.html" class="text-primary font-bold border-b-2 border-primary pb-1 text-sm" data-i18n="navListings">דירות</a>
             <a href="dashboard.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navRoommates">שותפים</a>
-            <a href="ai-assistant.html" class="text-on-surface-variant text-sm hover:text-primary" data-i18n="navAI">AI</a>
+            <button type="button" onclick="location.search='chat=open'" class="text-on-surface-variant text-sm hover:text-primary bg-transparent border-none cursor-pointer" data-i18n="navAI">AI</button>
           </div>
         </div>
         <div class="flex items-center gap-md">
@@ -106,5 +106,6 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="js/listing-details.js"></script>
+    <script src="js/chat-widget.js" defer></script>
   </body>
 </html>

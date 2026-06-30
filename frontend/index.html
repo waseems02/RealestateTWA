@@ -148,12 +148,12 @@
               data-i18n="navRoommates"
               >שותפים</a
             >
-            <a
-              href="ai-assistant.html"
+            <button
+              type="button"
+              onclick="window.__roomieFitChatWidgetLoaded && (new URL(location.href).search.includes('chat=open') ? null : (location.search='chat=open'))"
               class="text-on-surface-variant text-sm hover:text-primary transition-colors"
               data-i18n="navAI"
-              >AI</a
-            >
+            >AI</button>
           </div>
           <p class="lead">הממשק מותאם ל-RTL בעברית ומוכן להצגה ב- staging.</p>
         </div>
@@ -267,13 +267,14 @@
           </button>
         </form>
 
-        <a
-          href="ai-assistant.html"
-          class="mt-xl flex items-center gap-sm text-primary font-bold text-sm hover:opacity-80 transition-all bg-primary/10 px-md py-sm rounded-full"
+        <button
+          type="button"
+          onclick="location.search='chat=open'"
+          class="mt-xl flex items-center gap-sm text-primary font-bold text-sm hover:opacity-80 transition-all bg-primary/10 px-md py-sm rounded-full border-none cursor-pointer"
         >
           <span class="material-symbols-outlined">auto_awesome</span>
           <span data-i18n="askAi">שאל את עוזר ה-AI</span>
-        </a>
+        </button>
       </section>
 
       <!-- Featured listings -->
@@ -589,5 +590,6 @@
 
       document.addEventListener("DOMContentLoaded", loadFeatured);
     </script>
+    <script src="js/chat-widget.js" defer></script>
   </body>
 </html>
