@@ -361,7 +361,14 @@
         }
       });
 
-      init();
+      // auth.js is loaded with defer, so it hasn't executed yet at this
+      // point in parsing. Wait for DOMContentLoaded (fires after deferred
+      // scripts) so window.RfAuth is guaranteed to exist before init runs.
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
     </script>
   </body>
 </html>

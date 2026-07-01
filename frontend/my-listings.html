@@ -147,7 +147,12 @@
         await load();
       }
 
-      init();
+      // Wait for deferred auth.js to load before touching window.RfAuth
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
     </script>
   </body>
 </html>
