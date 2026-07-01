@@ -2,30 +2,17 @@
   "name": "roomiefit-frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "Static server + /api proxy for the RoomieFit web frontend.",
+  "main": "server.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "node static-server.js",
-    "next:start": "next start",
-    "lint": "eslint"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.108.2",
-    "leaflet": "^1.9.4",
-    "next": "16.2.9",
-    "react-leaflet": "^5.0.0",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^3.0.3"
   },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/leaflet": "^1.9.14",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.9",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+  "engines": {
+    "node": ">=20"
   }
 }
