@@ -64,6 +64,14 @@ const server = app.listen(PORT, () => {
   } else {
     console.log("CORS: allow-all (no FRONTEND_ORIGINS set — set it in production)");
   }
+  // Print env-var presence at boot so Railway logs make it obvious
+  // whether Supabase / OpenAI vars actually reached this process.
+  const has = (k) => (process.env[k] ? "✓" : "✗");
+  console.log(
+    `env check: SUPABASE_URL ${has("SUPABASE_URL")}, ANON ${has("SUPABASE_ANON_KEY")}, ` +
+    `SERVICE ${has("SUPABASE_SERVICE_ROLE_KEY")}, OPENAI ${has("OPENAI_API_KEY")}, ` +
+    `TELEGRAM ${has("TELEGRAM_BOT_TOKEN")}`
+  );
 });
 
 const telegramBot = createTelegramBot();
