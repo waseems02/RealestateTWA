@@ -51,3 +51,4 @@ next-env.d.ts
 .claude/
 .vscode/
 .idea/
+frontend/.railway-config-pull-*/
