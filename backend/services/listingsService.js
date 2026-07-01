@@ -358,7 +358,9 @@ function minutesToMetres(min) {
 function clampLimit(n) {
   const parsed = Number(n);
   if (!Number.isFinite(parsed) || parsed <= 0) return 10;
-  return Math.min(parsed, 50);
+  // Cap at 500 — the DB has 164 listings and growing. 50 was too low and
+  // hid rows on /listings.html even when the client asked for more.
+  return Math.min(parsed, 500);
 }
 
 /**
