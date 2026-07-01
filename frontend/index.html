@@ -164,6 +164,11 @@
               data-i18n="navListings"
               >דירות</a
             >
+            <a
+              href="about.html"
+              class="text-on-surface-variant text-sm hover:text-primary transition-colors"
+              >אודות</a
+            >
           </div>
           <p class="lead">הממשק מותאם ל-RTL בעברית ומוכן להצגה ב- staging.</p>
         </div>
@@ -499,94 +504,6 @@
         </div>
       </section>
 
-      <!-- About us / team -->
-      <section id="about" class="py-2xl bg-surface">
-        <div class="max-w-container-max mx-auto px-lg md:px-xl">
-          <div class="text-center mb-16 max-w-3xl mx-auto">
-            <span class="inline-block bg-brand-coral/10 text-brand-coral font-bold text-xs px-md py-xs rounded-full mb-md">מי אנחנו</span>
-            <h2 class="font-heading font-semibold text-2xl md:text-3xl text-on-surface mb-md">
-              סטודנטים בונים לסטודנטים
-            </h2>
-            <p class="text-base md:text-lg text-on-surface-variant leading-relaxed">
-              נמאס לנו לרדוף אחרי מודעות בקבוצות פייסבוק, לפתוח את Yad2 שוב ושוב, ולנחש אם הדירה
-              באמת קרובה לקמפוס. בנינו את RoomieFit כדי לאחד את כל המודעות למקום אחד,
-              עם מפה, פילטרים חכמים, ועוזר AI שמכיר את הצרכים של סטודנטים בישראל —
-              מארנונה וממ״ד ועד שאלות על שותפים.
-              <br class="hidden md:block" />
-              <span class="block mt-md font-semibold text-on-surface">
-                המטרה שלנו: שכל סטודנט/ית ימצא/תמצא דירה מתאימה תוך פחות מ-15 דקות.
-              </span>
-            </p>
-          </div>
-
-          <!-- Team grid — team members can drop their photos into
-               frontend/assets/team/<name>.jpg. Until then, the initial
-               circle shows as a fallback (onerror). -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
-            <!-- Waseem -->
-            <article class="bg-white rounded-2xl p-lg text-center shadow-sm hover:shadow-lg transition-shadow border border-surface-container">
-              <div class="relative w-32 h-32 mx-auto mb-md">
-                <div class="absolute inset-0 rounded-full bg-primary text-white flex items-center justify-center font-heading font-bold text-4xl">W</div>
-                <img
-                  src="assets/team/waseem.jpg"
-                  alt="Waseem"
-                  class="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-              <h3 class="font-heading font-semibold text-xl text-on-surface">Waseem Ssadi</h3>
-              <p class="text-brand-coral text-sm font-bold mt-xs">Full-Stack &amp; AI</p>
-              <p class="text-on-surface-variant text-sm mt-sm">
-                בנה את עוזר ה-AI, ה-UI וה-API. אחראי על החוויה מהחיפוש ועד קבלת המפתחות.
-              </p>
-            </article>
-
-            <!-- Tareq -->
-            <article class="bg-white rounded-2xl p-lg text-center shadow-sm hover:shadow-lg transition-shadow border border-surface-container">
-              <div class="relative w-32 h-32 mx-auto mb-md">
-                <div class="absolute inset-0 rounded-full bg-brand-coral text-white flex items-center justify-center font-heading font-bold text-4xl">T</div>
-                <img
-                  src="assets/team/tareq.jpg"
-                  alt="Tareq"
-                  class="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-              <h3 class="font-heading font-semibold text-xl text-on-surface">Tareq Zahaika</h3>
-              <p class="text-brand-coral text-sm font-bold mt-xs">Database &amp; Backend</p>
-              <p class="text-on-surface-variant text-sm mt-sm">
-                תכנן את סכימת Supabase, בנה את בוט הטלגרם ואת חיבורי המקורות ההיברידיים.
-              </p>
-            </article>
-
-            <!-- Abed -->
-            <article class="bg-white rounded-2xl p-lg text-center shadow-sm hover:shadow-lg transition-shadow border border-surface-container">
-              <div class="relative w-32 h-32 mx-auto mb-md">
-                <div class="absolute inset-0 rounded-full bg-primary-container text-white flex items-center justify-center font-heading font-bold text-4xl">A</div>
-                <img
-                  src="assets/team/abed.jpg"
-                  alt="Abed"
-                  class="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
-                  onerror="this.style.display='none'"
-                />
-              </div>
-              <h3 class="font-heading font-semibold text-xl text-on-surface">Abed Al-Rhman Issa</h3>
-              <p class="text-brand-coral text-sm font-bold mt-xs">Design &amp; UX</p>
-              <p class="text-on-surface-variant text-sm mt-sm">
-                עיצב את חוויית המשתמש, את הזהות הוויזואלית ואת התאמת ה-RTL לעברית.
-              </p>
-            </article>
-          </div>
-
-          <!-- Mission strip -->
-          <div class="mt-16 bg-gradient-to-l from-primary to-primary-container text-on-primary rounded-2xl p-lg md:p-xl text-center">
-            <p class="font-heading font-semibold text-lg md:text-xl leading-relaxed">
-              🎓 נבנה על ידי סטודנטים באוניברסיטה העברית · פרויקט קורס מסדי נתונים · שיאושר תוך יולי 2026
-            </p>
-          </div>
-        </div>
-      </section>
-
       <!-- Floating AI + Telegram side icons injected by js/app.js -->
     </main>
 
@@ -601,7 +518,7 @@
           </p>
         </div>
         <div class="flex gap-lg text-xs text-on-surface-variant">
-          <a href="#about" class="hover:text-primary" data-i18n="footerAbout">אודות</a>
+          <a href="about.html" class="hover:text-primary" data-i18n="footerAbout">אודות</a>
           <a href="#" class="hover:text-primary" data-i18n="footerContact"
             >צור קשר</a
           >

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>אודות | RoomieFit</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              surface: "#f9f9ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f0f3ff",
+              "surface-container": "#e7eeff",
+              "surface-container-high": "#dee8ff",
+              "on-surface": "#111c2d",
+              "on-surface-variant": "#464555",
+              outline: "#777587",
+              "outline-variant": "#c7c4d8",
+              primary: "#3525cd",
+              "on-primary": "#ffffff",
+              "primary-container": "#4f46e5",
+              "on-primary-container": "#dad7ff",
+              "brand-coral": "#FB7185",
+              "brand-coral-dark": "#F43F5E",
+            },
+            borderRadius: { lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+            spacing: { xs: "4px", sm: "8px", md: "16px", lg: "24px", xl: "40px", "2xl": "64px", "container-max": "1280px" },
+            fontFamily: { heading: ["Heebo", "system-ui", "sans-serif"], body: ["Heebo", "system-ui", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: "Heebo", system-ui, sans-serif; background-color: #fafaf9; color: #111c2d; }
+      .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+      .custom-shadow { box-shadow: 0 4px 20px -2px rgba(30, 41, 59, 0.05); }
+    </style>
+    <script defer src="js/app.js"></script>
+  </head>
+  <body class="text-on-surface" data-no-auto-layout>
+    <!-- Top nav -->
+    <nav class="sticky top-0 z-50 bg-surface-container-lowest/90 backdrop-blur shadow-[0_4px_20px_-2px_rgba(30,41,59,0.05)]">
+      <div class="flex justify-between items-center w-full px-lg md:px-xl py-md max-w-container-max mx-auto">
+        <div class="flex items-center gap-xl">
+          <a href="index.html" class="text-2xl font-heading font-bold">RoomieFit</a>
+          <div class="hidden md:flex gap-lg items-center">
+            <a href="index.html" class="text-on-surface-variant text-sm hover:text-primary">בית</a>
+            <a href="listings.html" class="text-on-surface-variant text-sm hover:text-primary">דירות</a>
+            <a href="about.html" class="text-primary font-bold border-b-2 border-primary pb-1 text-sm">אודות</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-md">
+          <span data-auth-area="logged-out"><a href="login.html" class="text-primary font-bold text-sm hover:opacity-80">כניסה</a></span>
+          <span data-auth-area="logged-in" class="flex items-center gap-sm" style="display:none;">
+            <a href="add-listing.html" class="bg-brand-coral text-white px-sm py-xs rounded-lg text-xs font-semibold hover:scale-105 transition-all flex items-center gap-xs"><span class="material-symbols-outlined" style="font-size:16px;">add</span>פרסם</a>
+            <div class="relative">
+              <button type="button" id="rfUserBtn" class="w-9 h-9 bg-primary text-white rounded-full font-bold text-sm flex items-center justify-center" data-auth-display="initial">?</button>
+              <div id="rfUserDrop" class="hidden absolute end-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-outline-variant py-1 z-50">
+                <div class="px-md py-sm border-b border-outline-variant"><div class="font-bold text-sm" data-auth-display="name">—</div><div class="text-xs text-on-surface-variant truncate" data-auth-display="email">—</div></div>
+                <a href="my-listings.html" class="block px-md py-sm hover:bg-surface-container-low text-sm">הדירות שלי</a>
+                <a href="add-listing.html" class="block px-md py-sm hover:bg-surface-container-low text-sm">פרסום דירה חדשה</a>
+                <button type="button" id="rfSignOut" class="block w-full text-start px-md py-sm hover:bg-surface-container-low text-sm text-rose-600 border-t border-outline-variant">יציאה</button>
+              </div>
+            </div>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="py-2xl bg-surface">
+      <div class="max-w-container-max mx-auto px-lg md:px-xl">
+        <!-- Mission -->
+        <div class="text-center mb-16 max-w-3xl mx-auto">
+          <span class="inline-block bg-brand-coral/10 text-brand-coral font-bold text-xs px-md py-xs rounded-full mb-md">מי אנחנו</span>
+          <h1 class="font-heading font-semibold text-3xl md:text-4xl text-on-surface mb-md">
+            סטודנטים בונים לסטודנטים
+          </h1>
+          <p class="text-base md:text-lg text-on-surface-variant leading-relaxed">
+            נמאס לנו לרדוף אחרי מודעות בקבוצות פייסבוק, לפתוח את Yad2 שוב ושוב, ולנחש אם הדירה
+            באמת קרובה לקמפוס. בנינו את RoomieFit כדי לאחד את כל המודעות למקום אחד,
+            עם מפה, פילטרים חכמים, ועוזר AI שמכיר את הצרכים של סטודנטים בישראל —
+            מארנונה וממ״ד ועד שאלות על שותפים.
+            <br class="hidden md:block" />
+            <span class="block mt-md font-semibold text-on-surface">
+              המטרה שלנו: שכל סטודנט/ית ימצא/תמצא דירה מתאימה תוך פחות מ-15 דקות.
+            </span>
+          </p>
+        </div>
+
+        <!-- Team grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+          <!-- Waseem -->
+          <article class="bg-white rounded-2xl p-lg text-center shadow-sm hover:shadow-lg transition-shadow border border-surface-container">
+            <div class="relative w-32 h-32 mx-auto mb-md">
+              <div class="absolute inset-0 rounded-full bg-primary text-white flex items-center justify-center font-heading font-bold text-4xl">W</div>
+              <img
+                src="assets/team/waseem.jpg"
+                alt="Waseem"
+                class="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
+                onerror="this.style.display='none'"
+              />
+            </div>
+            <h3 class="font-heading font-semibold text-xl text-on-surface">Waseem Ssadi</h3>
+            <p class="text-brand-coral text-sm font-bold mt-xs">Full-Stack &amp; AI</p>
+            <p class="text-on-surface-variant text-sm mt-sm">
+              בנה את עוזר ה-AI, ה-UI וה-API. אחראי על החוויה מהחיפוש ועד קבלת המפתחות.
+            </p>
+          </article>
+
+          <!-- Tareq -->
+          <article class="bg-white rounded-2xl p-lg text-center shadow-sm hover:shadow-lg transition-shadow border border-surface-container">
+            <div class="relative w-32 h-32 mx-auto mb-md">
+              <div class="absolute inset-0 rounded-full bg-brand-coral text-white flex items-center justify-center font-heading font-bold text-4xl">T</div>
+              <img
+                src="assets/team/tareq.jpg"
+                alt="Tareq"
+                class="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
+                onerror="this.style.display='none'"
+              />
+            </div>
+            <h3 class="font-heading font-semibold text-xl text-on-surface">Tareq Zahaika</h3>
+            <p class="text-brand-coral text-sm font-bold mt-xs">Database &amp; Backend</p>
+            <p class="text-on-surface-variant text-sm mt-sm">
+              תכנן את סכימת Supabase, בנה את בוט הטלגרם ואת חיבורי המקורות ההיברידיים.
+            </p>
+          </article>
+
+          <!-- Abed -->
+          <article class="bg-white rounded-2xl p-lg text-center shadow-sm hover:shadow-lg transition-shadow border border-surface-container">
+            <div class="relative w-32 h-32 mx-auto mb-md">
+              <div class="absolute inset-0 rounded-full bg-primary-container text-white flex items-center justify-center font-heading font-bold text-4xl">A</div>
+              <img
+                src="assets/team/abed.jpg"
+                alt="Abed"
+                class="relative w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
+                onerror="this.style.display='none'"
+              />
+            </div>
+            <h3 class="font-heading font-semibold text-xl text-on-surface">Abed Al-Rhman Issa</h3>
+            <p class="text-brand-coral text-sm font-bold mt-xs">Design &amp; UX</p>
+            <p class="text-on-surface-variant text-sm mt-sm">
+              עיצב את חוויית המשתמש, את הזהות הוויזואלית ואת התאמת ה-RTL לעברית.
+            </p>
+          </article>
+        </div>
+
+        <!-- Mission strip -->
+        <div class="mt-16 bg-gradient-to-l from-primary to-primary-container text-on-primary rounded-2xl p-lg md:p-xl text-center">
+          <p class="font-heading font-semibold text-lg md:text-xl leading-relaxed">
+            🎓 נבנה על ידי סטודנטים באוניברסיטה העברית · פרויקט קורס מסדי נתונים · יולי 2026
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-surface border-t border-surface-container mt-xl">
+      <div class="w-full px-lg md:px-xl py-lg max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md text-xs text-on-surface-variant">
+        <span>RoomieFit · פרויקט קורס מסדי נתונים · נתוני דמו בלבד</span>
+        <div class="flex gap-lg">
+          <a href="about.html" class="hover:text-primary">אודות</a>
+          <a href="listings.html" class="hover:text-primary">דירות</a>
+          <a href="add-listing.html" class="hover:text-primary">פרסום דירה</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/api/config.js"></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/chat-widget.js" defer></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("rfUserBtn");
+        const drop = document.getElementById("rfUserDrop");
+        if (btn && drop) {
+          btn.addEventListener("click", (e) => { e.stopPropagation(); drop.classList.toggle("hidden"); });
+          document.addEventListener("click", () => drop.classList.add("hidden"));
+        }
+        const out = document.getElementById("rfSignOut");
+        if (out) out.addEventListener("click", async () => { await window.RfAuth?.signOut(); location.href = "index.html"; });
+      });
+    </script>
+  </body>
+</html>
