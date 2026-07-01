@@ -74,9 +74,8 @@ const ALLOWED_FIELDS = new Set([
   "contact_phone", "contact_email",
 ]);
 
-// Curated pool of real apartment / bedroom / kitchen photos. Picked over
-// picsum.photos because picsum returns random anything (cats, landscapes)
-// which looks broken on a rentals site.
+// 12 hand-verified simple apartment interiors. Keep in sync with the
+// frontend pools + migration 0009.
 const APARTMENT_PHOTOS = [
   "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1600&q=80",
@@ -89,13 +88,7 @@ const APARTMENT_PHOTOS = [
   "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1522444690501-d3cdef84a8c1?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1519643381401-22c77e60520e?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
 ];
 
 function placeholderImageFor(listingId) {

@@ -4,6 +4,8 @@
 // Curated real apartment photos, deterministic per listing id. Each gallery
 // tile picks a different photo from the pool so the four thumbnails don't
 // repeat.
+// 12 hand-verified simple apartment interiors. Dropped 6 questionable
+// IDs from the previous pool (one turned out to be a shampoo bottle).
 const APARTMENT_PHOTOS = [
   "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1600&q=80",
@@ -16,13 +18,7 @@ const APARTMENT_PHOTOS = [
   "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1522444690501-d3cdef84a8c1?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1519643381401-22c77e60520e?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=80",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
 ];
 function galleryFallbacks(listingId) {
   const seed = String(listingId || "x").split("").reduce((s, c) => s + c.charCodeAt(0), 0);
@@ -130,9 +126,11 @@ function render(listing) {
   const rm = listing.roommates || {};
 
   root.innerHTML = `
-    <!-- Gallery (click to zoom) -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[500px]">
-      <button type="button" class="js-lightbox group md:col-span-3 h-96 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
+    <!-- Gallery (click to zoom) — shrunk from 500 px → 380 px so the
+         main image doesn't dominate the fold and the title / details
+         are visible without scrolling. -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[380px]">
+      <button type="button" class="js-lightbox group md:col-span-3 h-72 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
         <img src="${galleryImgs[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${escapeHtml(listing.title)}" />
         <span class="absolute bottom-md end-md bg-black/55 text-white text-xs font-bold px-md py-xs rounded-full flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
           <span class="material-symbols-outlined" style="font-size:16px;">zoom_in</span>
