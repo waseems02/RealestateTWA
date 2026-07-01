@@ -134,29 +134,19 @@ function render(listing) {
   const rm = listing.roommates || {};
 
   root.innerHTML = `
-    <!-- Gallery (click to zoom) — main image at 300 px on desktop /
-         256 px on mobile so it can't push the title, description, or
-         side map below the fold. Thumbs get explicit heights on each
-         breakpoint so they never collapse. -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[300px]">
-      <button type="button" class="js-lightbox group md:col-span-3 h-64 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
-        <img src="${galleryImgs[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${escapeHtml(listing.title)}" />
-        <span class="absolute bottom-md end-md bg-black/55 text-white text-xs font-bold px-md py-xs rounded-full flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
-          <span class="material-symbols-outlined" style="font-size:16px;">zoom_in</span>
-          הגדל
-        </span>
-      </button>
-      <div class="grid grid-cols-3 md:grid-cols-1 gap-md">
-        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0 h-20 md:h-full" data-img-idx="1">
-          <img src="${galleryImgs[1]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 2" />
+    <!-- Gallery (click any to zoom) — 4 uniformly small photos.
+         Mobile: 2×2 grid, ~120 px each. Desktop: 4-in-a-row, ~160 px
+         each. No single 'hero' image so nothing dominates the fold. -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-md">
+      ${[0,1,2,3].map((i) => `
+        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0 h-32 md:h-40" data-img-idx="${i}">
+          <img src="${galleryImgs[i]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${escapeHtml(listing.title)} · תמונה ${i + 1}" />
+          <span class="absolute bottom-xs end-xs bg-black/55 text-white text-[10px] font-bold px-sm py-xs rounded-full flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="material-symbols-outlined" style="font-size:12px;">zoom_in</span>
+            הגדל
+          </span>
         </button>
-        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0 h-20 md:h-full" data-img-idx="2">
-          <img src="${galleryImgs[2]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 3" />
-        </button>
-        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0 h-20 md:h-full" data-img-idx="3">
-          <img src="${galleryImgs[3]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 4" />
-        </button>
-      </div>
+      `).join("")}
     </section>
 
     <div class="grid lg:grid-cols-3 gap-xl items-start">
