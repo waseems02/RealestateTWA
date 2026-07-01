@@ -277,20 +277,43 @@
         };
       }
 
+      function showError(html) {
+        errBox.innerHTML = html;
+        errBox.classList.remove("hidden");
+        window.scrollTo({ top: errBox.offsetTop - 80, behavior: "smooth" });
+      }
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         errBox.classList.add("hidden");
         okBox.classList.add("hidden");
         const payload = readForm();
-        if (!payload.title || !payload.city || payload.price == null) {
-          errBox.textContent = "כותרת, עיר ומחיר הם שדות חובה.";
-          errBox.classList.remove("hidden");
+        console.log("[add-listing] payload:", payload);
+
+        // Basic client-side validation
+        const missing = [];
+        if (!payload.title) missing.push("כותרת");
+        if (!payload.city) missing.push("עיר");
+        if (payload.price == null || Number.isNaN(payload.price)) missing.push("מחיר");
+        if (missing.length) {
+          showError("שדות חסרים: " + missing.join(", "));
           return;
         }
+
         btn.disabled = true;
         btnLabel.textContent = "שולח...";
         try {
-          const token = window.RfAuth.getAccessToken();
+          // Force a fresh Supabase session so we never send a stale/expired
+          // token. If the user isn't logged in at all → hard fail with a
+          // clear message + link back to login.
+          const client = await window.RfAuth.getClient();
+          const { data: sessionData } = await client.auth.getSession();
+          const token = sessionData?.session?.access_token;
+          if (!token) {
+            showError('לא זוהתה התחברות. <a href="login.html?next=add-listing.html" class="underline font-bold">היכנס/י מחדש</a> ונסה שוב.');
+            return;
+          }
+
           const res = await fetch("/api/listings", {
             method: "POST",
             headers: {
@@ -299,8 +322,25 @@
             },
             body: JSON.stringify(payload),
           });
-          const body = await res.json();
-          if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
+
+          // Response may not be JSON on 500-page errors — guard the parse
+          const rawText = await res.text();
+          let body;
+          try { body = JSON.parse(rawText); }
+          catch { body = { error: rawText.slice(0, 200) || `HTTP ${res.status}` }; }
+          console.log("[add-listing] server response:", res.status, body);
+
+          if (res.status === 401) {
+            showError('הזהות פגה. <a href="login.html?next=add-listing.html" class="underline font-bold">היכנס/י מחדש</a> ונסה שוב.');
+            return;
+          }
+          if (!res.ok) {
+            const serverErr = body?.error || `HTTP ${res.status}`;
+            const detail = body?.detail ? `<br><span class="text-xs">${serverErr}</span>` : "";
+            showError("פרסום נכשל: " + serverErr + detail);
+            return;
+          }
+
           okBox.innerHTML =
             '<div class="text-lg font-bold mb-2">🎉 הדירה פורסמה בהצלחה!</div>' +
             '<div class="flex flex-wrap gap-2 mt-2">' +
@@ -313,8 +353,8 @@
           form.reset();
           window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
-          errBox.textContent = "פרסום נכשל: " + (err.message || err);
-          errBox.classList.remove("hidden");
+          console.error("[add-listing] unexpected error:", err);
+          showError("פרסום נכשל: " + (err?.message || err));
         } finally {
           btn.disabled = false;
           btnLabel.textContent = "פרסם דירה";
