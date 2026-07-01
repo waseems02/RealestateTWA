@@ -231,6 +231,59 @@
             </div>
             <input type="hidden" id="f_smoking_allowed" />
           </div>
+
+          <!-- Lifestyle divider -->
+          <div class="mt-lg mb-md pt-md border-t border-outline-variant">
+            <h3 class="font-heading font-semibold text-sm text-on-surface-variant mb-sm">אורח חיים בדירה</h3>
+          </div>
+
+          <!-- Religious importance -->
+          <div class="mb-md">
+            <label class="block text-sm font-semibold mb-sm">חשיבות דת</label>
+            <div class="flex flex-wrap gap-xs" id="religiousImportanceChips">
+              <button type="button" data-rli="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active">הכל</button>
+              <button type="button" data-rli="not_important" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">לא חשוב</button>
+              <button type="button" data-rli="somewhat" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">קצת חשוב</button>
+              <button type="button" data-rli="very" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary">חשוב מאוד</button>
+            </div>
+            <input type="hidden" id="f_religious_importance" />
+          </div>
+
+          <!-- Guests -->
+          <div class="mb-md">
+            <label class="block text-sm font-semibold mb-sm">אורחים</label>
+            <div class="flex gap-xs" id="guestsChips">
+              <button type="button" data-gst="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active flex-1">הכל</button>
+              <button type="button" data-gst="rarely" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">רחוקות</button>
+              <button type="button" data-gst="sometimes" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">לפעמים</button>
+              <button type="button" data-gst="often" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">קרובות</button>
+            </div>
+            <input type="hidden" id="f_guests_frequency" />
+          </div>
+
+          <!-- Cooking -->
+          <div class="mb-md">
+            <label class="block text-sm font-semibold mb-sm">בישול</label>
+            <div class="flex gap-xs" id="cookingChips">
+              <button type="button" data-cook="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active flex-1">הכל</button>
+              <button type="button" data-cook="rarely" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">רחוקות</button>
+              <button type="button" data-cook="sometimes" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">לפעמים</button>
+              <button type="button" data-cook="daily" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">כל יום</button>
+            </div>
+            <input type="hidden" id="f_cooking_frequency" />
+          </div>
+
+          <!-- Alcohol -->
+          <div class="mb-md">
+            <label class="block text-sm font-semibold mb-sm">אלכוהול</label>
+            <div class="flex gap-xs" id="alcoholChips">
+              <button type="button" data-alc="" class="px-md py-sm rounded-full bg-primary text-white text-xs is-active flex-1">הכל</button>
+              <button type="button" data-alc="never" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">לא</button>
+              <button type="button" data-alc="socially" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">חברתי</button>
+              <button type="button" data-alc="often" class="px-md py-sm rounded-full border border-outline-variant text-xs hover:border-primary flex-1">קרובות</button>
+            </div>
+            <input type="hidden" id="f_alcohol_frequency" />
+          </div>
         </form>
       </aside>
 

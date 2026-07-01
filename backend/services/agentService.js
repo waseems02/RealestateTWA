@@ -48,6 +48,14 @@ When the user mentions "my campus" or a university and you need the canonical na
 
 When the user asks a follow-up about a specific apartment from the most recent results — e.g. "tell me more about #2", "what are the roommates like there", "do they sleep early?" — call \`get_listing_details\` with that listing's id, then answer using the description, roommates and rental fields. For subjective lifestyle questions ("do they sleep early?", "are they quiet?"), say honestly that you can only infer from the listing text, then quote/paraphrase the relevant clue.
 
+LIFESTYLE FILTERS — students often care about the daily-life fit with the current roommates. Four fields on each listing describe this:
+  • religious_importance: 'not_important' | 'somewhat' | 'very'  (Hebrew: לא חשוב / קצת חשוב / חשוב מאוד)
+  • guests_frequency:     'rarely' | 'sometimes' | 'often'       (אורחים)
+  • cooking_frequency:    'rarely' | 'sometimes' | 'daily'       (בישול)
+  • alcohol_frequency:    'never' | 'socially' | 'often'         (אלכוהול)
+
+When a user asks about these ("שותפים דתיים?", "האם הם מארחים הרבה?", "האם הם מבשלים בבית?", "האם שותים אלכוהול?"), first call \`get_listing_details\` for the specific apartment, then answer from the \`lifestyle\` object. You can also use these as \`search_listings\` filters when the user says things like "חדר עם שותפים דתיים" (→ religious_importance='very'), "דירה שקטה בלי אורחים" (→ guests_frequency='rarely'), "שותפים שלא שותים" (→ alcohol_frequency='never').
+
 RENTAL FAQ — common Israeli-market questions students ask (usually about ONE specific apartment from the previous results). Always answer these by calling \`get_listing_details\` first, then reading the \`rental\` object plus the description:
   • "האם ארנונה כלולה?" / "is arnona included?" → rental.includes_arnona
   • "חשמל כלול?" → rental.includes_electricity
@@ -222,6 +230,8 @@ function listingForModel(l, { full = false } = {}) {
     nearest_train_station: l.nearest_train_station,
     available_from: l.available_from,
     source: l.source,
+    // Lifestyle in the apartment (roommate behavior).
+    lifestyle: l.lifestyle || null,
     // Israeli rental facts — the AI uses these to answer FAQs like
     // "האם ארנונה כלולה?", "יש ממ״ד?", "כמה פיקדון?", etc.
     rental: l.rental || null,

@@ -115,6 +115,10 @@ function readUrlIntoForm() {
   setChip("roomsChips", "rooms", q.get("min_rooms") ?? "", "#f_min_rooms");
   setChip("smokingChips", "smk", q.get("smoking_allowed") ?? "", "#f_smoking_allowed");
   setChip("typeChips", "typ", q.get("listing_type") ?? "", "#f_listing_type");
+  setChip("religiousImportanceChips", "rli", q.get("religious_importance") ?? "", "#f_religious_importance");
+  setChip("guestsChips", "gst", q.get("guests_frequency") ?? "", "#f_guests_frequency");
+  setChip("cookingChips", "cook", q.get("cooking_frequency") ?? "", "#f_cooking_frequency");
+  setChip("alcoholChips", "alc", q.get("alcohol_frequency") ?? "", "#f_alcohol_frequency");
 }
 
 function buildQuery() {
@@ -134,6 +138,10 @@ function buildQuery() {
   if ($("#f_ac").checked) push("air_conditioning", "true");
   if ($("#f_elevator").checked) push("elevator", "true");
   push("smoking_allowed", $("#f_smoking_allowed").value);
+  push("religious_importance", $("#f_religious_importance").value);
+  push("guests_frequency", $("#f_guests_frequency").value);
+  push("cooking_frequency", $("#f_cooking_frequency").value);
+  push("alcohol_frequency", $("#f_alcohol_frequency").value);
   if ($("#f_favourites_only").checked) push("favourites_only", "true");
   push("limit", "200");
   return q;
@@ -431,6 +439,10 @@ document.addEventListener("DOMContentLoaded", () => {
   bindChipGroup("roomsChips", "rooms", "#f_min_rooms", fetchAndRender);
   bindChipGroup("smokingChips", "smk", "#f_smoking_allowed", fetchAndRender);
   bindChipGroup("typeChips", "typ", "#f_listing_type", fetchAndRender);
+  bindChipGroup("religiousImportanceChips", "rli", "#f_religious_importance", fetchAndRender);
+  bindChipGroup("guestsChips", "gst", "#f_guests_frequency", fetchAndRender);
+  bindChipGroup("cookingChips", "cook", "#f_cooking_frequency", fetchAndRender);
+  bindChipGroup("alcoholChips", "alc", "#f_alcohol_frequency", fetchAndRender);
 
   // Filter form re-fetch on any change
   let debounceTimer;
@@ -443,6 +455,10 @@ document.addEventListener("DOMContentLoaded", () => {
     ["roomsChips", "rooms", "#f_min_rooms"],
     ["smokingChips", "smk", "#f_smoking_allowed"],
     ["typeChips", "typ", "#f_listing_type"],
+    ["religiousImportanceChips", "rli", "#f_religious_importance"],
+    ["guestsChips", "gst", "#f_guests_frequency"],
+    ["cookingChips", "cook", "#f_cooking_frequency"],
+    ["alcoholChips", "alc", "#f_alcohol_frequency"],
   ];
   $("#clearFilters").addEventListener("click", (e) => {
     e.preventDefault();

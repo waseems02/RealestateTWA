@@ -58,6 +58,15 @@ function religiousLabel(t) {
 function genderLabel(g) {
   return ({ female: "בנות בלבד", male: "בנים בלבד", any: "לא משנה" })[g] || null;
 }
+function religiousImportanceLabel(x) {
+  return ({ not_important: "לא חשוב", somewhat: "קצת חשוב", very: "חשוב מאוד" })[x] || null;
+}
+function frequencyLabel(x) {
+  return ({ rarely: "לעיתים רחוקות", sometimes: "לפעמים", often: "לעיתים קרובות", daily: "מדי יום" })[x] || null;
+}
+function alcoholLabel(x) {
+  return ({ never: "לא שותים", socially: "רק חברתי", often: "לעיתים קרובות" })[x] || null;
+}
 function sourceTone(src) {
   return ({
     yad2: "bg-yellow-100 text-yellow-800",
@@ -125,25 +134,26 @@ function render(listing) {
   const rm = listing.roommates || {};
 
   root.innerHTML = `
-    <!-- Gallery (click to zoom) — shrunk from 500 px → 380 px so the
-         main image doesn't dominate the fold and the title / details
-         are visible without scrolling. -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[380px]">
-      <button type="button" class="js-lightbox group md:col-span-3 h-72 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
+    <!-- Gallery (click to zoom) — main image at 300 px on desktop /
+         256 px on mobile so it can't push the title, description, or
+         side map below the fold. Thumbs get explicit heights on each
+         breakpoint so they never collapse. -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-md md:h-[300px]">
+      <button type="button" class="js-lightbox group md:col-span-3 h-64 md:h-full rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in border-none p-0" data-img-idx="0">
         <img src="${galleryImgs[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${escapeHtml(listing.title)}" />
         <span class="absolute bottom-md end-md bg-black/55 text-white text-xs font-bold px-md py-xs rounded-full flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
           <span class="material-symbols-outlined" style="font-size:16px;">zoom_in</span>
           הגדל
         </span>
       </button>
-      <div class="grid grid-cols-3 md:grid-cols-1 gap-md h-full">
-        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0" data-img-idx="1">
+      <div class="grid grid-cols-3 md:grid-cols-1 gap-md">
+        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0 h-20 md:h-full" data-img-idx="1">
           <img src="${galleryImgs[1]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 2" />
         </button>
-        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0" data-img-idx="2">
+        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0 h-20 md:h-full" data-img-idx="2">
           <img src="${galleryImgs[2]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 3" />
         </button>
-        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0" data-img-idx="3">
+        <button type="button" class="js-lightbox rounded-2xl overflow-hidden custom-shadow relative cursor-zoom-in group border-none p-0 h-20 md:h-full" data-img-idx="3">
           <img src="${galleryImgs[3]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="תמונה 4" />
         </button>
       </div>
@@ -210,12 +220,13 @@ function render(listing) {
             ${ruleRow("smoking_rooms", "עישון", listing.smoking_allowed ? "מותר" : "לא מותר", !listing.smoking_allowed)}
             ${ruleRow("pets", "חיות מחמד", listing.pets_allowed ? "מותר" : "לא מותר", !!listing.pets_allowed)}
             ${ruleRow("group", "סוג השותפים", statusLabel(rm.status) || "לא צוין", !!statusLabel(rm.status))}
-            ${ruleRow("local_florist", "אורח חיים", religiousLabel(rm.religious_tag) || listing.lifestyle_tradition_preference || "לא צוין", !!(religiousLabel(rm.religious_tag) || listing.lifestyle_tradition_preference))}
+            ${ruleRow("local_florist", "חשיבות דת", religiousImportanceLabel(listing.lifestyle?.religious_importance) || "לא צוין", !!religiousImportanceLabel(listing.lifestyle?.religious_importance))}
+            ${ruleRow("groups", "אורחים", frequencyLabel(listing.lifestyle?.guests_frequency) || "לא צוין", !!frequencyLabel(listing.lifestyle?.guests_frequency))}
+            ${ruleRow("restaurant", "בישול", frequencyLabel(listing.lifestyle?.cooking_frequency) || "לא צוין", !!frequencyLabel(listing.lifestyle?.cooking_frequency))}
+            ${ruleRow("wine_bar", "אלכוהול", alcoholLabel(listing.lifestyle?.alcohol_frequency) || "לא צוין", !!alcoholLabel(listing.lifestyle?.alcohol_frequency))}
             ${ruleRow("face", "העדפת מגדר", genderLabel(rm.gender_preference) || "לא משנה", true)}
-            ${ruleRow("groups", "שותפים בדירה", rm.count != null ? `${rm.count} שותפים` : "—", rm.count != null)}
+            ${ruleRow("bed", "שותפים בדירה", rm.count != null ? `${rm.count} שותפים` : "—", rm.count != null)}
             ${ruleRow("accessible", "נגישות לכיסא גלגלים / מעלית", listing.accessible == null ? "לא צוין" : listing.accessible ? "כן" : "לא", !!listing.accessible)}
-            ${listing.noise_level != null ? ruleRow("volume_up", "רעש (1=שקט, 5=תוסס)", `${listing.noise_level} / 5`, listing.noise_level <= 2) : ""}
-            ${listing.safety_rating != null ? ruleRow("shield", "ביטחון (1-5)", `${listing.safety_rating} / 5`, listing.safety_rating >= 4) : ""}
           </div>
         </div>
       </div>

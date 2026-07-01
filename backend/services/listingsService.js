@@ -135,6 +135,11 @@ async function searchListings(filters = {}) {
     if (filters.smoking_allowed === true) query = query.eq("smoking_allowed", true);
     if (filters.smoking_allowed === false) query = query.eq("smoking_allowed", false);
     if (filters.listing_type) query = query.eq("listing_type", filters.listing_type);
+    // Lifestyle filters (from migration 0011)
+    if (filters.religious_importance) query = query.eq("religious_importance", filters.religious_importance);
+    if (filters.guests_frequency) query = query.eq("guests_frequency", filters.guests_frequency);
+    if (filters.cooking_frequency) query = query.eq("cooking_frequency", filters.cooking_frequency);
+    if (filters.alcohol_frequency) query = query.eq("alcohol_frequency", filters.alcohol_frequency);
     if (filters.max_bus_distance_m != null)
       query = query.lte("distance_to_bus_station_m", filters.max_bus_distance_m);
     if (filters.max_train_distance_m != null)
@@ -244,6 +249,13 @@ function normalizeSupabaseRow(row) {
     images,
     image_url: images[0] || null,
     created_at: row.created_at,
+    // Lifestyle in the apartment (from migration 0011)
+    lifestyle: {
+      religious_importance: row.religious_importance,
+      guests_frequency: row.guests_frequency,
+      cooking_frequency: row.cooking_frequency,
+      alcohol_frequency: row.alcohol_frequency,
+    },
     // Israeli rental facts (from migration 0008)
     rental: {
       includes_arnona: row.includes_arnona,
@@ -414,6 +426,26 @@ function getFilterParameterSchema() {
         enum: ["apartment", "room"],
         description:
           "Whether the user wants a full apartment ('apartment') or a single room in a shared apartment ('room' — חדר בדירת שותפים)",
+      },
+      religious_importance: {
+        type: "string",
+        enum: ["not_important", "somewhat", "very"],
+        description: "How important religious observance is in the household — 'not_important' (חילוני / לא חשוב), 'somewhat' (מסורתי / קצת חשוב), 'very' (דתי / מאוד חשוב).",
+      },
+      guests_frequency: {
+        type: "string",
+        enum: ["rarely", "sometimes", "often"],
+        description: "How often the current roommates host guests. Only set when the user explicitly cares about guests / socializing / quiet.",
+      },
+      cooking_frequency: {
+        type: "string",
+        enum: ["rarely", "sometimes", "daily"],
+        description: "How often the current roommates cook at home. Useful when the user asks about a shared kitchen or dietary lifestyle.",
+      },
+      alcohol_frequency: {
+        type: "string",
+        enum: ["never", "socially", "often"],
+        description: "How often alcohol is consumed in the apartment — 'never' (לא שותים / no drinking), 'socially' (חברתי), 'often' (לעיתים קרובות).",
       },
       max_bus_distance_m: {
         type: "integer",
