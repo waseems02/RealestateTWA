@@ -199,16 +199,20 @@ function listingCard(listing, idx) {
       : "";
 
   const lifestyleChips = [];
-  if (listing.roommates?.status === "student") lifestyleChips.push({ t: "סטודנטים", c: "bg-indigo-50 text-indigo-700" });
-  if (listing.roommates?.status === "professional") lifestyleChips.push({ t: "עובדים", c: "bg-indigo-50 text-indigo-700" });
-  if (listing.roommates?.religious_tag === "religious") lifestyleChips.push({ t: "דתי", c: "bg-amber-50 text-amber-700" });
-  if (listing.roommates?.religious_tag === "secular") lifestyleChips.push({ t: "חילוני", c: "bg-emerald-50 text-emerald-700" });
-  if (listing.roommates?.religious_tag === "traditional") lifestyleChips.push({ t: "מסורתי", c: "bg-orange-50 text-orange-700" });
-  if (listing.roommates?.gender_preference === "female") lifestyleChips.push({ t: "בנות בלבד", c: "bg-rose-50 text-rose-700" });
-  if (listing.roommates?.gender_preference === "male") lifestyleChips.push({ t: "בנים בלבד", c: "bg-blue-50 text-blue-700" });
   if (listing.smoking_allowed) lifestyleChips.push({ t: "מותר לעשן", c: "bg-stone-100 text-stone-700" });
   else lifestyleChips.push({ t: "לא מעשנים", c: "bg-emerald-50 text-emerald-700" });
   if (listing.pets_allowed) lifestyleChips.push({ t: "מותר חיות", c: "bg-amber-50 text-amber-700" });
+  // Lifestyle facets from migration 0011
+  const ls = listing.lifestyle || {};
+  if (ls.religious_importance === "not_important") lifestyleChips.push({ t: "לא חשוב דת", c: "bg-emerald-50 text-emerald-700" });
+  else if (ls.religious_importance === "somewhat") lifestyleChips.push({ t: "מסורתיים", c: "bg-orange-50 text-orange-700" });
+  else if (ls.religious_importance === "very") lifestyleChips.push({ t: "דתיים", c: "bg-amber-50 text-amber-700" });
+  if (ls.guests_frequency === "rarely") lifestyleChips.push({ t: "שקטים", c: "bg-sky-50 text-sky-700" });
+  else if (ls.guests_frequency === "often") lifestyleChips.push({ t: "מארחים הרבה", c: "bg-fuchsia-50 text-fuchsia-700" });
+  if (ls.cooking_frequency === "daily") lifestyleChips.push({ t: "מבשלים כל יום", c: "bg-lime-50 text-lime-700" });
+  else if (ls.cooking_frequency === "rarely") lifestyleChips.push({ t: "לא מבשלים", c: "bg-slate-100 text-slate-700" });
+  if (ls.alcohol_frequency === "never") lifestyleChips.push({ t: "בלי אלכוהול", c: "bg-emerald-50 text-emerald-700" });
+  else if (ls.alcohol_frequency === "often") lifestyleChips.push({ t: "שותים", c: "bg-rose-50 text-rose-700" });
 
   const amenityIcons = [];
   if (listing.balcony) amenityIcons.push({ i: "balcony", t: "מרפסת" });
@@ -238,7 +242,7 @@ function listingCard(listing, idx) {
       <p class="text-sm text-on-surface-variant mb-sm font-bold">${escapeHtml(listing.title || "")}</p>
       <p class="text-xs text-on-surface-variant mb-md">${listing.rooms ?? "?"} חדרים · ${listing.size_sqm ?? "?"} מ"ר · קומה ${listing.floor ?? "—"}${listing.roommates?.count ? ` · ${listing.roommates.count} שותפים` : ""}</p>
       <div class="flex flex-wrap gap-xs mb-md">
-        ${lifestyleChips.slice(0, 4).map((c) => `<span class="${c.c} px-sm py-xs rounded-lg text-[11px] font-semibold">${c.t}</span>`).join("")}
+        ${lifestyleChips.slice(0, 6).map((c) => `<span class="${c.c} px-sm py-xs rounded-lg text-[11px] font-semibold">${c.t}</span>`).join("")}
       </div>
       <div class="border-t border-surface-container pt-sm flex justify-between items-center">
         <div class="flex gap-md text-xs text-on-surface-variant flex-wrap">
