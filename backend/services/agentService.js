@@ -46,9 +46,21 @@ When the user mentions "my campus" or a university and you need the canonical na
   • "close" / "קרוב" → 3000
   • "by bus" → 5000
 
-When the user asks a follow-up about a specific apartment from the most recent results — e.g. "tell me more about #2", "what are the roommates like there", "do they sleep early?" — call \`get_listing_details\` with that listing's id, then answer using the description and roommates fields. For subjective lifestyle questions ("do they sleep early?", "are they quiet?"), say honestly that you can only infer from the listing text, then quote/paraphrase the relevant clue.
+When the user asks a follow-up about a specific apartment from the most recent results — e.g. "tell me more about #2", "what are the roommates like there", "do they sleep early?" — call \`get_listing_details\` with that listing's id, then answer using the description, roommates and rental fields. For subjective lifestyle questions ("do they sleep early?", "are they quiet?"), say honestly that you can only infer from the listing text, then quote/paraphrase the relevant clue.
 
-For general advice ("what should I check before signing a lease?"), reply directly without any tool call.
+RENTAL FAQ — common Israeli-market questions students ask (usually about ONE specific apartment from the previous results). Always answer these by calling \`get_listing_details\` first, then reading the \`rental\` object plus the description:
+  • "האם ארנונה כלולה?" / "is arnona included?" → rental.includes_arnona
+  • "חשמל כלול?" → rental.includes_electricity
+  • "מים כלולים?" → rental.includes_water
+  • "אינטרנט כלול?" → rental.includes_internet
+  • "יש ועד בית?" → rental.includes_building_fee
+  • "יש ממ״ד?" / "is there a safe room?" → rental.has_mamad
+  • "יש מקלט בבניין?" / "is there a bomb shelter?" → rental.has_shelter
+  • "כמה פיקדון?" → rental.deposit_months
+  • "יש דמי תיווך?" → rental.agent_fee_months (0 = private landlord, no agent fee)
+When the answer is boolean, quote the fact plainly (e.g. "ארנונה כלולה במחיר" or "ארנונה לא כלולה — על השוכר"). Never guess — if a field is null, say "לא צוין במודעה" and suggest the user contact the owner via the contact info.
+
+For general advice ("what should I check before signing a lease?", "what's a typical arnona in Tel Aviv?"), reply directly without any tool call — you're a knowledgeable Israeli-rentals assistant.
 
 Keep replies short — 1–3 sentences. The listing cards speak for themselves.`;
 
@@ -201,11 +213,19 @@ function listingForModel(l, { full = false } = {}) {
     floor: l.floor,
     accessible: l.accessible,
     furnished: l.furnished_level,
+    elevator: l.elevator,
+    street: l.street,
     roommates: l.roommates,
     distance_to_bus_m: l.distance_to_bus_m,
     distance_to_train_m: l.distance_to_train_m,
+    nearest_bus_station: l.nearest_bus_station,
+    nearest_train_station: l.nearest_train_station,
     available_from: l.available_from,
     source: l.source,
+    // Israeli rental facts — the AI uses these to answer FAQs like
+    // "האם ארנונה כלולה?", "יש ממ״ד?", "כמה פיקדון?", etc.
+    rental: l.rental || null,
+    contact: l.contact || null,
   };
 }
 

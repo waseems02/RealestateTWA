@@ -244,6 +244,18 @@ function normalizeSupabaseRow(row) {
     images,
     image_url: images[0] || null,
     created_at: row.created_at,
+    // Israeli rental facts (from migration 0008)
+    rental: {
+      includes_arnona: row.includes_arnona,
+      includes_electricity: row.includes_electricity,
+      includes_water: row.includes_water,
+      includes_internet: row.includes_internet,
+      includes_building_fee: row.includes_building_fee,
+      has_mamad: row.has_mamad,
+      has_shelter: row.has_shelter,
+      deposit_months: row.deposit_months,
+      agent_fee_months: row.agent_fee_months,
+    },
     roommates: {
       count: row.current_roommates_count,
       status: null, // not in new schema

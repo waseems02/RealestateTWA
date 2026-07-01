@@ -204,6 +204,8 @@ function render(listing) {
           </div>
         </div>
 
+        ${rentalFactsPanel(listing.rental)}
+
         <!-- Lifestyle / roommates rules -->
         <div class="bg-white p-xl rounded-2xl custom-shadow border border-surface-container">
           <h2 class="font-heading font-semibold text-xl mb-md">סגנון חיים בדירה</h2>
@@ -375,6 +377,53 @@ function commuteRow(icon, label, value) {
     </div>
     <span class="font-bold">${escapeHtml(String(value))}</span>
   </div>`;
+}
+
+// Israeli rental facts — arnona / electricity / water / mamad / shelter /
+// deposit / agent fee. Renders "לא צוין" when a field is null so users can
+// see what's known vs unknown at a glance.
+function rentalFactsPanel(rental) {
+  if (!rental) return "";
+  const yn = (b) =>
+    b == null
+      ? '<span class="text-on-surface-variant">לא צוין</span>'
+      : b
+        ? '<span class="text-emerald-700 font-bold">כלול ✓</span>'
+        : '<span class="text-rose-600 font-bold">לא כלול</span>';
+  const bool = (b, yes = "יש", no = "אין") =>
+    b == null
+      ? '<span class="text-on-surface-variant">לא צוין</span>'
+      : b
+        ? `<span class="text-emerald-700 font-bold">${yes} ✓</span>`
+        : `<span class="text-rose-600 font-bold">${no}</span>`;
+  const money = (m) =>
+    m == null
+      ? '<span class="text-on-surface-variant">לא צוין</span>'
+      : m === 0
+        ? '<span class="text-emerald-700 font-bold">אין ✓</span>'
+        : `<span class="font-bold">${m} חודשי שכירות</span>`;
+
+  const row = (label, value) =>
+    `<div class="flex items-center justify-between gap-sm bg-surface-container-low rounded-xl px-md py-sm text-sm">
+      <span class="text-on-surface-variant">${escapeHtml(label)}</span>${value}
+    </div>`;
+
+  return `
+    <div class="bg-white p-xl rounded-2xl custom-shadow border border-surface-container">
+      <h2 class="font-heading font-semibold text-xl mb-md">פרטי השכירות</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+        ${row("ארנונה", yn(rental.includes_arnona))}
+        ${row("חשמל", yn(rental.includes_electricity))}
+        ${row("מים", yn(rental.includes_water))}
+        ${row("אינטרנט", yn(rental.includes_internet))}
+        ${row("ועד בית", yn(rental.includes_building_fee))}
+        ${row('ממ״ד בדירה', bool(rental.has_mamad))}
+        ${row("מקלט בבניין", bool(rental.has_shelter))}
+        ${row("פיקדון", money(rental.deposit_months))}
+        ${row("דמי תיווך", money(rental.agent_fee_months))}
+      </div>
+      <p class="text-xs text-on-surface-variant mt-md">💡 יש/אין ספק? אפשר לשאול את העוזר בצ׳אט על הדירה הזו.</p>
+    </div>`;
 }
 
 // ---------- Lightbox ----------
