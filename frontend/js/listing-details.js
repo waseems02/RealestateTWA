@@ -291,7 +291,8 @@ function render(listing) {
   // Mini map — apartment pin (price) + campus pin (uni name) + dashed walking
   // line between them, auto-fit to show both.
   if (listing.latitude != null && listing.longitude != null) {
-    const map = L.map("miniMap", { zoomControl: true, attributionControl: false }).setView(
+    const mapEl = document.getElementById("miniMap");
+    const map = L.map(mapEl, { zoomControl: true, attributionControl: false }).setView(
       [listing.latitude, listing.longitude],
       15
     );
@@ -335,6 +336,27 @@ function render(listing) {
 
     if (bounds.length > 1) {
       map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+    }
+
+    // Fix the "map is cut off" bug — Leaflet caches container size at init,
+    // but our container sits inside a grid that finishes layout AFTER init
+    // (right column stacks under the gallery on mobile, sticky bar renders
+    // late, etc.). invalidateSize forces Leaflet to remeasure and repaint
+    // tiles over the full container. We do it:
+    //   1. On the next animation frame (immediately after layout settles)
+    //   2. After 300ms (in case images / sticky bar shift the layout)
+    //   3. On window resize (rotate / responsive breakpoints)
+    //   4. On any container resize (ResizeObserver — catches sidebar/font
+    //      changes we didn't anticipate).
+    const refit = () => {
+      map.invalidateSize();
+      if (bounds.length > 1) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+    };
+    requestAnimationFrame(refit);
+    setTimeout(refit, 300);
+    window.addEventListener("resize", refit);
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(() => map.invalidateSize()).observe(mapEl);
     }
   } else {
     document.getElementById("miniMap").innerHTML =
