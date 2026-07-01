@@ -203,11 +203,25 @@
       </div>
     </nav>
 
-    <main class="hero-gradient overflow-hidden">
-      <!-- Hero -->
+    <main class="overflow-hidden">
+      <!-- Hero — video background of the campus building, softly greyed
+           so the title + search stay readable. The rest of the page
+           below (featured listings, "how it works") is untouched. -->
       <section
-        class="max-w-container-max mx-auto px-lg md:px-xl pt-2xl pb-2xl md:pt-24 md:pb-32 flex flex-col items-center text-center relative"
+        class="relative isolate w-full flex flex-col items-center text-center px-lg md:px-xl pt-2xl pb-2xl md:pt-24 md:pb-32 overflow-hidden"
       >
+        <!-- Video background -->
+        <video
+          class="absolute inset-0 -z-20 w-full h-full object-cover"
+          autoplay muted loop playsinline preload="auto"
+          poster="assets/campus-housing.svg"
+          aria-hidden="true"
+        >
+          <source src="assets/Buildings.mp4" type="video/mp4" />
+        </video>
+        <!-- Light greyish overlay: brightens the video and gives the
+             text plenty of contrast. -->
+        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-white/70 via-slate-200/55 to-white/60 backdrop-blur-[2px]" aria-hidden="true"></div>
         <div class="max-w-3xl mb-xl">
           <h1
             class="font-heading font-bold text-4xl md:text-6xl leading-tight mb-md text-on-surface"
